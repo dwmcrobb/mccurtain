@@ -1,0 +1,16 @@
+BUILD_DOCS       = @BUILD_DOCS@
+BZINC            = @BZ2INC@
+BZLIB            = @BZ2LIB@
+CXX              = @CXX@
+CXXFLAGS         = @CXXFLAGS@
+DWMDIR           = @DWMDIR@
+DWMINCS          = @DWMINCS@
+DWMLIBS          = @DWMLIBS@
+HTMLMAN          = @htmlman@
+INSTALLPREFIX    = @prefix@
+LIBTOOL          = @LIBTOOL@
+MANDOC		 = @MANDOC@
+OSNAME           = @OSNAME@
+PTHREADCXXFLAGS  = @PTHREADCXXFLAGS@
+TARDIR		 = @TARDIR@@prefix@
+VERSION		 = @DWM_VERSION@

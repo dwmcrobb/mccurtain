@@ -1,0 +1,17 @@
+name: "mccurtain"
+version: "@TAGVERSION@"
+origin: "devel/mccurtain"
+prefix: "@prefix@"
+www: "http://www.mcplex.net"
+maintainer: "dwmcrobb@me.com"
+comment: "C++ library and tools to create access deny lists for small web servers"
+desc: "C++ library and tools to create access deny lists for small web servers."
+licenselogic: "single"
+licenses: ["BSD"]
+categories: ["devel"]
+scripts: {
+  post-install: "#!/bin/sh\nldconfig @prefix@/lib\n"
+}
+deps: {
+  "libDwm":{"origin":"devel/libDwm","version":"0.9.10"}
+}

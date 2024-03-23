@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/libDwmMcCurtain
+
+Name: libDwmMcCurtain
+Description: C++ library for small web server access list creation
+Version: @TAGVERSION@
+Requires: libDwm
+Libs: @PTHREADLDFLAGS@ -L${libdir} -lDwmCredence @DWMLIBS@ @OSLIBS@
+Cflags: @PTHREADCXXFLAGS@ -I${includedir} @BOOSTINC@

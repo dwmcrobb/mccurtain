@@ -1,0 +1,10 @@
+Section: libdevel
+Priority: optional
+Maintainer: Daniel McRobb <dwm@mcplex.net>
+Build-Depends: debhelper-compat (= 12), autotools-dev
+Standards-Version: 4.4.1
+Homepage: http://www.mcplex.net
+Package: mccurtain
+Version: @TAGVERSION@
+Architecture: @DEBARCH@
+Description: C++ library and tools for creating access denial lists for small web servers.
