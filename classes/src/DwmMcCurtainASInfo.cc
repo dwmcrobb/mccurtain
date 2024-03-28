@@ -36,7 +36,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainASInfo.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::McCurtain::ASInfo class implementation
 //---------------------------------------------------------------------------
 
 #include "DwmMcCurtainASInfo.hh"
@@ -72,7 +72,7 @@ namespace Dwm {
                     Ipv4Prefix  pfx(net.get<string>());
                     if ((pfx.Network().Raw() != 0xFFFFFFFF)
                         && (pfx.MaskLength() != 0)) {
-                      _nets[pfx] = true;
+                      _nets[pfx] = 1;
                     }
                     else {
                       rc = false;
@@ -105,7 +105,7 @@ namespace Dwm {
       j["CC"] = _countryCode;
       if (! _nets.Empty()) {
         j["nets"] = nlohmann::json::array();
-        vector<pair<Ipv4Prefix,bool>>  netvec;
+        vector<pair<Ipv4Prefix,uint8_t>>  netvec;
         _nets.SortByKey(netvec);
         for (size_t i = 0; i < netvec.size(); ++i) {
           j["nets"][i] = netvec[i].first.ToString();

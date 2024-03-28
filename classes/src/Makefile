@@ -1,7 +1,8 @@
 include ../../Makefile.vars
 
 ALLINC       = -I../include ${DWMINCS}
-OBJS         = DwmMcCurtainASInfo.o
+OBJS         = DwmMcCurtainASInfo.o \
+               DwmMcCurtainASes.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
 OBJFILES     = $(OBJS:%.o=../obj/%.o)
 

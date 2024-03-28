@@ -34,33 +34,30 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASInfo.hh
+//!  \file DwmMcCurtainASes.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::ASInfo class declaration
+//!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINASINFO_HH_
-#define _DWMMCCURTAINASINFO_HH_
+#ifndef _DWMMCCURTAINASES_HH_
+#define _DWMMCCURTAINASES_HH_
 
-
-#include <nlohmann/json.hpp>
-
-#include "DwmIpv4Routes.hh"
+#include "DwmMcCurtainASInfo.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  Encapsulate information for a single AS.
+    //!  
     //------------------------------------------------------------------------
-    class ASInfo
+    class ASes
     {
     public:
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      bool FromJson(const nlohmann::json & j);
+      bool FromJsonFile(const std::string & filePath);
       
       //----------------------------------------------------------------------
       //!  
@@ -70,56 +67,28 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      inline uint32_t Number() const  { return _number; }
+      bool LoadRouteviews(const std::string & routeviewsFile);
       
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      inline uint32_t Number(uint32_t number)  { return _number = number; }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      inline const std::string & OrgName() const  { return _orgName; }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      inline const std::string & OrgName(const std::string orgName)
-      { return _orgName = orgName; }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      inline const std::string & CountryCode() const  { return _countryCode; }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      inline const std::string & CountryCode(const std::string & countryCode)
-      { return _countryCode = countryCode; }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      inline const Ipv4Routes<uint8_t> & Nets() const  { return _nets; }
+      bool Load(const std::string & jsonFile,
+                const std::string & routeviewsFile);
       
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets()   { return _nets; }
-
-      void Clear();
+      inline std::map<uint32_t,ASInfo> & ASMap()  
+      { return _asMap; }
       
     private:
-      uint32_t             _number;
-      std::string          _orgName;
-      std::string          _countryCode;
-      Ipv4Routes<uint8_t>  _nets;
+      std::map<uint32_t,ASInfo>  _asMap;
+
+      std::vector<uint32_t> GetASNumbers(std::string asnumstr);
     };
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINASINFO_HH_
+#endif  // _DWMMCCURTAINASES_HH_
