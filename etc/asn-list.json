@@ -687,6 +687,7 @@
         { "AS": 202053, "CC": "FI", "Org": "UpCloud Ltd" },
         { "AS": 202118, "CC": "CA", "Org": "Lain Networks Limited" },
         { "AS": 202836, "CC": "FR", "Org": "COMMUNE DE LA VALETTE DU VAR" },
+        { "AS": 203020, "CC": "IN", "Org": "HostRoyale Technologies Pvt Ltd" },
         { "AS": 203523, "CC": "RO", "Org": "Virtono Networks SRL" },
         { "AS": 203629, "CC": "CZ", "Org": "SIBNET s.r.o." },
         { "AS": 204196, "CC": "NL", "Org": "Abelohost BV" },
