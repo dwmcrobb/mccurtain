@@ -271,6 +271,7 @@
         { "AS": 34745, "CC": "GB", "Org": "TeleWare Hosted Services Ltd." },
         { "AS": 34971, "CC": "IT", "Org": "CDLAN SpA" },
         { "AS": 34989, "CC": "NO", "Org": "ServeTheWorld AS" },
+        { "AS": 35048, "CC": "RU", "Org": "Biterika Group LLC" },
         { "AS": 35278, "CC": "RU", "Org": "SPRINTHOST.RU LLC" },
         { "AS": 35295, "CC": "RU", "Org": "JSC RU-CENTER PeterHost" },
         { "AS": 35366, "CC": "DE", "Org": "ISPpro Internet KG" },
