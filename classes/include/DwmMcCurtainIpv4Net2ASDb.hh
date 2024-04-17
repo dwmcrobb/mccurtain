@@ -34,15 +34,17 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASes.hh
+//!  \file DwmMcCurtainIpv4Net2ASDb.hh
 //!  \author Daniel W. McRobb
 //!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINASES_HH_
-#define _DWMMCCURTAINASES_HH_
+#ifndef _DWMMCCURTAINIPV4NET2ASDB_HH_
+#define _DWMMCCURTAINIPV4NET2ASDB_HH_
 
-#include "DwmMcCurtainASInfo.hh"
+#include <set>
+
+#include "DwmIpv4Routes.hh"
 
 namespace Dwm {
 
@@ -51,51 +53,27 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    class ASes
+    class Ipv4Net2ASDb
     {
     public:
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool FromJsonFile(const std::string & filePath);
-      
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      nlohmann::json ToJson() const;
+      using  NetASes = Ipv4Routes<std::set<uint32_t>>;
 
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool LoadRouteviews(const std::string & routeviewsFile);
-      
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool Load(const std::string & jsonFile,
-                const std::string & routeviewsFile);
-      
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      inline std::map<uint32_t,ASInfo> & ASMap()  
-      { return _asMap; }
+      bool LoadCAIDARouteViews(const std::string & path);
+      bool Load(const std::string & path);
+      bool Save(const std::string & path) const;
 
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool MakePfList(std::vector<Dwm::Ipv4Prefix> & pfList,
-                      const std::vector<Dwm::Ipv4Prefix> & exceptions);
+      const NetASes & Entries() const
+      {
+        return _netASes;
+      }
       
     private:
-      std::map<uint32_t,ASInfo>  _asMap;
-
-      std::vector<uint32_t> GetASNumbers(std::string asnumstr);
-      void Coalesce();
+      NetASes  _netASes;
     };
+    
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINASES_HH_
+#endif  // _DWMMCCURTAINIPV4NET2ASDB_HH_

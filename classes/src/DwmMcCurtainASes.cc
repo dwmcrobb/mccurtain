@@ -46,6 +46,7 @@
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
+#include "DwmSysLogger.hh"
 #include "DwmMcCurtainASes.hh"
 
 namespace Dwm {
@@ -78,6 +79,7 @@ namespace Dwm {
                 _asMap[asinfo.Number()] = asinfo;
               }
               else {
+                Syslog(LOG_ERR, "Failed to load ASInfo from JSON");
                 rc = false;
                 break;
               }
@@ -121,6 +123,21 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
+    void ASes::Coalesce()
+    {
+      for (auto & as : _asMap) {
+        size_t  numNets;
+        do {
+          numNets = as.second.Nets().Size();
+          as.second.Nets().Coalesce();
+        } while (numNets != as.second.Nets().Size());
+      }
+      return;
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
     bool ASes::LoadRouteviews(const string & routeviewsFile)
     {
       bool  rc = false;
@@ -138,12 +155,15 @@ namespace Dwm {
           for (const auto & a : asnums) {
             auto  it = _asMap.find(a);
             if (it != _asMap.end()) {
-              it->second.Nets()[pfx] = true;
+              it->second.Nets()[pfx] = 1;
               rc = true;
             }
           }
         }
         is.close();
+      }
+      if (rc) {
+        Coalesce();
       }
       return rc;
     }
@@ -159,11 +179,52 @@ namespace Dwm {
         for (auto & as : _asMap) {
           as.second.Nets().Clear();
         }
-        rc = LoadRouteviews(routeviewsFile);
+        if (LoadRouteviews(routeviewsFile)) {
+          rc = true;
+        }
+        else {
+          Syslog(LOG_ERR, "Failed to load routeviews file '%s'",
+                 routeviewsFile.c_str());
+        }
+      }
+      else {
+        Syslog(LOG_ERR, "Failed to load JSON file '%s'", jsonFile.c_str());
       }
       return rc;
     }
     
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool ASes::MakePfList(vector<Dwm::Ipv4Prefix> & pfList,                    
+                          const vector<Dwm::Ipv4Prefix> & exceptions)
+    {
+      Ipv4Routes<uint8_t>  routes;
+      for (auto & as : _asMap) {
+        vector<pair<Ipv4Prefix,uint8_t>> asnets;
+        as.second.Nets().SortByKey(asnets);
+        for (const auto & asnet : asnets) {
+          bool  accept = true;
+          for (const auto & exc : exceptions) {
+            if (asnet.first.Contains(exc) || exc.Contains(asnet.first)) {
+              accept = false;
+              break;
+            }
+          }
+          if (accept) {
+            routes[asnet.first] = 1;
+          }
+        }
+      }
+      pfList.clear();
+      routes.Coalesce();
+      vector<pair<Ipv4Prefix,uint8_t>>  nets;
+      routes.SortByKey(nets);
+      for (const auto & net : nets) {
+        pfList.push_back(net.first);
+      }
+      return (! pfList.empty());
+    }
     
   }  // namespace McCurtain
 

@@ -80,13 +80,13 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      inline const std::string & OrgName() const  { return _orgName; }
+      inline const std::string & Org() const  { return _org; }
 
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      inline const std::string & OrgName(const std::string orgName)
-      { return _orgName = orgName; }
+      inline const std::string & Org(const std::string org)
+      { return _org = org; }
 
       //----------------------------------------------------------------------
       //!  
@@ -113,7 +113,7 @@ namespace Dwm {
       
     private:
       uint32_t             _number;
-      std::string          _orgName;
+      std::string          _org;
       std::string          _countryCode;
       Ipv4Routes<uint8_t>  _nets;
     };

@@ -43,21 +43,40 @@
 #include <string>
 
 #include "DwmSysLogger.hh"
-#include "DwmMcCurtainASes.hh"
+#include "DwmUnitAssert.hh"
 #include "DwmMcCurtainIpv4Net2ASDb.hh"
 
 using namespace std;
+using namespace Dwm;
 
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static bool MakeIpv4ToASDb(const std::string & routeViewsPath,
-                           const std::string & outPath)
+static bool TestMakeIpv4ToASDb(Dwm::McCurtain::Ipv4Net2ASDb & db,
+                               const std::string & routeViewsPath)
+{
+  return UnitAssert(db.LoadCAIDARouteViews(routeViewsPath));
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool TestSave(Dwm::McCurtain::Ipv4Net2ASDb & db,
+                     const std::string & outPath)
+{
+  return UnitAssert(db.Save(outPath));
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool TestLoad(const Dwm::McCurtain::Ipv4Net2ASDb & db,
+                     const std::string & inPath)
 {
   bool  rc = false;
-  Dwm::McCurtain::Ipv4Net2ASDb  db;
-  if (db.LoadCAIDARouteViews(routeViewsPath)) {
-    rc = db.Save(outPath);
+  Dwm::McCurtain::Ipv4Net2ASDb  db2;
+  if (UnitAssert(db2.Load(inPath))) {
+    rc = UnitAssert(db.Entries().Size() == db2.Entries().Size());
   }
   return rc;
 }
@@ -67,19 +86,30 @@ static bool MakeIpv4ToASDb(const std::string & routeViewsPath,
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  Dwm::SysLogger::Open("mkcurtain", LOG_PERROR|LOG_PID, "user");
+  Dwm::SysLogger::Open("TestIpv4Net2ASDb", LOG_PERROR|LOG_PID, "user");
 
-  MakeIpv4ToASDb(argv[2], argv[3]);
+  Dwm::McCurtain::Ipv4Net2ASDb  db;
+  db.Load("ipv42as.db");
+  cout << db.Entries().Size() << '\n';
   
-  Dwm::McCurtain::ASes  ases;
-  if (ases.Load(argv[1], argv[2])) {
-    cout << ases.ToJson().dump(4) << '\n' << '\n';
-#if 1
-    std::vector<Dwm::Ipv4Prefix>  pfList;
-    ases.MakePfList(pfList, { });
-    for (const auto & pfe : pfList) {
-      cout << pfe << '\n';
+#if 0
+  if (TestMakeIpv4ToASDb(db, "inputs/routeviews-rv2-20240406.pfx2as.gz")) {
+    if (TestSave(db, "ipv42as.db")) {
+      TestLoad(db, "ipv42as.db");
     }
-#endif
+    // std::remove("ipv42as.db");
   }
+#endif
+  
+  if (Assertions::Total().Failed())
+    Assertions::Print(cerr, true);
+  else
+    cout << Assertions::Total() << " passed" << endl;
+
+  exit(0);
+  
+testFailed:
+  
+  Assertions::Print(cerr, true);
+  exit(1);
 }

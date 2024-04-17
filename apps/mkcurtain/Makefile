@@ -1,7 +1,13 @@
 include ../../Makefile.vars
 
-mkcurtain: mkcurtain.o
-	${CXX} ${LDFLAGS} -o $@ $< ${DWMLIBS}
+ALLINCS = -I../../classes/include ${DWMINCS}
+
+mkcurtain: mkcurtain.o ../../classes/lib/libDwmMcCurtain.a
+	${CXX} ${LDFLAGS} -o $@ $^ ${DWMLIBS}
+
+../../classes/lib/libDwmMcCurtain.a::
+	${MAKE} -C ../../classes/src
 
 mkcurtain.o: mkcurtain.cc
-	${CXX} ${CXXFLAGS} ${DWMINCS} -c $<
+	${CXX} ${CXXFLAGS} ${ALLINCS} -c $<
+

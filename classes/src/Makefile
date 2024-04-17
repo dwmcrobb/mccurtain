@@ -2,7 +2,8 @@ include ../../Makefile.vars
 
 ALLINC       = -I../include ${DWMINCS}
 OBJS         = DwmMcCurtainASInfo.o \
-               DwmMcCurtainASes.o
+               DwmMcCurtainASes.o \
+               DwmMcCurtainIpv4Net2ASDb.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
 OBJFILES     = $(OBJS:%.o=../obj/%.o)
 

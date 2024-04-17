@@ -34,12 +34,19 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASInfo.cc
+//!  \file DwmMcCurtainIpv4Net2ASDb.cc
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::ASInfo class implementation
+//!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#include "DwmMcCurtainASInfo.hh"
+#include <fstream>
+#include <regex>
+
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+
+#include "DwmMcCurtainIpv4Net2ASDb.hh"
 
 namespace Dwm {
 
@@ -50,78 +57,80 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    bool ASInfo::FromJson(const nlohmann::json & j)
+    static set<uint32_t> GetASNumbers(string asnumstr)
     {
-      bool  rc = false;
-      Clear();
-      if (j.is_object()) {
-        auto  it = j.find("AS");
-        if ((it != j.end()) && it->is_number()) {
-          _number = it->get<uint32_t>();
-          it = j.find("Org");
-          if ((it != j.end()) && it->is_string()) {
-            _org = it->get<string>();
-            it = j.find("CC");
-            if ((it != j.end()) && it->is_string()) {
-              _countryCode = it->get<string>();
-              rc = true;
-              it = j.find("nets");
-              if ((it != j.end()) && it->is_array()) {
-                for (const auto & net : *it) {
-                  if (net.is_string()) {
-                    Ipv4Prefix  pfx(net.get<string>());
-                    if ((pfx.Network().Raw() != 0xFFFFFFFF)
-                        && (pfx.MaskLength() != 0)) {
-                      _nets[pfx] = 1;
-                    }
-                    else {
-                      rc = false;
-                      break;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      if (! rc) {
-        Clear();
+      static regex  s_rgx("([0-9]+)", regex::optimize|regex::ECMAScript);
+      set<uint32_t>  rc;
+      for (smatch sm; regex_search(asnumstr, sm, s_rgx); ) {
+        rc.insert(stoul(sm.str()));
+        asnumstr = sm.suffix();
       }
       return rc;
     }
-            
+    
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    nlohmann::json ASInfo::ToJson() const
+    bool Ipv4Net2ASDb::LoadCAIDARouteViews(const std::string & path)
     {
-      nlohmann::json  j;
-      j["AS"] = _number;
-      j["Org"] = _org;
-      j["CC"] = _countryCode;
-      if (! _nets.Empty()) {
-        j["nets"] = nlohmann::json::array();
-        vector<pair<Ipv4Prefix,uint8_t>>  netvec;
-        _nets.SortByKey(netvec);
-        for (size_t i = 0; i < netvec.size(); ++i) {
-          j["nets"][i] = netvec[i].first.ToString();
+      using boost::iostreams::filtering_streambuf;
+      using boost::iostreams::gzip_decompressor;
+      using boost::iostreams::gzip_compressor;
+
+      _netASes.Clear();
+      ifstream  is(path);
+      if (is) {
+        filtering_streambuf<boost::iostreams::input>  gzin;
+        gzin.push(gzip_decompressor());
+        gzin.push(is);
+        istream   gzis(&gzin);
+        string    addrstr, asnumstr;
+        uint16_t  maskLen;
+        while (gzis >> addrstr >> maskLen >> asnumstr) {
+          if (maskLen < 33) {
+            Dwm::Ipv4Prefix  pfx(addrstr, (uint8_t)maskLen);
+            _netASes[pfx] = GetASNumbers(asnumstr);
+          }
+        }
+        is.close();
+      }
+      bool  rc = (! _netASes.Empty());
+      if (rc) {
+        _netASes.Coalesce();
+      }
+      return rc;
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Ipv4Net2ASDb::Load(const std::string & path)
+    {
+      bool      rc = false;
+      ifstream  is(path);
+      if (is) {
+        if (_netASes.Read(is)) {
+          rc = true;
         }
       }
-      return j;
+      return rc;
     }
-
+          
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    void ASInfo::Clear()
+    bool Ipv4Net2ASDb::Save(const std::string & path) const
     {
-      _number = 0;
-      _org.clear();
-      _countryCode.clear();
-      _nets.Clear();
-      return;
+      bool      rc = false;
+      ofstream  os(path);
+      if (os) {
+        if (_netASes.Write(os)) {
+          rc = true;
+        }
+      }
+      return rc;
     }
+    
     
   }  // namespace McCurtain
 
