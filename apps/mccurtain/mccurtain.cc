@@ -101,14 +101,29 @@ static void ShowNets(uint32_t as)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static void Usage(const char *argv0)
+{
+  cerr << "Usage: " << argv0 << " ASNumber_or_IPv4Address\n";
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+  if (argc < 2) {
+    Usage(argv[0]);
+    return 1;
+  }
+  
   string  arg(argv[1]);
   if (arg.find_first_of('.') != string::npos) {
     Dwm::Ipv4Address  addr(arg);
     ShowASes(addr);
   }
   else {
-    ShowNets(strtoul(argv[1], nullptr, 10));
+    ShowNets(stoul(arg));
   }
+  return 0;
 }
