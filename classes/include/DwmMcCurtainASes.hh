@@ -36,7 +36,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainASes.hh
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::McCurtain::ASes class declaration
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINASES_HH_
@@ -49,40 +49,49 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  This class is used to hold information about ASes that I like to
+    //!  block from accessing servers on my home network.  Internally it's
+    //!  just a map of AS numbers to ASInfo objects.  I keep a JSON file of
+    //!  skeletal information about ASes of interest (AS number, country code,
+    //!  organization), which can be used in combination with an AS2Ipv4NetDb
+    //!  file to pupulate all the prefixes being announced by each AS of
+    //!  interest on a per-AS basis (as the values in the map).  A JSON
+    //!  object that contains all of the information of interest can then
+    //!  be fetched via the ToJson() member.  A vector of all prefixes
+    //!  (useful for a pf table) may also be populated via the MakePfList()
+    //!  member.
     //------------------------------------------------------------------------
     class ASes
     {
     public:
       //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool FromJsonFile(const std::string & filePath);
-      
-      //----------------------------------------------------------------------
-      //!  
+      //!  Returns a JSON representation of the ASes.
       //----------------------------------------------------------------------
       nlohmann::json ToJson() const;
 
       //----------------------------------------------------------------------
+      //!  Loads from the given @c jsonFile and an AS2Ipv4NetDb file
+      //!  @c asdbFile.  Returns true on success, false on failure.
       //!  
+      //!  @c jsonFile contains skeletal information about
+      //!  ASes of interest (see ../../etc/asn-list.json as an example).
+      //!  @c asdbFile contains prefixes announced by each AS in a global
+      //!  BGP routing table dump.
       //----------------------------------------------------------------------
-      bool LoadRouteviews(const std::string & routeviewsFile);
+      bool Load(const std::string & jsonFile, const std::string & asdbFile);
       
       //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool Load(const std::string & jsonFile,
-                const std::string & routeviewsFile);
-      
-      //----------------------------------------------------------------------
-      //!  
+      //!  Returns a reference to the contained map of ASInfo objects keyed
+      //!  by AS number.
       //----------------------------------------------------------------------
       inline std::map<uint32_t,ASInfo> & ASMap()  
       { return _asMap; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Populates @c pfList with all of the contained network prefixes,
+      //!  with the exception of those contained in @c exceptions.  Returns
+      //!  true if the resulting @c pfList is non-empty as a result, else
+      //!  returns false.
       //----------------------------------------------------------------------
       bool MakePfList(std::vector<Dwm::Ipv4Prefix> & pfList,
                       const std::vector<Dwm::Ipv4Prefix> & exceptions);
@@ -90,8 +99,9 @@ namespace Dwm {
     private:
       std::map<uint32_t,ASInfo>  _asMap;
 
-      std::vector<uint32_t> GetASNumbers(std::string asnumstr);
       void Coalesce();
+      bool FromJsonFile(const std::string & filePath);
+      bool LoadASDb(const std::string & asdbFile);
     };
     
   }  // namespace McCurtain

@@ -36,7 +36,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainIpv4Net2ASDb.hh
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::McCurtain::Ipv4Net2ASDb class declaration
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINIPV4NET2ASDB_HH_
@@ -51,21 +51,37 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Just a wrapper around an Ipv4Routes<std::set<uint32_t>>.  The
+    //!  set<uint32_t> values for each route (prefix) contain all of the
+    //!  origin AS numbers for the prefix.
     //------------------------------------------------------------------------
     class Ipv4Net2ASDb
     {
     public:
       using  NetASes = Ipv4Routes<std::set<uint32_t>>;
 
+      //----------------------------------------------------------------------
+      //!  Loads the contents from a gzip'ed routeviews file from CAIDA.
+      //!  Returns true on success, falue on failure.
+      //----------------------------------------------------------------------
       bool LoadCAIDARouteViews(const std::string & path);
+      
+      //----------------------------------------------------------------------
+      //!  Loads the contents from the native binary file located at @c path.
+      //!  Returns true on success, false on failure.
+      //----------------------------------------------------------------------
       bool Load(const std::string & path);
+      
+      //----------------------------------------------------------------------
+      //!  Saves the contents in native binary form to the file at @c path.
+      //!  Returns true on success, false on failure.
+      //----------------------------------------------------------------------
       bool Save(const std::string & path) const;
 
-      const NetASes & Entries() const
-      {
-        return _netASes;
-      }
+      //----------------------------------------------------------------------
+      //!  Returns the contained entries.
+      //----------------------------------------------------------------------
+      const NetASes & Entries() const  { return _netASes; }
       
     private:
       NetASes  _netASes;

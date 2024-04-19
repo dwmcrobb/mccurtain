@@ -34,98 +34,103 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASInfo.hh
+//!  \file DwmMcCurtainAS2Ipv4NetDb.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::ASInfo class declaration
+//!  \brief Dwm::McCurtain::AS2Ipv4NetDb class declaration
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINASINFO_HH_
-#define _DWMMCCURTAINASINFO_HH_
+#ifndef _DWMMCCURTAINAS2IPV4NETDB_HH_
+#define _DWMMCCURTAINAS2IPV4NETDB_HH_
 
-
-#include <nlohmann/json.hpp>
-
-#include "DwmIpv4Routes.hh"
+#include "DwmMcCurtainIpv4Net2ASDb.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  Encapsulate information for a single AS.
+    //!  Holds IPv4 prefixes for a set of Autonomous Systems (ASes) on a
+    //!  per-AS basis.  I do this by using an unordered_map whose keys are
+    //!  AS numbers and whose values are Ipv4Routes<uint8_t>.  Note that
+    //!  the uint8_t value in the Ipv4Routes is always set to 1 because it's
+    //!  effectively unused.  I'm just using Ipv4Routes because it has some
+    //!  desirable functionality for a set of IPv4 prefixes.
+    //!
+    //!  The contents of an instance of this class can be loaded in 2 ways:
+    //!   - from an existing Ipv4Net2ASDb
+    //!   - from a file that was previously created via the Save() member
+    //!     (this is the 'native' binary form and is portable).
+    //!
+    //!  I typically get a routeviews file from CAIDA and use it to create
+    //!  an Ipv4Net2ASDb, then create an AS2Ipv4NetDb from the Ipv4Net2ASDb.
+    //!  I then Save() both, so I can use the native binary form in various
+    //!  utilities.
     //------------------------------------------------------------------------
-    class ASInfo
+    class AS2Ipv4NetDb
+      : public StreamIOCapable
     {
     public:
-      //----------------------------------------------------------------------
-      //!  Pupulates the ASInfo from the given JSON @c j.
-      //----------------------------------------------------------------------
-      bool FromJson(const nlohmann::json & j);
-      
-      //----------------------------------------------------------------------
-      //!  Returns a JSON representation of the ASInfo.
-      //----------------------------------------------------------------------
-      nlohmann::json ToJson() const;
+      using  ASNets = Ipv4Routes<uint8_t>;
 
       //----------------------------------------------------------------------
-      //!  Returns the AS number of the AS.
+      //!  Load from the given Ipv4Net2ASDb @c net2asdb.  Returns true on
+      //!  success, false on failure.
       //----------------------------------------------------------------------
-      inline uint32_t Number() const  { return _number; }
-      
-      //----------------------------------------------------------------------
-      //!  Sets and returns the AS number of the AS.
-      //----------------------------------------------------------------------
-      inline uint32_t Number(uint32_t number)  { return _number = number; }
+      bool Load(const Ipv4Net2ASDb & net2asdb);
 
       //----------------------------------------------------------------------
-      //!  Returns the organization that owns the AS.
+      //!  Load from a file at the given @c path.  Returns true on       
+      //!  success, false on failure.
       //----------------------------------------------------------------------
-      inline const std::string & Org() const  { return _org; }
+      bool Load(const std::string & path);
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the organization that owns the AS.
+      //!  Saves to a file at the given @c path.  Returns true on success,
+      //!  falue on failure.
       //----------------------------------------------------------------------
-      inline const std::string & Org(const std::string org)
-      { return _org = org; }
+      bool Save(const std::string & path) const;
 
       //----------------------------------------------------------------------
-      //!  Returns the country code of the AS.
+      //!  Reads the contents from an istream.  Returns the istream.
       //----------------------------------------------------------------------
-      inline const std::string & CountryCode() const  { return _countryCode; }
+      std::istream & Read(std::istream & is) override;
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the country code of the AS.
+      //!  Writes the contents to an ostream.  Returns the ostream.
       //----------------------------------------------------------------------
-      inline const std::string & CountryCode(const std::string & countryCode)
-      { return _countryCode = countryCode; }
+      std::ostream & Write(std::ostream & os) const override;
 
       //----------------------------------------------------------------------
-      //!  Returns a const reference to the prefixes for the AS.
+      //!  Returns the total number of contained prefixes, across all ASes.
+      //!  Note that a prefix may be announced by more than one AS, hence
+      //!  the returned value does not represent the number of unique
+      //!  prefixes.
       //----------------------------------------------------------------------
-      inline const Ipv4Routes<uint8_t> & Nets() const  { return _nets; }
-      
-      //----------------------------------------------------------------------
-      //!  Returns a mutable reference to the prefixes for the AS.
-      //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets()   { return _nets; }
+      uint32_t Size() const
+      {
+        uint32_t  rc = 0;
+        for (auto it = _asNets.begin(); it != _asNets.end(); ++it) {
+          rc += it->second.Size();
+        }
+        return rc;
+      }
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the prefixes for the AS.
+      //!  Returns a const reference to the contained unordered_map of ASNets
+      //!  keyed by AS number.
       //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets(const Ipv4Routes<uint8_t> & nets)
-      { return _nets = nets; }
-
-      void Clear();
+      const std::unordered_map<uint32_t,ASNets> & Nets() const
+      {
+        return _asNets;
+      }
       
     private:
-      uint32_t             _number;
-      std::string          _org;
-      std::string          _countryCode;
-      Ipv4Routes<uint8_t>  _nets;
+      std::unordered_map<uint32_t,ASNets>  _asNets;
     };
+    
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINASINFO_HH_
+#endif  // _DWMMCCURTAINAS2IPV4NETDB_HH_

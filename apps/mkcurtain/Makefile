@@ -11,3 +11,5 @@ mkcurtain: mkcurtain.o ../../classes/lib/libDwmMcCurtain.a
 mkcurtain.o: mkcurtain.cc
 	${CXX} ${CXXFLAGS} ${ALLINCS} -c $<
 
+clean::
+	rm -f mkcurtain mkcurtain.o

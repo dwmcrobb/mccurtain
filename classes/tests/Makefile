@@ -1,6 +1,7 @@
 include ../../Makefile.vars
 
-OBJFILES = TestIpv4Net2ASDb.o
+OBJFILES = TestIpv4Net2ASDb.o \
+           TestAS2Ipv4NetDb.o
 OBJDEPS  = $(OBJFILES:%.o=deps/%_deps)
 TESTS    = $(OBJFILES:%.o=%)
 ALLINCS  = -I../../classes/include ${DWMINCS}

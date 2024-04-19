@@ -34,75 +34,94 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file mkcurtain.cc
+//!  \file TestAS2Ipv4NetDb.cc
 //!  \author Daniel W. McRobb
 //!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
-
-extern "C" {
-  #include <unistd.h>
-}
 
 #include <iostream>
 #include <string>
 
 #include "DwmSysLogger.hh"
-#include "DwmMcCurtainASes.hh"
+#include "DwmUnitAssert.hh"
 #include "DwmMcCurtainAS2Ipv4NetDb.hh"
 
 using namespace std;
+using namespace Dwm;
 
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void Usage(const char *argv0)
+static bool TestMakeIpv4ToASDb(Dwm::McCurtain::Ipv4Net2ASDb & db,
+                               const std::string & routeViewsPath)
 {
-  cerr << "Usage: " << argv0 << " [-p] ASesOfInterest_json_file asdbFile\n";
+  return UnitAssert(db.LoadCAIDARouteViews(routeViewsPath));
 }
 
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static bool TestSave(Dwm::McCurtain::AS2Ipv4NetDb & asdb,
+                     const std::string & outPath)
+{
+  return UnitAssert(asdb.Save(outPath));
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool TestLoad(const Dwm::McCurtain::Ipv4Net2ASDb & netdb,
+                     Dwm::McCurtain::AS2Ipv4NetDb & asdb)
+{
+  bool  rc = false;
+  if (UnitAssert(asdb.Load(netdb))) {
+    rc = UnitAssert(asdb.Size() >= netdb.Entries().Size());
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool TestLoad(const Dwm::McCurtain::AS2Ipv4NetDb & asdb,
+                     const string & path)
+{
+  bool  rc = false;
+  Dwm::McCurtain::AS2Ipv4NetDb  asdb2;
+  if (UnitAssert(asdb2.Load(path))) {
+    rc = UnitAssert(asdb2.Size() == asdb.Size());
+  }
+  return rc;
+}
+      
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  Dwm::SysLogger::Open("mkcurtain", LOG_PERROR|LOG_PID, "user");
+  Dwm::SysLogger::Open("TestIpv4Net2ASDb", LOG_PERROR|LOG_PID, "user");
 
-  bool  generatePfList = false;
-  
-  extern int  optind;
-  int         optChar;
-  while ((optChar = getopt(argc, argv, "p")) != -1) {
-    switch (optChar) {
-      case 'p':
-        generatePfList = true;
-        break;
-      default:
-        Usage(argv[0]);
-        return 1;
-    }
-  }
+  Dwm::McCurtain::Ipv4Net2ASDb  netdb;
+  Dwm::McCurtain::AS2Ipv4NetDb  asdb;
 
-  if ((argc - optind) != 2) {
-    Usage(argv[0]);
-    return 1;
-  }
-  
-  Dwm::McCurtain::ASes  ases;
-  if (ases.Load(argv[optind], argv[optind+1])) {
-    if (! generatePfList) {
-      cout << ases.ToJson().dump(4) << '\n' << '\n';
-    }
-    else {
-      std::vector<Dwm::Ipv4Prefix>  pfList;
-      ases.MakePfList(pfList, { });
-      for (const auto & pfe : pfList) {
-        cout << pfe << '\n';
+  if (TestMakeIpv4ToASDb(netdb, "inputs/routeviews-rv2-20240406.pfx2as.gz")) {
+    if (TestLoad(netdb, asdb)) {
+      if (UnitAssert(TestSave(asdb, "as2ipv4.db"))) {
+        TestLoad(asdb, "as2ipv4.db");
       }
     }
-    return 0;
+    // std::remove("as2ipv4.db");
   }
-  else {
-    cerr << "Failed to load ASes\n";
-    return 1;
-  }
+  
+  if (Assertions::Total().Failed())
+    Assertions::Print(cerr, true);
+  else
+    cout << Assertions::Total() << " passed" << endl;
+
+  exit(0);
+  
+testFailed:
+  
+  Assertions::Print(cerr, true);
+  exit(1);
 }

@@ -1,0 +1,4 @@
+*.o
+as2ipv4.db
+ipv42as.db
+mkcurtaindb

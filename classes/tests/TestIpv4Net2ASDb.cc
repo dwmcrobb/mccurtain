@@ -89,17 +89,12 @@ int main(int argc, char *argv[])
   Dwm::SysLogger::Open("TestIpv4Net2ASDb", LOG_PERROR|LOG_PID, "user");
 
   Dwm::McCurtain::Ipv4Net2ASDb  db;
-  db.Load("ipv42as.db");
-  cout << db.Entries().Size() << '\n';
-  
-#if 0
   if (TestMakeIpv4ToASDb(db, "inputs/routeviews-rv2-20240406.pfx2as.gz")) {
     if (TestSave(db, "ipv42as.db")) {
       TestLoad(db, "ipv42as.db");
     }
     // std::remove("ipv42as.db");
   }
-#endif
   
   if (Assertions::Total().Failed())
     Assertions::Print(cerr, true);

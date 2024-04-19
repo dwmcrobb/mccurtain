@@ -34,7 +34,7 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file mkcurtain.cc
+//!  \file mccurtain.cc
 //!  \author Daniel W. McRobb
 //!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
@@ -43,11 +43,9 @@ extern "C" {
   #include <unistd.h>
 }
 
-#include <iostream>
-#include <string>
+#include <cstdlib>
+#include <iomanip>
 
-#include "DwmSysLogger.hh"
-#include "DwmMcCurtainASes.hh"
 #include "DwmMcCurtainAS2Ipv4NetDb.hh"
 
 using namespace std;
@@ -55,9 +53,49 @@ using namespace std;
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void Usage(const char *argv0)
+static void ShowASes(const Dwm::Ipv4Address & addr)
 {
-  cerr << "Usage: " << argv0 << " [-p] ASesOfInterest_json_file asdbFile\n";
+  Dwm::McCurtain::Ipv4Net2ASDb  netdb;
+  if (netdb.Load(string(getenv("HOME")) + "/etc/ipv42as.db")) {
+    std::vector<std::pair<Dwm::Ipv4Prefix,set<uint32_t>>>  matches;
+    if (netdb.Entries().Find(addr, matches)) {
+      for (const auto & match : matches) {
+        cout << setiosflags(ios::left) << setw(20) << match.first << ' ';
+        if (! match.second.empty()) {
+          auto  asit = match.second.begin();
+          cout << *asit;
+          ++asit;
+          for (; asit != match.second.end(); ++asit) {
+            cout << ',' << *asit;
+          }
+        }
+        cout << '\n';
+      }
+    }
+  }
+  else {
+    cerr << "Failed to load ipv42as.db\n";
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void ShowNets(uint32_t as)
+{
+  Dwm::McCurtain::AS2Ipv4NetDb  asdb;
+  if (asdb.Load(string(getenv("HOME")) + "/etc/as2ipv4.db")) {
+    auto  asit = asdb.Nets().find(as);
+    if (asit != asdb.Nets().end()) {
+      std::vector<std::pair<Dwm::Ipv4Prefix,uint8_t>>  prefixes;
+      asit->second.SortByKey(prefixes);
+      for (const auto & pfx : prefixes) {
+        cout << pfx.first << '\n';
+      }
+    }
+  }
+  return;
 }
 
 //----------------------------------------------------------------------------
@@ -65,44 +103,12 @@ static void Usage(const char *argv0)
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  Dwm::SysLogger::Open("mkcurtain", LOG_PERROR|LOG_PID, "user");
-
-  bool  generatePfList = false;
-  
-  extern int  optind;
-  int         optChar;
-  while ((optChar = getopt(argc, argv, "p")) != -1) {
-    switch (optChar) {
-      case 'p':
-        generatePfList = true;
-        break;
-      default:
-        Usage(argv[0]);
-        return 1;
-    }
-  }
-
-  if ((argc - optind) != 2) {
-    Usage(argv[0]);
-    return 1;
-  }
-  
-  Dwm::McCurtain::ASes  ases;
-  if (ases.Load(argv[optind], argv[optind+1])) {
-    if (! generatePfList) {
-      cout << ases.ToJson().dump(4) << '\n' << '\n';
-    }
-    else {
-      std::vector<Dwm::Ipv4Prefix>  pfList;
-      ases.MakePfList(pfList, { });
-      for (const auto & pfe : pfList) {
-        cout << pfe << '\n';
-      }
-    }
-    return 0;
+  string  arg(argv[1]);
+  if (arg.find_first_of('.') != string::npos) {
+    Dwm::Ipv4Address  addr(arg);
+    ShowASes(addr);
   }
   else {
-    cerr << "Failed to load ASes\n";
-    return 1;
+    ShowNets(strtoul(argv[1], nullptr, 10));
   }
 }

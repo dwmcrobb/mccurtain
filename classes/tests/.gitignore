@@ -1,2 +1,4 @@
+TestAS2Ipv4NetDb
 TestIpv4Net2ASDb
 *.o
+*.db

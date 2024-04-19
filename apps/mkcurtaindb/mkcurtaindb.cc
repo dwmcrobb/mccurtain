@@ -39,10 +39,6 @@
 //!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-extern "C" {
-  #include <unistd.h>
-}
-
 #include <iostream>
 #include <string>
 
@@ -57,7 +53,9 @@ using namespace std;
 //----------------------------------------------------------------------------
 static void Usage(const char *argv0)
 {
-  cerr << "Usage: " << argv0 << " [-p] ASesOfInterest_json_file asdbFile\n";
+  cerr << "Usage: " << argv0
+       << " [-i ipv4ToASdb] [-a asToIpv4db] routeViewsFile\n";
+  return;
 }
 
 //----------------------------------------------------------------------------
@@ -65,44 +63,60 @@ static void Usage(const char *argv0)
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  Dwm::SysLogger::Open("mkcurtain", LOG_PERROR|LOG_PID, "user");
+  Dwm::SysLogger::Open("mkcurtaindb", LOG_PERROR|LOG_PID, "user");
 
-  bool  generatePfList = false;
-  
+  string  as2Ipv4DbFile = "as2ipv4.db";
+  string  ipv42AsDbFile = "ipv42as.db";
+
   extern int  optind;
   int         optChar;
-  while ((optChar = getopt(argc, argv, "p")) != -1) {
+  while ((optChar = getopt(argc, argv, "a:i:")) != -1) {
     switch (optChar) {
-      case 'p':
-        generatePfList = true;
+      case 'a':
+        as2Ipv4DbFile = optarg;
+        break;
+      case 'i':
+        ipv42AsDbFile = optarg;
         break;
       default:
         Usage(argv[0]);
-        return 1;
+        exit(1);
+        break;
     }
   }
 
-  if ((argc - optind) != 2) {
+  if (optind >= argc) {
     Usage(argv[0]);
-    return 1;
+    exit(1);
   }
   
-  Dwm::McCurtain::ASes  ases;
-  if (ases.Load(argv[optind], argv[optind+1])) {
-    if (! generatePfList) {
-      cout << ases.ToJson().dump(4) << '\n' << '\n';
-    }
-    else {
-      std::vector<Dwm::Ipv4Prefix>  pfList;
-      ases.MakePfList(pfList, { });
-      for (const auto & pfe : pfList) {
-        cout << pfe << '\n';
+  Dwm::McCurtain::Ipv4Net2ASDb  netdb;
+  if (netdb.LoadCAIDARouteViews(argv[optind])) {
+    Dwm::McCurtain::AS2Ipv4NetDb  asdb;
+    if (asdb.Load(netdb)) {
+      if (netdb.Save(ipv42AsDbFile)) {
+        if (asdb.Save(as2Ipv4DbFile)) {
+          return 0;
+        }
+        else {
+          cerr << "Failed to save AS to ipv4 net database to '"
+               << as2Ipv4DbFile << "'\n";
+        }
+      }
+      else {
+        cerr << "Failed to save ipv4 net to AS database to '"                
+             << ipv42AsDbFile << "'\n";
       }
     }
-    return 0;
+    else {
+      cerr << "Failed to load AS to ipv4 net database from ipv4 to AS "
+           << "database\n";
+    }
   }
   else {
-    cerr << "Failed to load ASes\n";
-    return 1;
+    cerr << "Failed to load ipv4 net to AS database from routeviews file '"
+         << argv[optind] << "'\n";
   }
+
+  return 1;
 }

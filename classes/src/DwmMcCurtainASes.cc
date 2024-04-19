@@ -48,6 +48,7 @@
 
 #include "DwmSysLogger.hh"
 #include "DwmMcCurtainASes.hh"
+#include "DwmMcCurtainAS2Ipv4NetDb.hh"
 
 namespace Dwm {
 
@@ -109,20 +110,6 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    vector<uint32_t> ASes::GetASNumbers(string asnumstr)
-    {
-      static regex  s_rgx("([0-9]+)", regex::optimize|regex::ECMAScript);
-      vector<uint32_t>  rc;
-      for (smatch sm; regex_search(asnumstr, sm, s_rgx); ) {
-        rc.push_back(stoul(sm.str()));
-        asnumstr = sm.suffix();
-      }
-      return rc;
-    }
-
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
     void ASes::Coalesce()
     {
       for (auto & as : _asMap) {
@@ -134,61 +121,43 @@ namespace Dwm {
       }
       return;
     }
-    
+
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    bool ASes::LoadRouteviews(const string & routeviewsFile)
+    bool ASes::LoadASDb(const string & asdbFile)
     {
       bool  rc = false;
-      ifstream  is(routeviewsFile);
-      if (is) {
-        filtering_streambuf<boost::iostreams::input>  gzin;
-        gzin.push(gzip_decompressor());
-        gzin.push(is);
-        istream   gzis(&gzin);
-        string    addrstr, asnumstr;
-        uint16_t  maskLen;
-        while (gzis >> addrstr >> maskLen >> asnumstr) {
-          Dwm::Ipv4Prefix  pfx(addrstr, (uint8_t)maskLen);
-          vector<uint32_t>  asnums = GetASNumbers(asnumstr);
-          for (const auto & a : asnums) {
-            auto  it = _asMap.find(a);
-            if (it != _asMap.end()) {
-              it->second.Nets()[pfx] = 1;
-              rc = true;
-            }
+      AS2Ipv4NetDb  asdb;
+      if (asdb.Load(asdbFile)) {
+        for (auto asi = _asMap.begin(); asi != _asMap.end(); ++asi) {
+          auto  asdbi = asdb.Nets().find(asi->first);
+          if (asdbi != asdb.Nets().end()) {
+            asi->second.Nets(asdbi->second);
+            rc = true;
           }
         }
-        is.close();
-      }
-      if (rc) {
-        Coalesce();
       }
       return rc;
     }
-    
+      
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    bool ASes::Load(const string & jsonFile,
-                    const string & routeviewsFile)
+    bool ASes::Load(const string & jsonFile, const string & asdbFile)
     {
       bool  rc = false;
       if (FromJsonFile(jsonFile)) {
         for (auto & as : _asMap) {
           as.second.Nets().Clear();
         }
-        if (LoadRouteviews(routeviewsFile)) {
+        if (LoadASDb(asdbFile)) {
           rc = true;
         }
         else {
-          Syslog(LOG_ERR, "Failed to load routeviews file '%s'",
-                 routeviewsFile.c_str());
+          Syslog(LOG_ERR, "Failed to load ASdb file '%s'",
+                 asdbFile.c_str());
         }
-      }
-      else {
-        Syslog(LOG_ERR, "Failed to load JSON file '%s'", jsonFile.c_str());
       }
       return rc;
     }
