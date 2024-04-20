@@ -1,4 +1,5 @@
-TestAS2Ipv4NetDb
-TestIpv4Net2ASDb
 *.o
 *.db
+TestAS2Ipv4NetDb
+TestIpv4Net2ASDb
+TestRipeAsnTxt

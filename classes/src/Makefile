@@ -4,7 +4,8 @@ ALLINC       = -I../include ${DWMINCS}
 OBJS         = DwmMcCurtainASInfo.o \
                DwmMcCurtainASes.o \
                DwmMcCurtainAS2Ipv4NetDb.o \
-               DwmMcCurtainIpv4Net2ASDb.o
+               DwmMcCurtainIpv4Net2ASDb.o \
+               DwmMcCurtainRipeAsnTxt.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
 OBJFILES     = $(OBJS:%.o=../obj/%.o)
 
