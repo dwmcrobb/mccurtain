@@ -41,12 +41,14 @@
 
 extern "C" {
   #include <unistd.h>
+  #include <sys/resource.h>
 }
 
 #include <cstdlib>
 #include <iomanip>
 
 #include "DwmMcCurtainAS2Ipv4NetDb.hh"
+#include "DwmMcCurtainRipeAsnTxt.hh"
 
 using namespace std;
 
@@ -75,6 +77,85 @@ static void ShowASes(const Dwm::Ipv4Address & addr)
   }
   else {
     cerr << "Failed to load ipv42as.db\n";
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void ShowASesVerbose(const Dwm::Ipv4Address & addr)
+{
+  Dwm::McCurtain::Ipv4Net2ASDb  netdb;
+  if (netdb.Load(string(getenv("HOME")) + "/etc/ipv42as.db")) {
+    Dwm::McCurtain::RipeAsnTxt  asntxt;
+    asntxt.Load(string(getenv("HOME")) + "/etc/asn.txt");
+    std::vector<std::pair<Dwm::Ipv4Prefix,set<uint32_t>>>  matches;
+    if (netdb.Entries().Find(addr, matches)) {
+      for (const auto & match : matches) {
+        cout << match.first << ':' << '\n';
+        if (! match.second.empty()) {
+          for (auto asit = match.second.begin();
+               asit != match.second.end(); ++asit) {
+            cout << "  " << *asit;
+            auto  txtit = asntxt.Entries().find(*asit);
+            if (txtit != asntxt.Entries().end()) {
+              cout << ' ' << txtit->second.CountryCode() << ", "
+                   << txtit->second.Name();
+            }
+            cout << '\n';
+          }
+        }
+        // cout << '\n';
+      }
+    }
+  }
+  else {
+    cerr << "Failed to load ipv42as.db\n";
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool GetASesForCountry(const std::string & countryCode,
+                              vector<uint32_t> & ases)
+{
+    Dwm::McCurtain::RipeAsnTxt  asntxt;
+    if (asntxt.Load(string(getenv("HOME")) + "/etc/asn.txt")) {
+      for (const auto & entry : asntxt.Entries()) {
+        if (countryCode == entry.second.CountryCode()) {
+          ases.push_back(entry.first);
+        }
+      }
+    }
+    return (! ases.empty());
+}
+      
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void ShowNetsForCountry(const std::string & country)
+{
+  vector<uint32_t>  ases;
+  if (GetASesForCountry(country, ases)) {
+    Dwm::McCurtain::AS2Ipv4NetDb  asdb;
+    if (asdb.Load(string(getenv("HOME")) + "/etc/as2ipv4.db")) {
+      Dwm::Ipv4Routes<uint8_t>  prefixes;
+      for (const auto as : ases) {
+        auto  asit = asdb.Nets().find(as);
+        if (asit != asdb.Nets().end()) {
+          prefixes.Add(asit->second);
+        }
+      }
+      prefixes.Coalesce();
+      vector<pair<Dwm::Ipv4Prefix,uint8_t>> sortedPrefixes;
+      prefixes.SortByKey(sortedPrefixes);
+      for (const auto & pfx : sortedPrefixes) {
+        cout << pfx.first << '\n';
+      }
+    }
   }
   return;
 }
@@ -120,10 +201,21 @@ int main(int argc, char *argv[])
   string  arg(argv[1]);
   if (arg.find_first_of('.') != string::npos) {
     Dwm::Ipv4Address  addr(arg);
-    ShowASes(addr);
+    ShowASesVerbose(addr);
   }
   else {
-    ShowNets(stoul(arg));
+    try {
+      uint32_t  asNum = stoul(arg);
+      ShowNets(asNum);
+    }
+    catch (...) {
+      ShowNetsForCountry(arg);
+    }
   }
+
+  struct rusage  rusage;
+  getrusage(RUSAGE_SELF, &rusage);
+
+  //  cout << "ru_maxrss: " << rusage.ru_maxrss << '\n' << flush;
   return 0;
 }

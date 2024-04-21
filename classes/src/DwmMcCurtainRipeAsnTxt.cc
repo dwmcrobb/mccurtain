@@ -65,7 +65,7 @@ namespace Dwm {
             uint32_t  asNum = stoul(linestr.substr(0,idx), nullptr, 10);
             string::size_type  idx2 = linestr.find_last_of(',');
             if ((idx2 != string::npos) && ((idx2 + 3) < linestr.size())) {
-              Entry  entry(linestr.substr(idx + 1, (idx2 - idx) + 1),
+              Entry  entry(linestr.substr(idx + 1, (idx2 - idx) - 1),
                            linestr.substr(idx2 + 2, 2));
               _entries[asNum] = entry;
             }
