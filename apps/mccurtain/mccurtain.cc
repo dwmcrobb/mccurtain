@@ -45,13 +45,49 @@ extern "C" {
 }
 
 #include <cstdlib>
+#include <fstream>
 #include <iomanip>
+#include <nlohmann/json.hpp>
 
 #include "DwmMcCurtainAS2Ipv4NetDb.hh"
 #include "DwmMcCurtainRipeAsnTxt.hh"
 
 using namespace std;
 
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool IsValidCountryCode(const std::string & countryCode)
+{
+  bool      rc = false;
+  ifstream  is("/usr/local/etc/country_codes.json");
+  if (is) {
+    nlohmann::json  jv = nlohmann::json::parse(is, nullptr, false);
+    if (! jv.is_discarded()) {
+      auto  cit = jv.find("codes");
+      if ((cit != jv.end()) && (cit->is_array())) {
+        for (auto & el : *cit) {
+          auto  a2it = el.find("a2");
+          if ((a2it != el.end()) && a2it->is_string()) {
+            auto  cc = a2it->get<string>();
+            if ((cc.length() == 2) && (countryCode == cc)) {
+              rc = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+    if (! rc) {
+      cerr << "Invalid country code '" << countryCode << "'\n";
+    }
+  }
+  else {
+    cerr << "Failed to open '/usr/local/etc/country_codes.json'\n";
+  }
+  return rc;
+}
+            
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
@@ -184,7 +220,9 @@ static void ShowNets(uint32_t as)
 //----------------------------------------------------------------------------
 static void Usage(const char *argv0)
 {
-  cerr << "Usage: " << argv0 << " ASNumber_or_IPv4Address\n";
+  cerr << "Usage: " << argv0 << " AS_number\n"
+       << "       " << argv0 << " IPv4_address\n"
+       << "       " << argv0 << " country_code\n";
   return;
 }
 
@@ -209,7 +247,12 @@ int main(int argc, char *argv[])
       ShowNets(asNum);
     }
     catch (...) {
-      ShowNetsForCountry(arg);
+      if (IsValidCountryCode(arg)) {
+        ShowNetsForCountry(arg);
+      }
+      else {
+        Usage(argv[0]);
+      }
     }
   }
 
