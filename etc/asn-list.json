@@ -852,6 +852,7 @@
         { "AS": 395089, "CC": "CA", "Org": "Hextet Systems" },
         { "AS": 395111, "CC": "US", "Org": "KVCHOSTING.COM LLC" },
         { "AS": 395978, "CC": "US", "Org": "SANTA CLARA VALLEY WATER DISTRICT PUBLIC FACILITIES FINANCING CORPORATION" },
+	{ "AS": 396073, "CC": "US", "Org": "Majestic Hosting Solutions, LLC" },
 	{ "AS": 396948, "CC": "US", "Org": "Kamatera, Inc." },
 	{ "AS": 397270, "CC": "US", "Org": "NetInformatik Inc." },
 	{ "AS": 397630, "CC": "US", "Org": "Blazing SEO, LLC" },
