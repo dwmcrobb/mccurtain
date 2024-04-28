@@ -829,6 +829,7 @@
         { "AS": 212238, "CC": "GB", "Org": "Datacamp Limited" },
         { "AS": 212477, "CC": "NL", "Org": "RoyaleHosting BV" },
         { "AS": 212815, "CC": "FR", "Org": "Dyjix SAS" },
+        { "AS": 216167, "CC": "FR", "Org": "Skoali SAS" },
         { "AS": 216319, "CC": "GB", "Org": "1337 HOSTING LTD" },
         { "AS": 262287, "CC": "BR", "Org": "Latitude.sh LTDA" },
         { "AS": 262603, "CC": "BR", "Org": "INTERNET E WEB HOSTING SERV DE INFORMATICA LTDA" },
