@@ -205,8 +205,10 @@ static void ShowNets(uint32_t as)
   if (asdb.Load(string(getenv("HOME")) + "/etc/as2ipv4.db")) {
     auto  asit = asdb.Nets().find(as);
     if (asit != asdb.Nets().end()) {
+      auto  netsCopy = asit->second;
+      netsCopy.Coalesce();
       std::vector<std::pair<Dwm::Ipv4Prefix,uint8_t>>  prefixes;
-      asit->second.SortByKey(prefixes);
+      netsCopy.SortByKey(prefixes);
       for (const auto & pfx : prefixes) {
         cout << pfx.first << '\n';
       }
