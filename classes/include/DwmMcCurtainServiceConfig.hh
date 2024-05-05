@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2023
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -34,110 +34,93 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASInfo.hh
+//!  \file DwmMcCurtainServiceConfig.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::ASInfo class declaration
+//!  \brief Dwm::McCurtain::ServiceConfig class declaration
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINASINFO_HH_
-#define _DWMMCCURTAINASINFO_HH_
+#ifndef _DWMMCCURTAINSERVICECONFIG_HH_
+#define _DWMMCCURTAINSERVICECONFIG_HH_
 
+#include <set>
+#include <boost/asio.hpp>
 
-#include <nlohmann/json.hpp>
-
-#include "DwmIpv4Routes.hh"
+#include "DwmIpPrefix.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  Encapsulate information for a single AS.
+    //!  Encapsulates the mccurtaind network service configuration.
     //------------------------------------------------------------------------
-    class ASInfo
+    class ServiceConfig
     {
     public:
       //----------------------------------------------------------------------
-      //!  Pupulates the ASInfo from the given JSON @c j.
+      //!  Returns a reference to the endpoints on which we'll listen for
+      //!  client connections.
       //----------------------------------------------------------------------
-      bool FromJson(const nlohmann::json & j);
+      const std::set<boost::asio::ip::tcp::endpoint> & Addresses() const;
       
       //----------------------------------------------------------------------
-      //!  Returns a JSON representation of the ASInfo.
+      //!  Sets and returns the endpoints on which we'll listen for client
+      //!  connections.
       //----------------------------------------------------------------------
-      nlohmann::json ToJson() const;
+      const std::set<boost::asio::ip::tcp::endpoint> &
+      Addresses(const std::set<boost::asio::ip::tcp::endpoint> & addrs);
 
       //----------------------------------------------------------------------
-      //!  Returns the AS number of the AS.
+      //!  Adds an endpoint to the set of endpoints on which we'll listen
+      //!  for client connections.
       //----------------------------------------------------------------------
-      inline uint32_t Number() const  { return _number; }
+      void AddAddress(const boost::asio::ip::tcp::endpoint & addr);
       
       //----------------------------------------------------------------------
-      //!  Sets and returns the AS number of the AS.
+      //!  Returns the directory where our private key, public key and known
+      //!  client keys are stored.
       //----------------------------------------------------------------------
-      inline uint32_t Number(uint32_t number)  { return _number = number; }
-
-      //----------------------------------------------------------------------
-      //!  Returns the name of the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & Name() const  { return _name; }
-
-      //----------------------------------------------------------------------
-      //!  Sets and returns the name of the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & Name(const std::string & name)
-      { return _name = name; }
+      const std::string & KeyDirectory() const;
       
       //----------------------------------------------------------------------
-      //!  Returns the organization that owns the AS.
+      //!  Sets and returns the directory where our private key, public key
+      //!  and known client keys are stored.
       //----------------------------------------------------------------------
-      inline const std::string & Org() const  { return _org; }
-
-      //----------------------------------------------------------------------
-      //!  Sets and returns the organization that owns the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & Org(const std::string org)
-      { return _org = org; }
-
-      //----------------------------------------------------------------------
-      //!  Returns the country code of the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & CountryCode() const  { return _countryCode; }
-
-      //----------------------------------------------------------------------
-      //!  Sets and returns the country code of the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & CountryCode(const std::string & countryCode)
-      { return _countryCode = countryCode; }
-
-      //----------------------------------------------------------------------
-      //!  Returns a const reference to the prefixes for the AS.
-      //----------------------------------------------------------------------
-      inline const Ipv4Routes<uint8_t> & Nets() const  { return _nets; }
+      const std::string & KeyDirectory(const std::string & keyDir);
       
       //----------------------------------------------------------------------
-      //!  Returns a mutable reference to the prefixes for the AS.
+      //!  Returns a reference to const of the set of prefixes from which
+      //!  we'll allow clients to connect.
       //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets()   { return _nets; }
+      const std::set<IpPrefix> & AllowedClients() const;
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the prefixes for the AS.
+      //!  Returns a reference to the set of prefixes from which we'll allow
+      //!  clients to connect.
       //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets(const Ipv4Routes<uint8_t> & nets)
-      { return _nets = nets; }
+      std::set<IpPrefix> & AllowedClients();
 
+      //----------------------------------------------------------------------
+      //!  Clears the service configuration.
+      //----------------------------------------------------------------------
       void Clear();
+
+      //----------------------------------------------------------------------
+      //!  Prints the given service configuration @c cfg to the given
+      //!  ostream @c os.
+      //----------------------------------------------------------------------
+      friend std::ostream &
+      operator << (std::ostream & os, const ServiceConfig & cfg);
       
     private:
-      uint32_t             _number;
-      std::string          _name;
-      std::string          _org;
-      std::string          _countryCode;
-      Ipv4Routes<uint8_t>  _nets;
+      std::set<boost::asio::ip::tcp::endpoint>  _serviceAddresses;
+      std::string                               _keyDirectory;
+      std::set<IpPrefix>                        _allowedClients;
     };
+    
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINASINFO_HH_
+#endif  // _DWMMCCURTAINSERVICECONFIG_HH_

@@ -58,8 +58,10 @@ AC_SUBST(OSLIBS)
 DWM_REQUIRES_DWMPKG(libDwm,0.9.22)
 
 DWMDIR=`pkg-config --variable=prefix libDwm`
-DWMINCS=`pkg-config --cflags-only-I libDwm`
-DWMLIBS=`pkg-config --libs libDwm`
+DWMINCS=`pkg-config --cflags-only-I libDwmCredence`
+DWMINCS=`dwmcflags ${DWMINCS}`
+DWMLIBS=`pkg-config --libs libDwmCredence`
+DWMLIBS=`dwmcflags ${DWMLIBS}`
 
 AC_SUBST(DWMDIR)
 AC_SUBST(DWMINCS)

@@ -4,8 +4,11 @@ ALLINC       = -I../include ${DWMINCS}
 OBJS         = DwmMcCurtainASInfo.o \
                DwmMcCurtainASes.o \
                DwmMcCurtainAS2Ipv4NetDb.o \
+               DwmMcCurtainConfigLex.o \
+               DwmMcCurtainConfigParse.o \
                DwmMcCurtainIpv4Net2ASDb.o \
-               DwmMcCurtainRipeAsnTxt.o
+               DwmMcCurtainRipeAsnTxt.o \
+               DwmMcCurtainServiceConfig.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
 OBJFILES     = $(OBJS:%.o=../obj/%.o)
 
@@ -32,8 +35,17 @@ endif
 ../obj/%.o: %.cc deps/%_deps
 	${CXX} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $< -o $@
 
+DwmMcCurtainConfigParse.hh: DwmMcCurtainConfigParse.cc
+
+DwmMcCurtainConfigParse.cc: DwmMcCurtainConfigParse.y
+	bison -d -o$@ $<
+
+DwmMcCurtainConfigLex.cc: DwmMcCurtainConfigLex.lex DwmMcCurtainConfigParse.hh
+	flex -o$@ $<
+
 clean::
 	rm -f ../lib/libDwmMcCurtain.a ${OBJFILES}
+	rm -f DwmMcCurtainConfigParse.hh DwmMcCurtainConfigParse.cc DwmMcCurtainConfigLex.cc
 
 distclean:: clean
 	rm -f deps/*_deps

@@ -34,84 +34,73 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainRipeAsnTxt.cc
+//!  \file DwmMcCurtainResponder.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::RipeAsnTxt class implementation
+//!  \brief Dwm::McCurtain::Responder class declaration
 //---------------------------------------------------------------------------
 
-#include <fstream>
+#ifndef _DWMMCCURTAINRESPONDER_HH_
+#define _DWMMCCURTAINRESPONDER_HH_
 
-#include "DwmStreamIO.hh"
-#include "DwmSysLogger.hh"
-#include "DwmMcCurtainRipeAsnTxt.hh"
+extern "C" {
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+}
+
+#include <string>
+#include <thread>
+#include <vector>
+
+#include "DwmCredencePeer.hh"
+#include "DwmMcCurtainRequests.hh"
+#include "DwmMcCurtainResponses.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
-    using namespace std;
-
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    std::istream & RipeAsnTxt::Entry::Read(std::istream & is)
-    {
-      if (StreamIO::Read(is, _asName)) {
-        StreamIO::Read(is, _countryCode);
-      }
-      return is;
-    }
+    class Server;
     
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates a thread that responds to requests from a single
+    //!  client.
     //------------------------------------------------------------------------
-    std::ostream & RipeAsnTxt::Entry::Write(std::ostream & os) const
+    class Responder
     {
-      if (StreamIO::Write(os, _asName)) {
-        StreamIO::Write(os, _countryCode);
-      }
-      return os;
-    }
+    public:
+      //--------------------------------------------------------------------
+      //!  Construct from the given socket @c s and Server @c server.
+      //--------------------------------------------------------------------
+      Responder(boost::asio::ip::tcp::socket && s, Server & server);
 
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    bool RipeAsnTxt::Load(const std::string & asntxtFile)
-    {
-      _entries.clear();
-      ifstream  is(asntxtFile);
-      while (is) {
-        string  linestr;
-        if (std::getline(is, linestr)) {
-          string::size_type  idx = linestr.find_first_of(' ');
-          if (idx && (idx != string::npos)) {
-            uint32_t  asNum = stoul(linestr.substr(0,idx), nullptr, 10);
-            string::size_type  idx2 = linestr.find_last_of(',');
-            if ((idx2 != string::npos) && ((idx2 + 3) < linestr.size())) {
-              Entry  entry(linestr.substr(idx + 1, (idx2 - idx) - 1),
-                           linestr.substr(idx2 + 2, 2));
-              _entries[asNum] = entry;
-            }
-#if 0
-            else {
-              Syslog(LOG_ERR, "Failed to parse name and country code\n");
-              goto parseFailed;
-            }
-#endif
-          }
-          else {
-            goto parseFailed;
-          }
-        }
-      }
-      return (! _entries.empty());
+      //----------------------------------------------------------------------
+      //!  Destructor.
+      //----------------------------------------------------------------------
+      ~Responder();
+      
+      //----------------------------------------------------------------------
+      //!  Join the responder's thread.  Returns true if the thread is
+      //!  joinable and done, and we successfully joined it.
+      //----------------------------------------------------------------------
+      bool Join();
+      
+    private:
+      Credence::Peer        _peer;
+      Server               &_server;
+      std::string           _agreedKey;
+      std::thread           _thread;
+      std::atomic<bool>     _running;
 
-    parseFailed:
-      _entries.clear();
-      return false;
-    }
-    
+      bool HandleRequest(Request request);
+      bool SendIpv4AddrResponse(const Ipv4Address & addr);
+      bool SendASPrefixesResponse(uint32_t asNum);
+      void Run();
+    };
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
+
+#endif  // _DWMMCCURTAINRESPONDER_HH_

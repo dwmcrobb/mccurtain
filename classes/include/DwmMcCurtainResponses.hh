@@ -34,101 +34,40 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASInfo.cc
+//!  \file DwmMcCurtainResponses.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::ASInfo class implementation
+//!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#include "DwmMcCurtainASInfo.hh"
+#ifndef _DWMMCCURTAINRESPONSES_HH_
+#define _DWMMCCURTAINRESPONSES_HH_
+
+#include <tuple>
+#include <vector>
+
+#include "DwmIpv4Prefix.hh"
+#include "DwmMcCurtainRipeAsnTxt.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
-    using namespace std;
-    
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    bool ASInfo::FromJson(const nlohmann::json & j)
-    {
-      bool  rc = false;
-      Clear();
-      if (j.is_object()) {
-        auto  it = j.find("AS");
-        if ((it != j.end()) && it->is_number()) {
-          _number = it->get<uint32_t>();
-          it = j.find("Name");
-          if ((it != j.end()) && it->is_string()) {
-            _name = it->get<string>();
-            rc = true;
-            it = j.find("Org");
-            if ((it != j.end()) && it->is_string()) {
-              _org = it->get<string>();
-            }
-            it = j.find("CC");
-            if ((it != j.end()) && it->is_string()) {
-              _countryCode = it->get<string>();
-            }
-            it = j.find("nets");
-            if ((it != j.end()) && it->is_array()) {
-              for (const auto & net : *it) {
-                if (net.is_string()) {
-                  Ipv4Prefix  pfx(net.get<string>());
-                  if ((pfx.Network().Raw() != 0xFFFFFFFF)
-                      && (pfx.MaskLength() != 0)) {
-                    _nets[pfx] = 1;
-                  }
-                  else {
-                    rc = false;
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      if (! rc) {
-        Clear();
-      }
-      return rc;
-    }
-            
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    nlohmann::json ASInfo::ToJson() const
-    {
-      nlohmann::json  j;
-      j["AS"]   = _number;
-      j["Name"] = _name;
-      j["Org"]  = _org;
-      j["CC"]   = _countryCode;
-      if (! _nets.Empty()) {
-        j["nets"] = nlohmann::json::array();
-        vector<pair<Ipv4Prefix,uint8_t>>  netvec;
-        _nets.SortByKey(netvec);
-        for (size_t i = 0; i < netvec.size(); ++i) {
-          j["nets"][i] = netvec[i].first.ToString();
-        }
-      }
-      return j;
-    }
+    using Ipv4AddrResponseEntry =
+      std::tuple<Ipv4Prefix,
+                 std::vector<std::pair<uint32_t,RipeAsnTxt::Entry>>>;
+    using Ipv4AddrResponse = std::vector<Ipv4AddrResponseEntry>;
 
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    void ASInfo::Clear()
-    {
-      _number = 0;
-      _name.clear();
-      _org.clear();
-      _countryCode.clear();
-      _nets.Clear();
-      return;
-    }
-    
+    using ASPrefixesResponse = std::tuple<uint32_t,RipeAsnTxt::Entry,
+                                          std::vector<Ipv4Prefix>>;
+
   }  // namespace McCurtain
 
 }  // namespace Dwm
+
+#endif  // _DWMMCCURTAINRESPONSES_HH_

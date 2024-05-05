@@ -34,110 +34,79 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASInfo.hh
+//!  \file DwmMcCurtainRequests.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::ASInfo class declaration
+//!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINASINFO_HH_
-#define _DWMMCCURTAINASINFO_HH_
+#ifndef _DWMMCCURTAINREQUESTS_HH_
+#define _DWMMCCURTAINREQUESTS_HH_
 
-
-#include <nlohmann/json.hpp>
-
-#include "DwmIpv4Routes.hh"
+#include "DwmIpv4Address.hh"
+#include "DwmStreamIO.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  Encapsulate information for a single AS.
+    //!  
     //------------------------------------------------------------------------
-    class ASInfo
+    class Request
+      : public Dwm::StreamIOCapable
     {
     public:
       //----------------------------------------------------------------------
-      //!  Pupulates the ASInfo from the given JSON @c j.
+      //!  Defaulted constructors and assignments.
       //----------------------------------------------------------------------
-      bool FromJson(const nlohmann::json & j);
+      Request() = default;
+      Request(const Request &) = default;
+      Request(Request &&) = default;
+      Request & operator = (const Request &) = default;
+      Request & operator = (Request &&) = default;
       
       //----------------------------------------------------------------------
-      //!  Returns a JSON representation of the ASInfo.
+      //!  
       //----------------------------------------------------------------------
-      nlohmann::json ToJson() const;
+      Request(const Ipv4Address & addr)
+          : _data(addr)
+      {}
 
       //----------------------------------------------------------------------
-      //!  Returns the AS number of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline uint32_t Number() const  { return _number; }
+      Request(uint32_t asnum)
+          : _data(asnum)
+      {}
       
       //----------------------------------------------------------------------
-      //!  Sets and returns the AS number of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline uint32_t Number(uint32_t number)  { return _number = number; }
+      std::istream & Read(std::istream & is) override
+      { return StreamIO::Read(is, _data); }
 
       //----------------------------------------------------------------------
-      //!  Returns the name of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Name() const  { return _name; }
+      std::ostream & Write(std::ostream & os) const override
+      { return StreamIO::Write(os, _data); }
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the name of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Name(const std::string & name)
-      { return _name = name; }
-      
-      //----------------------------------------------------------------------
-      //!  Returns the organization that owns the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & Org() const  { return _org; }
+      using DataType = std::variant<Ipv4Address,uint32_t>;
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the organization that owns the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Org(const std::string org)
-      { return _org = org; }
-
-      //----------------------------------------------------------------------
-      //!  Returns the country code of the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & CountryCode() const  { return _countryCode; }
-
-      //----------------------------------------------------------------------
-      //!  Sets and returns the country code of the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & CountryCode(const std::string & countryCode)
-      { return _countryCode = countryCode; }
-
-      //----------------------------------------------------------------------
-      //!  Returns a const reference to the prefixes for the AS.
-      //----------------------------------------------------------------------
-      inline const Ipv4Routes<uint8_t> & Nets() const  { return _nets; }
-      
-      //----------------------------------------------------------------------
-      //!  Returns a mutable reference to the prefixes for the AS.
-      //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets()   { return _nets; }
-
-      //----------------------------------------------------------------------
-      //!  Sets and returns the prefixes for the AS.
-      //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets(const Ipv4Routes<uint8_t> & nets)
-      { return _nets = nets; }
-
-      void Clear();
+      const DataType & Data() const  { return _data; }
       
     private:
-      uint32_t             _number;
-      std::string          _name;
-      std::string          _org;
-      std::string          _countryCode;
-      Ipv4Routes<uint8_t>  _nets;
+      DataType  _data;
     };
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINASINFO_HH_
+#endif  // _DWMMCCURTAINREQUESTS_HH_
