@@ -67,6 +67,9 @@ static void TestDefaults(const Dwm::McCurtain::Config & cfg)
 //----------------------------------------------------------------------------
 static void TestCfg1()
 {
+  using  batcp = boost::asio::ip::tcp;
+  using  batcpep = boost::asio::ip::tcp::endpoint;
+  
   Dwm::McCurtain::Config  cfg;
   TestDefaults(cfg);
   if (UnitAssert(cfg.Parse("inputs/cfg1"))) {
@@ -75,7 +78,19 @@ static void TestCfg1()
     UnitAssert(cfg.SyslogLocations() == false);
     UnitAssert(cfg.Service().KeyDirectory() == "/usr/local/etc/mccurtaind");
     UnitAssert(cfg.Service().Addresses().size() == 2);
+    UnitAssert(cfg.Service().Addresses().find(batcpep(batcp::v4(), 2126))
+               != cfg.Service().Addresses().end());
+    UnitAssert(cfg.Service().Addresses().find(batcpep(batcp::v6(), 2126))
+               != cfg.Service().Addresses().end());
     UnitAssert(cfg.Service().AllowedClients().size() == 4);
+    UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("192.168.168/24"))
+               != cfg.Service().AllowedClients().end());
+    UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("127.0.0.1/32"))
+               != cfg.Service().AllowedClients().end());
+    UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("fd60:3019:f4a:6aaf::0/64"))
+               != cfg.Service().AllowedClients().end());
+    UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("::1"))
+               != cfg.Service().AllowedClients().end());
     UnitAssert(cfg.Database().Ipv4ToASFile() == "/usr/local/etc/ipv42as.db");
     UnitAssert(cfg.Database().ASToIpv4File() == "/usr/local/etc/as2ipv4.db");
     UnitAssert(cfg.Database().ASNTxtFile() == "/usr/local/etc/asn.txt");
@@ -88,6 +103,9 @@ static void TestCfg1()
 //----------------------------------------------------------------------------
 static void TestCfg2()
 {
+  using  batcp = boost::asio::ip::tcp;
+  using  batcpep = boost::asio::ip::tcp::endpoint;
+  
   Dwm::McCurtain::Config  cfg;
   TestDefaults(cfg);
   if (UnitAssert(cfg.Parse("inputs/cfg2"))) {
@@ -96,7 +114,19 @@ static void TestCfg2()
     UnitAssert(cfg.SyslogLocations() == true);
     UnitAssert(cfg.Service().KeyDirectory() == "/etc/mccurtaind");
     UnitAssert(cfg.Service().Addresses().size() == 2);
+    UnitAssert(cfg.Service().Addresses().find(batcpep(batcp::v4(), 2126))
+               != cfg.Service().Addresses().end());
+    UnitAssert(cfg.Service().Addresses().find(batcpep(batcp::v6(), 2126))
+               != cfg.Service().Addresses().end());
     UnitAssert(cfg.Service().AllowedClients().size() == 4);
+    UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("192.168.168/24"))
+               != cfg.Service().AllowedClients().end());
+    UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("127.0.0.1/32"))
+               != cfg.Service().AllowedClients().end());
+    UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("fd60:3019:f4a:6aaf::0/64"))
+               != cfg.Service().AllowedClients().end());
+    UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("::1"))
+               != cfg.Service().AllowedClients().end());
     UnitAssert(cfg.Database().Ipv4ToASFile() == "/etc/ipv42as.db");
     UnitAssert(cfg.Database().ASToIpv4File() == "/etc/as2ipv4.db");
     UnitAssert(cfg.Database().ASNTxtFile() == "/etc/asn.txt");
