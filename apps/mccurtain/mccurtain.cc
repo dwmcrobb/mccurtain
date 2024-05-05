@@ -95,6 +95,21 @@ PrintIpv4AddrResponse(const Dwm::McCurtain::Ipv4AddrResponse & resp)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static void
+PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp)
+{
+  cout << setiosflags(ios::left) << setw(10) << std::get<0>(resp) << ' '
+       << setw(2) << std::get<1>(resp).CountryCode() << ' '
+       << std::get<1>(resp).Name() << '\n';
+  for (const auto & pfx : std::get<2>(resp)) {
+    cout << "  " << pfx.ToShortString() << '\n';
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
   extern int        optind;
@@ -130,6 +145,21 @@ int main(int argc, char *argv[])
           PrintIpv4AddrResponse(resp);
           return 0;
         }
+      }
+    }
+    else {
+      try {
+        uint32_t  asNum = stoul(arg);
+        Dwm::McCurtain::Request  req{asNum};
+        if (peer.Send(req)) {
+          Dwm::McCurtain::ASPrefixesResponse  resp;
+          if (peer.Receive(resp)) {
+            PrintASPrefixesResponse(resp);
+            return 0;
+          }
+        }
+      }
+      catch (...) {
       }
     }
   }
