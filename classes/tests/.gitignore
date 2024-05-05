@@ -1,5 +1,6 @@
 *.o
 *.db
 TestAS2Ipv4NetDb
+TestConfig
 TestIpv4Net2ASDb
 TestRipeAsnTxt

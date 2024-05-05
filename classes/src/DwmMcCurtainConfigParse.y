@@ -52,6 +52,7 @@
   pair<uint16_t,uint16_t>                       *uint16PairVal;
   pair<float,float>                             *floatPairVal;
   set<Dwm::IpPrefix>                            *ipPrefixSetVal;
+  Dwm::McCurtain::DatabaseConfig                *dbConfigVal;
   Dwm::McCurtain::ServiceConfig                 *serviceConfigVal;
   boost::asio::ip::tcp::endpoint                *serviceAddrVal;
   std::set<boost::asio::ip::tcp::endpoint>      *serviceAddrSetVal;
@@ -69,25 +70,26 @@
   YY_DECL;
 }
 
-%token ADDRESS ADDRESSES ALLOWEDCLIENTS FACILITY KEYDIRECTORY
-%token LEVEL LOGLOCATIONS PORT SERVICE SYSLOG
+%token ADDRESS ADDRESSES ALLOWEDCLIENTS ASNTXT ASTOIPV4 DATABASES FACILITY
+%token IPV4TOAS KEYDIRECTORY LEVEL LOGLOCATIONS PORT SERVICE SYSLOG
 
 %token<stringVal>  STRING
 %token<intVal>     INTEGER
 
 %type<intVal>                  TCP4Port
-%type<stringVal>               KeyDirectory
+%type<stringVal>               KeyDirectory Ipv4ToASDB ASToIpv4DB ASNTxt
 %type<stringVecVal>            VectorOfString
 %type<serviceConfigVal>        ServiceSettings
 %type<serviceAddrSetVal>       ServiceAddresses ServiceAddressSet
 %type<ipPrefixSetVal>          AllowedClients
 %type<serviceAddrVal>          ServiceAddress
+%type<dbConfigVal>             Databases DatabaseSettings
 
 %%
 
 Config: TopStanza | Config TopStanza;
 
-TopStanza: Service | Syslog;
+TopStanza: Service | Syslog | Databases;
 
 Syslog: SYSLOG '{' SyslogSettings '}' ';';
 
@@ -323,6 +325,63 @@ VectorOfString: STRING
 | VectorOfString ',' STRING    { $$->push_back(*$3); delete $3; }
 ;
 
+Databases: DATABASES '{' DatabaseSettings '}' ';'
+{
+  if (g_config) {
+    g_config->Database(*$3);
+  }
+  delete $3;
+};
+
+DatabaseSettings: Ipv4ToASDB 
+{
+  $$ = new Dwm::McCurtain::DatabaseConfig();
+  $$->Ipv4ToASFile(*$1);
+  delete $1;
+}
+| ASToIpv4DB
+{
+  $$ = new Dwm::McCurtain::DatabaseConfig();
+  $$->ASToIpv4File(*$1);
+  delete $1;
+}
+| ASNTxt
+{
+  $$ = new Dwm::McCurtain::DatabaseConfig();
+  $$->ASNTxtFile(*$1);
+  delete $1;
+}
+| DatabaseSettings Ipv4ToASDB
+{
+  $$->Ipv4ToASFile(*$2);
+  delete $2;
+}
+| DatabaseSettings ASToIpv4DB
+{
+  $$->ASToIpv4File(*$2);
+  delete $2;
+}
+| DatabaseSettings ASNTxt
+{
+  $$->ASNTxtFile(*$2);
+  delete $2;
+};
+
+Ipv4ToASDB: IPV4TOAS '=' STRING ';'
+{
+  $$ = $3;
+};
+
+ASToIpv4DB: ASTOIPV4 '=' STRING ';'
+{
+  $$ = $3;
+};
+
+ASNTxt: ASNTXT '=' STRING ';'
+{
+  $$ = $3;
+};
+
 %%
 
 namespace Dwm {
@@ -447,7 +506,7 @@ namespace Dwm {
     //-----------------------------------------------------------------------
     //!  
     //-----------------------------------------------------------------------
-    const ServiceConfig Config::Service(const ServiceConfig & service)
+    const ServiceConfig & Config::Service(const ServiceConfig & service)
     {
       _service = service;
       return _service;
@@ -456,9 +515,26 @@ namespace Dwm {
     //-----------------------------------------------------------------------
     //!  
     //-----------------------------------------------------------------------
+    const DatabaseConfig & Config::Database()	const
+    {
+      return _database;
+    }
+
+    //-----------------------------------------------------------------------
+    //!  
+    //-----------------------------------------------------------------------
+    const DatabaseConfig & Config::Database(const DatabaseConfig & database)
+    {
+      return _database = database;
+    }
+    
+    //-----------------------------------------------------------------------
+    //!  
+    //-----------------------------------------------------------------------
     void Config::Clear()
     {
       _runService = false;
+      _database.Clear();
       _service.Clear();
       _syslogFacility = "daemon";
       _syslogLevel = "info";
@@ -501,6 +577,7 @@ namespace Dwm {
          << "\";\n"
          << "};\n\n";
 
+      os << cfg._database;
       
       return os;
     }

@@ -34,118 +34,105 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainConfig.hh
+//!  \file DwmMcCurtainDatabaseConfig.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::Config class declaration
+//!  \brief Dwm::McCurtain::DatabaseConfig class declaration
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINCONFIG_HH_
-#define _DWMMCCURTAINCONFIG_HH_
+#ifndef _DWMMCCURTAINDATABASECONFIG_HH_
+#define _DWMMCCURTAINDATABASECONFIG_HH_
 
+#include <iostream>
 #include <string>
-
-#include "DwmMcCurtainDatabaseConfig.hh"
-#include "DwmMcCurtainServiceConfig.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  Encapsulates mccurtaind configuration.
+    //!  Encapsulate the database parts of the mccurtaind configuration.
     //------------------------------------------------------------------------
-    class Config
+    class DatabaseConfig
     {
     public:
       //----------------------------------------------------------------------
+      //!  Default constructor
+      //----------------------------------------------------------------------
+      DatabaseConfig();
+      
+      //----------------------------------------------------------------------
+      //!  Copy constructor
+      //----------------------------------------------------------------------
+      DatabaseConfig(const DatabaseConfig &) = default;
+
+      //----------------------------------------------------------------------
+      //!  Move constructor
+      //----------------------------------------------------------------------
+      DatabaseConfig(DatabaseConfig &&) = default;
+      
+      //----------------------------------------------------------------------
+      //!  Copy assignment
+      //----------------------------------------------------------------------
+      DatabaseConfig & operator = (const DatabaseConfig &) = default;
+
+      //----------------------------------------------------------------------
+      //!  Move assignment
+      //----------------------------------------------------------------------
+      DatabaseConfig & operator = (DatabaseConfig &&) = default;
+
+      //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      Config();
+      const std::string & Ipv4ToASFile() const  { return _ipv4ToASFile; }
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      const std::string & Ipv4ToASFile(const std::string & f)
+      { return _ipv4ToASFile = f; }
+        
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      const std::string & ASToIpv4File() const  { return _asToIpv4File; }
       
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      bool Parse(const std::string & path);
-
+      const std::string & ASToIpv4File(const std::string & f)
+      { return _asToIpv4File = f; }
+        
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      const std::string & SyslogFacility() const;
+      const std::string & ASNTxtFile() const  { return _asnTxtFile; }
       
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      const std::string & SyslogFacility(const std::string & facility);
+      const std::string & ASNTxtFile(const std::string & f)
+      { return _asnTxtFile = f; }
 
       //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      const std::string & SyslogLevel() const;
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      const std::string & SyslogLevel(const std::string & level);
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool SyslogLocations() const;
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool SyslogLocations(bool logLocations);
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool RunService() const;
-      
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool RunService(bool runService);
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      const ServiceConfig & Service() const;
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      const ServiceConfig & Service(const ServiceConfig & service);
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      const DatabaseConfig & Database() const;
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      const DatabaseConfig & Database(const DatabaseConfig & database);
-      
-      //----------------------------------------------------------------------
-      //!  
+      //!  Prints the given database configuration @c cfg to the given
+      //!  ostream @c os.
       //----------------------------------------------------------------------
       friend std::ostream &
-      operator << (std::ostream & os, const Config & cfg);
+      operator << (std::ostream & os, const DatabaseConfig & cfg);
+
+      //----------------------------------------------------------------------
+      //!  Reset the configuration to the defaults.
+      //----------------------------------------------------------------------
+      void Clear();
       
     private:
-      bool            _runService;
-      DatabaseConfig  _database;
-      ServiceConfig   _service;
-      std::string     _syslogFacility;
-      std::string     _syslogLevel;
-      bool            _logLocations;
-      
-      void Clear();
+      std::string  _ipv4ToASFile;
+      std::string  _asToIpv4File;
+      std::string  _asnTxtFile;
     };
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINCONFIG_HH_
+#endif  // _DWMMCCURTAINDATABASECONFIG_HH_
