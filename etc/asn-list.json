@@ -750,6 +750,7 @@
         { "AS": 62282, "CC": "LT", "Org": "UAB Rakrejus" },
         { "AS": 62310, "CC": "DE", "Org": "managedhosting.de GmbH" },
         { "AS": 62370, "CC": "NL", "Org": "Snel.com B.V." },
+        { "AS": 62445, "CC": "RO", "Org": "ADA NET-TV SRL" },
         { "AS": 62471, "CC": "US", "Org": "SupremeBytes, LLC" },
         { "AS": 62540, "CC": "US", "Org": "Drake Holdings LLC" },
         { "AS": 62563, "CC": "CA", "Org": "GLOBALTELEHOST Corp." },
