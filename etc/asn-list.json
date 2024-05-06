@@ -253,6 +253,7 @@
         { "AS": 25532, "CC": "RU", "Org": "MASTERHOST LLC" },
         { "AS": 25553, "CC": "UA", "Org": "TRK Gluhov Ltd." },
         { "AS": 25642, "CC": "US", "Org": "The Frohman Group Inc." },
+        { "AS": 25697, "CC": "US", "Org": "UpCloud USA Inc" },
         { "AS": 25767, "CC": "US", "Org": "ManagedWay" },
         { "AS": 25780, "CC": "US", "Org": "HugeServer Networks, LLC" },
         { "AS": 25820, "CC": "CA", "Org": "IT7 Networks Inc" },
