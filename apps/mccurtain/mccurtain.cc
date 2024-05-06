@@ -52,6 +52,7 @@ extern "C" {
 #include "DwmCredencePeer.hh"
 #include "DwmMcCurtainRequests.hh"
 #include "DwmMcCurtainResponses.hh"
+#include "DwmMcCurtainVersion.hh"
 
 using namespace std;
 using namespace Dwm;
@@ -110,6 +111,17 @@ PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static void Usage(const char *argv0)
+{
+  cerr << "Usage: " << argv0 << " [-h mccurtaind_host] ipv4addr\n"
+       << "       " << argv0 << " [-h mccurtaind_host] AS_number\n"
+       << "       " << argv0 << " -V\n";
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
   extern int        optind;
@@ -120,12 +132,18 @@ int main(int argc, char *argv[])
   Dwm::SysLogger::MinimumPriority(LOG_ERR);
   Dwm::SysLogger::ShowFileLocation(true);
 
-  while ((optChar = getopt(argc, argv, "h:")) != -1) {
+  while ((optChar = getopt(argc, argv, "h:V")) != -1) {
     switch (optChar) {
       case 'h':
         host = optarg;
         break;
+      case 'V':
+        cout << Dwm::McCurtain::Version.Version() << '\n';
+        return 0;
+        break;
       default:
+        Usage(argv[0]);
+        return 1;
         break;
     }
   }
@@ -134,6 +152,11 @@ int main(int argc, char *argv[])
     host = "kiva.mcplex.net";
   }
 
+  if (optind >= argc) {
+    Usage(argv[0]);
+    return 1;
+  }
+  
   Credence::Peer  peer;
   if (GetPeer(host, peer)) {
     string  arg(argv[optind]);

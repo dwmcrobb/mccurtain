@@ -9,7 +9,8 @@ OBJS         = DwmMcCurtainASInfo.o \
                DwmMcCurtainDatabaseConfig.o \
                DwmMcCurtainIpv4Net2ASDb.o \
                DwmMcCurtainRipeAsnTxt.o \
-               DwmMcCurtainServiceConfig.o
+               DwmMcCurtainServiceConfig.o \
+               DwmMcCurtainVersion.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
 OBJFILES     = $(OBJS:%.o=../obj/%.o)
 
