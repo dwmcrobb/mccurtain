@@ -6,10 +6,13 @@
 .Nd query for prefixes and origin ASes of IP address, or prefixes of origin AS
 .Sh SYNOPSIS
 .Nm
-.Op Fl h Ar host
+.Op Fl d
+.Op Fl h Ar mccurtaind_host
 .Cm ipv4_address
 .Nm
-.Op Fl h Ar host
+.Op Fl d
+.Op Fl v
+.Op Fl h Ar mccurtaind_host
 .Cm AS_number
 .Nm
 .Cm -V
@@ -34,6 +37,11 @@ The following command line options are available:
 Specify the
 .Xr mccurtaind 8
 host to be queried.
+.It Fl d
+Enable debug level logging on stderr.
+.It Fl v
+When querying an AS number, print the name and country of the AS and
+indent the prefixes by 2 spaces.
 .El
 
 .Sh EXAMPLES
@@ -50,7 +58,7 @@ prefix is returned (192.172.226.0/24), with two origin autonomous systems
 The next example requests information for AS 195.  The prefixes for which
 AS 195 is the origin AS are returned.
 .Bd -literal
-    % mccurtain 195
+    % mccurtain -v 195
     195        US SDSC-AS
       44.8.5/24
       132.249/16
@@ -70,7 +78,12 @@ AS 195 is the origin AS are returned.
       198.202.64/18
       199.165.16/20
 .Ed
-
+.Sh ENVIRONMENT
+The MCCURTAIND environment variable can be set to the name of the host
+running
+.Xr mccurtaind 8 .
+It will be used when the \fI-h mccurtaind_host\fR option is not specified
+on the command line.
 .Sh FILES
 .Bl -tag -width indent
 .It Pa ${HOME}/.credence/id_ed25519

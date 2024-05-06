@@ -72,7 +72,11 @@ static bool GetPeer(const string & host, Credence::Peer & peer)
     }
     else {
       peer.Disconnect();
+      Syslog(LOG_ERR, "Failed to authenticate with %s", host.c_str());
     }
+  }
+  else {
+      Syslog(LOG_ERR, "Failed to connect to %s port 2126", host.c_str());
   }
   return rc;
 }
@@ -120,8 +124,8 @@ PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp,
 //----------------------------------------------------------------------------
 static void Usage(const char *argv0)
 {
-  cerr << "Usage: " << argv0 << " [-h mccurtaind_host] ipv4addr\n"
-       << "       " << argv0 << " [-v] [-h mccurtaind_host] AS_number\n"
+  cerr << "Usage: " << argv0 << " [-d] [-h mccurtaind_host] ipv4addr\n"
+       << "       " << argv0 << " [-d] [-v] [-h mccurtaind_host] AS_number\n"
        << "       " << argv0 << " -V\n\n"
        << "  Note: MCCURTAIND environment variable will be used if\n"
        << "        '-h mccurtaind_host' option is not specified.\n";
@@ -147,8 +151,11 @@ int main(int argc, char *argv[])
     host = mccurtaindEnv;
   }
   
-  while ((optChar = getopt(argc, argv, "h:vV")) != -1) {
+  while ((optChar = getopt(argc, argv, "dh:vV")) != -1) {
     switch (optChar) {
+      case 'd':
+        Dwm::SysLogger::MinimumPriority(LOG_DEBUG);
+        break;
       case 'h':
         host = optarg;
         break;
