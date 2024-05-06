@@ -43,6 +43,7 @@ extern "C" {
   #include <unistd.h>
 }
 
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <regex>
@@ -97,13 +98,19 @@ PrintIpv4AddrResponse(const Dwm::McCurtain::Ipv4AddrResponse & resp)
 //!  
 //----------------------------------------------------------------------------
 static void
-PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp)
+PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp,
+                        bool verbose)
 {
-  cout << setiosflags(ios::left) << setw(10) << std::get<0>(resp) << ' '
-       << setw(2) << std::get<1>(resp).CountryCode() << ' '
-       << std::get<1>(resp).Name() << '\n';
+  if (verbose) {
+    cout << setiosflags(ios::left) << setw(10) << std::get<0>(resp) << ' '
+         << setw(2) << std::get<1>(resp).CountryCode() << ' '
+         << std::get<1>(resp).Name() << '\n';
+  }
   for (const auto & pfx : std::get<2>(resp)) {
-    cout << "  " << pfx.ToShortString() << '\n';
+    if (verbose) {
+      cout << "  ";
+    }
+    cout << pfx.ToShortString() << '\n';
   }
   return;
 }
@@ -114,8 +121,10 @@ PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp)
 static void Usage(const char *argv0)
 {
   cerr << "Usage: " << argv0 << " [-h mccurtaind_host] ipv4addr\n"
-       << "       " << argv0 << " [-h mccurtaind_host] AS_number\n"
-       << "       " << argv0 << " -V\n";
+       << "       " << argv0 << " [-v] [-h mccurtaind_host] AS_number\n"
+       << "       " << argv0 << " -V\n\n"
+       << "  Note: MCCURTAIND environment variable will be used if\n"
+       << "        '-h mccurtaind_host' option is not specified.\n";
   return;
 }
 
@@ -127,15 +136,24 @@ int main(int argc, char *argv[])
   extern int        optind;
   int               optChar;
   string            host;
+  bool              verbose = false;
   
   Dwm::SysLogger::Open("mccurtain", LOG_PERROR, LOG_USER);
   Dwm::SysLogger::MinimumPriority(LOG_ERR);
   Dwm::SysLogger::ShowFileLocation(true);
 
-  while ((optChar = getopt(argc, argv, "h:V")) != -1) {
+  char *mccurtaindEnv = getenv("MCCURTAIND");
+  if (nullptr != mccurtaindEnv) {
+    host = mccurtaindEnv;
+  }
+  
+  while ((optChar = getopt(argc, argv, "h:vV")) != -1) {
     switch (optChar) {
       case 'h':
         host = optarg;
+        break;
+      case 'v':
+        verbose = true;
         break;
       case 'V':
         cout << Dwm::McCurtain::Version.Version() << '\n';
@@ -149,7 +167,8 @@ int main(int argc, char *argv[])
   }
 
   if (host.empty()) {
-    host = "kiva.mcplex.net";
+    Usage(argv[0]);
+    return 1;
   }
 
   if (optind >= argc) {
@@ -177,7 +196,7 @@ int main(int argc, char *argv[])
         if (peer.Send(req)) {
           Dwm::McCurtain::ASPrefixesResponse  resp;
           if (peer.Receive(resp)) {
-            PrintASPrefixesResponse(resp);
+            PrintASPrefixesResponse(resp, verbose);
             return 0;
           }
         }
