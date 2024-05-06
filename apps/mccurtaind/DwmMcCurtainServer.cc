@@ -187,21 +187,24 @@ namespace Dwm {
     bool Server::InitDatabases()
     {
       bool  rc = false;
-      if (_ipv42asdb.Load("/usr/local/etc/ipv42as.db")) {
-        if (_as2ipv4db.Load("/usr/local/etc/as2ipv4.db")) {
-          if (_asntxt.Load("/usr/local/etc/asn.txt")) {
+      if (_ipv42asdb.Load(_config.Database().Ipv4ToASFile())) {
+        if (_as2ipv4db.Load(_config.Database().ASToIpv4File())) {
+          if (_asntxt.Load(_config.Database().ASNTxtFile())) {
             rc = true;
           }
           else {
-            Syslog(LOG_ERR, "Failed to load asn.txt");
+            Syslog(LOG_ERR, "Failed to load AS text file from %s",
+                   _config.Database().ASNTxtFile().c_str());
           }
         }
         else {
-          Syslog(LOG_ERR, "Failed to load as2ipv4.db");
+          Syslog(LOG_ERR, "Failed to load AS to Ipv4 database from %s",
+                 _config.Database().ASToIpv4File().c_str());
         }
       }
       else {
-        Syslog(LOG_ERR, "Failed to load ipv42as.db");
+        Syslog(LOG_ERR, "Failed to load Ipv4 to AS database from %s",
+               _config.Database().Ipv4ToASFile().c_str());
       }
       return rc;
     }
