@@ -1,0 +1,102 @@
+.Dd April 16, 2024
+.Dt mccurtain 1
+.Os mcplex.net
+.Sh NAME
+.Nm mccurtain
+.Nd query for prefixes and origin ASes of IP address, or prefixes of origin AS
+.Sh SYNOPSIS
+.Nm
+.Op Fl h Ar host
+.Cm ipv4_address
+.Nm
+.Op Fl h Ar host
+.Cm AS_number
+.Nm
+.Cm -V
+.Sh DESCRIPTION
+.Nm
+is a command-line client that asks mccurtaind(8) for prefixes
+covering a given IP address and the corresponding origin AS (autonomous
+systems) announcing those prefixes.  It can also ask mccurtaind(8) for
+all prefixes originating from a given AS.
+.Pp
+.Nm
+uses libDwmCredence for authentication and encryption.  Hence you
+will need to add the mccurtaind(8) public key to your credence known_keys
+file, and of course mccurtaind(8) will need your public key in its
+known_keys file.  If you don't have a credence keypair, see the
+credence(1) manpage.
+
+The following command line options are available:
+.Pp
+.Bl -tag -width indent
+.It Fl h Ar mccurtaind_host
+Specify the
+.Xr mccurtaind 8
+host to be queried.
+.El
+
+.Sh EXAMPLES
+The following example requests information for 192.172.226.1.  A single
+prefix is returned (192.172.226.0/24), with two origin autonomous systems
+(195 and 1909).
+.Bd -literal
+    % mccurtain 192.172.226.1
+    192.172.226.0/24:
+      195        US SDSC-AS
+      1909       US CAIDA
+.Ed
+
+The next example requests information for AS 195.  The prefixes for which
+AS 195 is the origin AS are returned.
+.Bd -literal
+    % mccurtain 195
+    195        US SDSC-AS
+      44.8.5/24
+      132.249/16
+      137.164.23.42/31
+      137.164.23.128/29
+      153.105/16
+      192.12.207/24
+      192.31.21/24
+      192.67.81/24
+      192.67.82/24
+      192.172.226/24
+      192.207.234/24
+      198.17.46/23
+      198.17.101/24
+      198.187.222/24
+      198.188.136.0/26
+      198.202.64/18
+      199.165.16/20
+.Ed
+
+.Sh FILES
+.Bl -tag -width indent
+.It Pa ${HOME}/.credence/id_ed25519
+The user's credence private key file, created with
+.Xr credence 1 .
+This file should be owned by the user and have permissions 0600.
+It must contain the private part of an Ed25519 key pair.
+.It Pa ${HOME}/.credence/id_ed25519.pub
+The user's credence public key file, created with
+.Xr credence 1 .
+This file should be owned by the user and have permissions 0600.
+It must contain the public part of an Ed25519 key pair.
+.It Pa ${HOME}/.credence/known_keys
+The user's credence known keys file.
+This file must contain the public keys of services the user will access.
+Each public key is used to authenticate a remote service during
+authentication.
+.It Pa <service>/known_keys
+A service utilizing libDwmCredence will have a file containing the public keys
+of those allowed to access the service.
+The location of this file is service dependent.
+.El
+.Sh SEE ALSO
+.Xr mccurtaind 8 ,
+.Xr mkcurtaindb 8 ,
+.Xr credence 1
+.Sh AUTHORS
+Copyright \(co 2024
+.An Daniel W. McRobb Aq Mt dwm@mcplex.net
