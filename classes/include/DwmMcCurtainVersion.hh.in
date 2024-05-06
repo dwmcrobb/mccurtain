@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2022
+//  Copyright (c) Daniel W. McRobb 2024
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -34,26 +34,26 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmCredenceVersion.hh
+//!  \file DwmMcCurtainVersion.hh
 //!  \author Daniel W. McRobb
-//!  \brief DWM_CREDENCE_VERSION macro and Dwm::Credence::Version declaration
+//!  \brief DWM_MCCURTAIN_VERSION macro and Dwm::McCurtain::Version declaration
 //---------------------------------------------------------------------------
 
-#ifndef _DWMCREDENCEVERSION_HH_
-#define _DWMCREDENCEVERSION_HH_
+#ifndef _DWMMCCURTAINVERSION_HH_
+#define _DWMMCCURTAINVERSION_HH_
 
 #include "DwmGitVersion.hh"
 
-#define DWM_CREDENCE_VERSION "@DWM_VERSION@"
+#define DWM_MCCURTAIN_VERSION "@DWM_VERSION@"
 
 namespace Dwm {
 
-  namespace Credence {
+  namespace McCurtain {
 
     extern const GitVersion  Version;
     
-  }  // namespace Credence
+  }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMCREDENCEVERSION_HH_
+#endif  // _DWMMCCURTAINVERSION_HH_

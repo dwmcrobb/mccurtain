@@ -31,7 +31,7 @@ endif
 
 tarprep: ${TARTARGETS}
 
-${TARDIR}/bin/mccurtaind: mccurtain
+${TARDIR}/bin/mccurtain: mccurtain
 	${LIBTOOL} --mode=install ../../install-sh -s -c -m 555 $< $@
 
 distclean:: clean

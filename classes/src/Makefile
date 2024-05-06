@@ -44,9 +44,17 @@ DwmMcCurtainConfigParse.cc: DwmMcCurtainConfigParse.y
 DwmMcCurtainConfigLex.cc: DwmMcCurtainConfigLex.lex DwmMcCurtainConfigParse.hh
 	flex -o$@ $<
 
-clean::
+tarprep: ${TARDIR}/lib/libDwmMcCurtain.a
+
+${TARDIR}/lib/libDwmMcCurtain.a: ../lib/libDwmMcCurtain.a
+	${LIBTOOL} --mode=install ../../install-sh -c $< $@
+
+clean:: clean-tarprep
 	rm -f ../lib/libDwmMcCurtain.a ${OBJFILES}
 	rm -f DwmMcCurtainConfigParse.hh DwmMcCurtainConfigParse.cc DwmMcCurtainConfigLex.cc
 
 distclean:: clean
 	rm -f deps/*_deps
+
+clean-tarprep::
+	${LIBTOOL} --mode=uninstall rm -f ${TARDIR}/lib/libDwmMcCurtain.a

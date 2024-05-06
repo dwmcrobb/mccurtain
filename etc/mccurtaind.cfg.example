@@ -19,7 +19,7 @@ service {
     #  Access can be restricted to clients within given address ranges.
     #------------------------------------------------------------------------
     allowedClients = [
-      "192.168.168/24", "127.0.0.1/32", "fd60:3019:f4a:6aaf::0/64", "::1"
+      "192.168.1/24", "127.0.0.1/32", "fd60:3019:f5a:5abf::0/64", "::1"
     ];
 };
 
@@ -48,20 +48,24 @@ syslog {
 #============================================================================
 databases {
     #------------------------------------------------------------------------
-    #  IPv4 to AS database.  If not configured, /usr/local/etc/ipv42as.db
-    #  will be assumed.
+    #  IPv4 prefix to ASes database file.  If not configured,
+    #  /usr/local/etc/ipv42as.db will be assumed.  This file can be created
+    #  from a CAIDA pfx2as file with mkcurtaindb(1)
     #------------------------------------------------------------------------
     ipv4toas = "/usr/local/etc/ipv42as.db";
 
     #------------------------------------------------------------------------
-    #  AS to IPv4 prefixes database.  If not configured,
-    #  /usr/local/etc/as2ipv4.db will be assumed.
+    #  AS to IPv4 prefixes database file.  If not configured,
+    #  /usr/local/etc/as2ipv4.db will be assumed.  This file can be created
+    #  from a CAIDA pfx2as file with mkcurtaindb(1)
     #------------------------------------------------------------------------
     astoipv4 = "/usr/local/etc/as2ipv4.db";
 
     #------------------------------------------------------------------------
     #  RIPE asn.txt file location.  If not configured,
-    #  /usr/local/etc/asn.txt will be assumed.
+    #  /usr/local/etc/asn.txt will be assumed.  A current version of this
+    #  file can be downloaded from RIPE's ftp site at
+    #  http://ftp.ripe.net/ripe/asnames/asn.txt
     #------------------------------------------------------------------------
     asntxt = "/usr/local/etc/asn.txt";
 };

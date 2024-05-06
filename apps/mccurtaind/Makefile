@@ -1,10 +1,11 @@
 include ../../Makefile.vars
 
-ALLINCS = -I../../classes/include ${DWMINCS}
+ALLINCS      = -I../../classes/include ${DWMINCS}
 OBJS         = mccurtaind.o \
                DwmMcCurtainResponder.o \
                DwmMcCurtainServer.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
+TARTARGETS   = ${TARDIR}/sbin/mccurtaind
 
 mccurtaind: ${OBJS} ../../classes/lib/libDwmMcCurtain.a
 	${CXX} ${LDFLAGS} -o $@ $^ ${DWMLIBS}
@@ -30,8 +31,16 @@ endif
 ../../classes/lib/libDwmMcCurtain.a::
 	${MAKE} -C ../../classes/src
 
-clean::
-	rm -f mccurtaind ${OBJS}
+tarprep: ${TARTARGETS}
+
+${TARDIR}/sbin/mccurtaind: mccurtaind
+	${LIBTOOL} --mode=install ../../install-sh -s -c -m 555 $< $@
 
 distclean:: clean
 	rm -f ${OBJDEPS}
+
+clean:: clean-tarprep
+	${LIBTOOL} --mode=clean rm -f mccurtaind ${OBJS}
+
+clean-tarprep::
+	${LIBTOOL} --mode=uninstall rm -f ${TARTARGETS}

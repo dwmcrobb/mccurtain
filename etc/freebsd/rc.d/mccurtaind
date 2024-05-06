@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# PROVIDE: mccurtaind
+# REQUIRE: FILESYSTEMS disks mountd resolv
+
+. /etc/rc.subr
+
+name="mccurtaind"
+rcvar=mccurtaind_enable
+
+load_rc_config mccurtaind
+
+: ${mccurtaind_enable:="NO"}
+
+required_files="${mccurtaind_config:=/usr/local/etc/mccurtaind.cfg} /usr/local/etc/mccurtaind/id_ed25519 /usr/local/etc/mccurtaind/known_keys"
+
+pidfile=${mccurtaind_pidfile:="/var/run/mccurtaind.pid"}
+
+command="/usr/local/sbin/mccurtaind"
+command_args="-c ${mccurtaind_config} -p ${pidfile}"
+
+start_precmd=mccurtaind_precmd
+
+mccurtaind_precmd()
+{
+    export PATH="${PATH}:/usr/local/sbin"
+}
+
+run_rc_command "$1"
