@@ -55,7 +55,7 @@ AC_SUBST(KVMLIB)
 AC_SUBST(LIBTOOL)
 AC_SUBST(OSLIBS)
 
-DWM_REQUIRES_DWMPKG(libDwm,0.9.22)
+DWM_REQUIRES_DWMPKG(libDwm,0.9.23)
 
 DWMDIR=`pkg-config --variable=prefix libDwm`
 DWMINCS=`pkg-config --cflags-only-I libDwmCredence`
