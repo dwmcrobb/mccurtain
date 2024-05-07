@@ -1,3 +1,9 @@
+2024-05-07  dwm  <dwm@ria.mcplex.net>
+
+	* tagged as mccurtain-0.0.4
+
+	* packaging/fbsd_manifest.in: Correct libDwm version to 0.9.23
+
 2024-05-07  Daniel McRobb  <dwm@thrip.mcplex.net>
 
 	* tagged as mccurtain-0.0.3
