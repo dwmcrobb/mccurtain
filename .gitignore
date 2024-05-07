@@ -3,3 +3,6 @@ autom4te.cache/**
 Makefile.vars
 config.log
 config.status
+mccurtain-*.pkg
+mccurtain_*.deb
+staging/**

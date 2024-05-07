@@ -1,0 +1,14 @@
+If query is an IP address, return a list of prefixes and the
+corresponding AS that is announcing each prefix.  Return type:
+  std::vector<std::tuple<Ipv4Prefix,uint32_t,std::string>>
+
+If query is an AS number, return a list of prefixes being
+announced by the AS, coalesced.  Return type:
+  std::tuple<uint32_t,string,std::vector<Ipv4Prefix>>
+
+If query is a country code, return a list of prefixes being
+announced by ASes in that country.  Most of the time I want
+a coalesced list.  However, I might also just want a list
+of ASes with the prefixes for each AS as a sublist.  Separate
+query?
+

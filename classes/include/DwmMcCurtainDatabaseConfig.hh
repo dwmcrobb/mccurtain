@@ -34,110 +34,105 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASInfo.hh
+//!  \file DwmMcCurtainDatabaseConfig.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::ASInfo class declaration
+//!  \brief Dwm::McCurtain::DatabaseConfig class declaration
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINASINFO_HH_
-#define _DWMMCCURTAINASINFO_HH_
+#ifndef _DWMMCCURTAINDATABASECONFIG_HH_
+#define _DWMMCCURTAINDATABASECONFIG_HH_
 
-
-#include <nlohmann/json.hpp>
-
-#include "DwmIpv4Routes.hh"
+#include <iostream>
+#include <string>
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  Encapsulate information for a single AS.
+    //!  Encapsulate the database parts of the mccurtaind configuration.
     //------------------------------------------------------------------------
-    class ASInfo
+    class DatabaseConfig
     {
     public:
       //----------------------------------------------------------------------
-      //!  Pupulates the ASInfo from the given JSON @c j.
+      //!  Default constructor
       //----------------------------------------------------------------------
-      bool FromJson(const nlohmann::json & j);
+      DatabaseConfig();
       
       //----------------------------------------------------------------------
-      //!  Returns a JSON representation of the ASInfo.
+      //!  Copy constructor
       //----------------------------------------------------------------------
-      nlohmann::json ToJson() const;
+      DatabaseConfig(const DatabaseConfig &) = default;
 
       //----------------------------------------------------------------------
-      //!  Returns the AS number of the AS.
+      //!  Move constructor
       //----------------------------------------------------------------------
-      inline uint32_t Number() const  { return _number; }
+      DatabaseConfig(DatabaseConfig &&) = default;
       
       //----------------------------------------------------------------------
-      //!  Sets and returns the AS number of the AS.
+      //!  Copy assignment
       //----------------------------------------------------------------------
-      inline uint32_t Number(uint32_t number)  { return _number = number; }
+      DatabaseConfig & operator = (const DatabaseConfig &) = default;
 
       //----------------------------------------------------------------------
-      //!  Returns the name of the AS.
+      //!  Move assignment
       //----------------------------------------------------------------------
-      inline const std::string & Name() const  { return _name; }
+      DatabaseConfig & operator = (DatabaseConfig &&) = default;
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the name of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Name(const std::string & name)
-      { return _name = name; }
+      const std::string & Ipv4ToASFile() const  { return _ipv4ToASFile; }
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      const std::string & Ipv4ToASFile(const std::string & f)
+      { return _ipv4ToASFile = f; }
+        
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      const std::string & ASToIpv4File() const  { return _asToIpv4File; }
       
       //----------------------------------------------------------------------
-      //!  Returns the organization that owns the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Org() const  { return _org; }
-
+      const std::string & ASToIpv4File(const std::string & f)
+      { return _asToIpv4File = f; }
+        
       //----------------------------------------------------------------------
-      //!  Sets and returns the organization that owns the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Org(const std::string org)
-      { return _org = org; }
-
-      //----------------------------------------------------------------------
-      //!  Returns the country code of the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & CountryCode() const  { return _countryCode; }
-
-      //----------------------------------------------------------------------
-      //!  Sets and returns the country code of the AS.
-      //----------------------------------------------------------------------
-      inline const std::string & CountryCode(const std::string & countryCode)
-      { return _countryCode = countryCode; }
-
-      //----------------------------------------------------------------------
-      //!  Returns a const reference to the prefixes for the AS.
-      //----------------------------------------------------------------------
-      inline const Ipv4Routes<uint8_t> & Nets() const  { return _nets; }
+      const std::string & ASNTxtFile() const  { return _asnTxtFile; }
       
       //----------------------------------------------------------------------
-      //!  Returns a mutable reference to the prefixes for the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets()   { return _nets; }
+      const std::string & ASNTxtFile(const std::string & f)
+      { return _asnTxtFile = f; }
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the prefixes for the AS.
+      //!  Prints the given database configuration @c cfg to the given
+      //!  ostream @c os.
       //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets(const Ipv4Routes<uint8_t> & nets)
-      { return _nets = nets; }
+      friend std::ostream &
+      operator << (std::ostream & os, const DatabaseConfig & cfg);
 
+      //----------------------------------------------------------------------
+      //!  Reset the configuration to the defaults.
+      //----------------------------------------------------------------------
       void Clear();
       
     private:
-      uint32_t             _number;
-      std::string          _name;
-      std::string          _org;
-      std::string          _countryCode;
-      Ipv4Routes<uint8_t>  _nets;
+      std::string  _ipv4ToASFile;
+      std::string  _asToIpv4File;
+      std::string  _asnTxtFile;
     };
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINASINFO_HH_
+#endif  // _DWMMCCURTAINDATABASECONFIG_HH_

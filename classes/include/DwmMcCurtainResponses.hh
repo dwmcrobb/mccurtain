@@ -34,26 +34,40 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainVersion.hh
+//!  \file DwmMcCurtainResponses.hh
 //!  \author Daniel W. McRobb
-//!  \brief DWM_MCCURTAIN_VERSION macro and Dwm::McCurtain::Version declaration
+//!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINVERSION_HH_
-#define _DWMMCCURTAINVERSION_HH_
+#ifndef _DWMMCCURTAINRESPONSES_HH_
+#define _DWMMCCURTAINRESPONSES_HH_
 
-#include "DwmGitVersion.hh"
+#include <tuple>
+#include <vector>
 
-#define DWM_MCCURTAIN_VERSION "@DWM_VERSION@"
+#include "DwmIpv4Prefix.hh"
+#include "DwmMcCurtainRipeAsnTxt.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
-    extern const GitVersion  Version;
-    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    using Ipv4AddrResponseEntry =
+      std::tuple<Ipv4Prefix,
+                 std::vector<std::pair<uint32_t,RipeAsnTxt::Entry>>>;
+    using Ipv4AddrResponse = std::vector<Ipv4AddrResponseEntry>;
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    using ASPrefixesResponse = std::tuple<uint32_t,RipeAsnTxt::Entry,
+                                          std::vector<Ipv4Prefix>>;
+
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINVERSION_HH_
+#endif  // _DWMMCCURTAINRESPONSES_HH_

@@ -45,36 +45,55 @@ extern "C" {
 
 #include <cstdlib>
 #include <iomanip>
+#include <iostream>
+#include <regex>
+#include <thread>
 
-#include "DwmMcCurtainAS2Ipv4NetDb.hh"
+#include "DwmSysLogger.hh"
+#include "DwmCredencePeer.hh"
+#include "DwmMcCurtainRequests.hh"
+#include "DwmMcCurtainResponses.hh"
+#include "DwmMcCurtainVersion.hh"
 
 using namespace std;
+using namespace Dwm;
 
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void ShowASes(const Dwm::Ipv4Address & addr)
+static bool GetPeer(const string & host, Credence::Peer & peer)
 {
-  Dwm::McCurtain::Ipv4Net2ASDb  netdb;
-  if (netdb.Load(string(getenv("HOME")) + "/etc/ipv42as.db")) {
-    std::vector<std::pair<Dwm::Ipv4Prefix,set<uint32_t>>>  matches;
-    if (netdb.Entries().Find(addr, matches)) {
-      for (const auto & match : matches) {
-        cout << setiosflags(ios::left) << setw(20) << match.first << ' ';
-        if (! match.second.empty()) {
-          auto  asit = match.second.begin();
-          cout << *asit;
-          ++asit;
-          for (; asit != match.second.end(); ++asit) {
-            cout << ',' << *asit;
-          }
-        }
-        cout << '\n';
-      }
+  bool  rc = false;
+  if (peer.Connect(host, 2126)) {
+    Credence::KeyStash   keyStash;
+    Credence::KnownKeys  knownKeys;
+    if (peer.Authenticate(keyStash, knownKeys)) {
+      rc = true;
+    }
+    else {
+      peer.Disconnect();
+      Syslog(LOG_ERR, "Failed to authenticate with %s", host.c_str());
     }
   }
   else {
-    cerr << "Failed to load ipv42as.db\n";
+      Syslog(LOG_ERR, "Failed to connect to %s port 2126", host.c_str());
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void
+PrintIpv4AddrResponse(const Dwm::McCurtain::Ipv4AddrResponse & resp)
+{
+  for (const auto & entry : resp) {
+    cout << std::get<0>(entry) << ":\n";
+    for (const auto & ase : std::get<1>(entry)) {
+      cout << "  " << setiosflags(ios::left) << setw(10) << ase.first << ' '
+           << setw(2) << ase.second.CountryCode() << ' '
+           << ase.second.Name() << '\n';
+    }
   }
   return;
 }
@@ -82,18 +101,20 @@ static void ShowASes(const Dwm::Ipv4Address & addr)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void ShowNets(uint32_t as)
+static void
+PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp,
+                        bool verbose)
 {
-  Dwm::McCurtain::AS2Ipv4NetDb  asdb;
-  if (asdb.Load(string(getenv("HOME")) + "/etc/as2ipv4.db")) {
-    auto  asit = asdb.Nets().find(as);
-    if (asit != asdb.Nets().end()) {
-      std::vector<std::pair<Dwm::Ipv4Prefix,uint8_t>>  prefixes;
-      asit->second.SortByKey(prefixes);
-      for (const auto & pfx : prefixes) {
-        cout << pfx.first << '\n';
-      }
+  if (verbose) {
+    cout << setiosflags(ios::left) << setw(10) << std::get<0>(resp) << ' '
+         << setw(2) << std::get<1>(resp).CountryCode() << ' '
+         << std::get<1>(resp).Name() << '\n';
+  }
+  for (const auto & pfx : std::get<2>(resp)) {
+    if (verbose) {
+      cout << "  ";
     }
+    cout << pfx.ToShortString() << '\n';
   }
   return;
 }
@@ -103,7 +124,11 @@ static void ShowNets(uint32_t as)
 //----------------------------------------------------------------------------
 static void Usage(const char *argv0)
 {
-  cerr << "Usage: " << argv0 << " ASNumber_or_IPv4Address\n";
+  cerr << "Usage: " << argv0 << " [-d] [-h mccurtaind_host] ipv4addr\n"
+       << "       " << argv0 << " [-d] [-v] [-h mccurtaind_host] AS_number\n"
+       << "       " << argv0 << " -V\n\n"
+       << "  Note: MCCURTAIND environment variable will be used if\n"
+       << "        '-h mccurtaind_host' option is not specified.\n";
   return;
 }
 
@@ -112,18 +137,81 @@ static void Usage(const char *argv0)
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  if (argc < 2) {
+  extern int        optind;
+  int               optChar;
+  string            host;
+  bool              verbose = false;
+  
+  Dwm::SysLogger::Open("mccurtain", LOG_PERROR, LOG_USER);
+  Dwm::SysLogger::MinimumPriority(LOG_ERR);
+  Dwm::SysLogger::ShowFileLocation(true);
+
+  char *mccurtaindEnv = getenv("MCCURTAIND");
+  if (nullptr != mccurtaindEnv) {
+    host = mccurtaindEnv;
+  }
+  
+  while ((optChar = getopt(argc, argv, "dh:vV")) != -1) {
+    switch (optChar) {
+      case 'd':
+        Dwm::SysLogger::MinimumPriority(LOG_DEBUG);
+        break;
+      case 'h':
+        host = optarg;
+        break;
+      case 'v':
+        verbose = true;
+        break;
+      case 'V':
+        cout << Dwm::McCurtain::Version.Version() << '\n';
+        return 0;
+        break;
+      default:
+        Usage(argv[0]);
+        return 1;
+        break;
+    }
+  }
+
+  if (host.empty()) {
+    Usage(argv[0]);
+    return 1;
+  }
+
+  if (optind >= argc) {
     Usage(argv[0]);
     return 1;
   }
   
-  string  arg(argv[1]);
-  if (arg.find_first_of('.') != string::npos) {
-    Dwm::Ipv4Address  addr(arg);
-    ShowASes(addr);
+  Credence::Peer  peer;
+  if (GetPeer(host, peer)) {
+    string  arg(argv[optind]);
+    if (arg.find_first_of('.') != string::npos) {
+      Dwm::McCurtain::Request  req{Dwm::Ipv4Address(arg)};
+      if (peer.Send(req)) {
+        Dwm::McCurtain::Ipv4AddrResponse  resp;
+        if (peer.Receive(resp)) {
+          PrintIpv4AddrResponse(resp);
+          return 0;
+        }
+      }
+    }
+    else {
+      try {
+        uint32_t  asNum = stoul(arg);
+        Dwm::McCurtain::Request  req{asNum};
+        if (peer.Send(req)) {
+          Dwm::McCurtain::ASPrefixesResponse  resp;
+          if (peer.Receive(resp)) {
+            PrintASPrefixesResponse(resp, verbose);
+            return 0;
+          }
+        }
+      }
+      catch (...) {
+      }
+    }
   }
-  else {
-    ShowNets(stoul(arg));
-  }
-  return 0;
+  return 1;
 }
+

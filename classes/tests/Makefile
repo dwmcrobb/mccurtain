@@ -2,6 +2,7 @@ include ../../Makefile.vars
 
 OBJFILES = TestIpv4Net2ASDb.o \
            TestAS2Ipv4NetDb.o \
+           TestConfig.o \
            TestRipeAsnTxt.o
 OBJDEPS  = $(OBJFILES:%.o=deps/%_deps)
 TESTS    = $(OBJFILES:%.o=%)

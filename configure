@@ -631,6 +631,7 @@ GIT_TAG
 TARDIR_RELATIVE
 TARDIR
 TAR
+STAGING_DIR
 PKG_SUBDIR
 TAGVERSION
 TAGNAME
@@ -4612,8 +4613,10 @@ printf "%s\n" "not found!!!" >&6; }
 
 
 DWMDIR=`pkg-config --variable=prefix libDwm`
-DWMINCS=`pkg-config --cflags-only-I libDwm`
-DWMLIBS=`pkg-config --libs libDwm`
+DWMINCS=`pkg-config --cflags-only-I libDwmCredence`
+DWMINCS=`dwmcflags ${DWMINCS}`
+DWMLIBS=`pkg-config --libs libDwmCredence`
+DWMLIBS=`dwmcflags ${DWMLIBS}`
 
 
 
@@ -5297,7 +5300,9 @@ printf %s "checking package variables... " >&6; }
     *)
       ;;
   esac
+  STAGING_DIR=`pwd`/staging
   TARDIR=`pwd`/${TARDIR_RELATIVE}
+
 
 
 
@@ -5317,6 +5322,7 @@ printf %s "checking package variables... " >&6; }
     TAGNAME=\"${TAGNAME}\"
     TAGVERSION=\"${TAGVERSION}\"
     PKG_SUBDIR=\"${PKG_SUBDIR}\"
+    STAGING_DIR=\"${STAGING_DIR}\"
     TAR=\"${TAR}\"
     TARDIR=\"${TARDIR}\"
     TARDIR_RELATIVE=\"${TARDIR_RELATIVE}\"" >&5
@@ -5328,6 +5334,7 @@ printf "%s\n" "
     TAGNAME=\"${TAGNAME}\"
     TAGVERSION=\"${TAGVERSION}\"
     PKG_SUBDIR=\"${PKG_SUBDIR}\"
+    STAGING_DIR=\"${STAGING_DIR}\"
     TAR=\"${TAR}\"
     TARDIR=\"${TARDIR}\"
     TARDIR_RELATIVE=\"${TARDIR_RELATIVE}\"" >&6; }
@@ -5534,7 +5541,13 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile.vars classes/include/DwmMcCurtainVersion.hh packaging/debcontrol packaging/fbsd_manifest packaging/mccurtain.pc doc/Doxyfile"
+ac_config_files="$ac_config_files Makefile.vars classes/include/DwmMcCurtainVersion.hh packaging/debcontrol packaging/fbsd_manifest packaging/mccurtain.pc doc/Doxyfile etc/macos/net.mcplex.mccurtaind.plist"
+
+ac_config_files="$ac_config_files etc/macos/scripts/postinstall"
+
+ac_config_files="$ac_config_files etc/macos/scripts/preinstall"
+
+ac_config_files="$ac_config_files etc/freebsd/+POST_INSTALL"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6243,6 +6256,10 @@ do
     "packaging/fbsd_manifest") CONFIG_FILES="$CONFIG_FILES packaging/fbsd_manifest" ;;
     "packaging/mccurtain.pc") CONFIG_FILES="$CONFIG_FILES packaging/mccurtain.pc" ;;
     "doc/Doxyfile") CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;
+    "etc/macos/net.mcplex.mccurtaind.plist") CONFIG_FILES="$CONFIG_FILES etc/macos/net.mcplex.mccurtaind.plist" ;;
+    "etc/macos/scripts/postinstall") CONFIG_FILES="$CONFIG_FILES etc/macos/scripts/postinstall" ;;
+    "etc/macos/scripts/preinstall") CONFIG_FILES="$CONFIG_FILES etc/macos/scripts/preinstall" ;;
+    "etc/freebsd/+POST_INSTALL") CONFIG_FILES="$CONFIG_FILES etc/freebsd/+POST_INSTALL" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -6656,6 +6673,13 @@ which seems to be undefined.  Please make sure it is defined" >&2;}
 
   esac
 
+
+  case $ac_file$ac_mode in
+    "etc/macos/scripts/postinstall":F) chmod a+x etc/macos/scripts/postinstall ;;
+    "etc/macos/scripts/preinstall":F) chmod a+x etc/macos/scripts/preinstall ;;
+    "etc/freebsd/+POST_INSTALL":F) chmod a+x etc/freebsd/+POST_INSTALL ;;
+
+  esac
 done # for ac_tag
 
 

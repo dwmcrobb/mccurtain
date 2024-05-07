@@ -34,101 +34,65 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASInfo.cc
+//!  \file DwmMcCurtainDatabaseConfig.cc
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::ASInfo class implementation
+//!  \brief Dwm::McCurtain::DatabaseConfig class implementation
 //---------------------------------------------------------------------------
 
-#include "DwmMcCurtainASInfo.hh"
+#include "DwmMcCurtainDatabaseConfig.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
-    using namespace std;
-    
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    bool ASInfo::FromJson(const nlohmann::json & j)
+    DatabaseConfig::DatabaseConfig()
     {
-      bool  rc = false;
       Clear();
-      if (j.is_object()) {
-        auto  it = j.find("AS");
-        if ((it != j.end()) && it->is_number()) {
-          _number = it->get<uint32_t>();
-          it = j.find("Name");
-          if ((it != j.end()) && it->is_string()) {
-            _name = it->get<string>();
-            rc = true;
-            it = j.find("Org");
-            if ((it != j.end()) && it->is_string()) {
-              _org = it->get<string>();
-            }
-            it = j.find("CC");
-            if ((it != j.end()) && it->is_string()) {
-              _countryCode = it->get<string>();
-            }
-            it = j.find("nets");
-            if ((it != j.end()) && it->is_array()) {
-              for (const auto & net : *it) {
-                if (net.is_string()) {
-                  Ipv4Prefix  pfx(net.get<string>());
-                  if ((pfx.Network().Raw() != 0xFFFFFFFF)
-                      && (pfx.MaskLength() != 0)) {
-                    _nets[pfx] = 1;
-                  }
-                  else {
-                    rc = false;
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      if (! rc) {
-        Clear();
-      }
-      return rc;
-    }
-            
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    nlohmann::json ASInfo::ToJson() const
-    {
-      nlohmann::json  j;
-      j["AS"]   = _number;
-      j["Name"] = _name;
-      j["Org"]  = _org;
-      j["CC"]   = _countryCode;
-      if (! _nets.Empty()) {
-        j["nets"] = nlohmann::json::array();
-        vector<pair<Ipv4Prefix,uint8_t>>  netvec;
-        _nets.SortByKey(netvec);
-        for (size_t i = 0; i < netvec.size(); ++i) {
-          j["nets"][i] = netvec[i].first.ToString();
-        }
-      }
-      return j;
     }
 
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    void ASInfo::Clear()
+    std::ostream &
+    operator << (std::ostream & os, const DatabaseConfig & cfg)
     {
-      _number = 0;
-      _name.clear();
-      _org.clear();
-      _countryCode.clear();
-      _nets.Clear();
+      os << "#============================================================================\n"
+         << "#  databases configuration.\n"
+         << "#============================================================================\n"
+         << "databases {\n"
+         << "#------------------------------------------------------------------------\n"
+         << "#  IPv4 to AS database.  If not configured, /usr/local/etc/ipv42as.db\n"
+         << "#  will be assumed.\n"
+         << "#------------------------------------------------------------------------\n"
+         << "ipv4toas = \"" << cfg._ipv4ToASFile << "\";\n\n"
+         << "#------------------------------------------------------------------------\n"
+         << "#  AS to IPv4 prefixes database.  If not configured,\n"
+         << "#  /usr/local/etc/as2ipv4.db will be assumed.\n"
+         << "#------------------------------------------------------------------------\n"
+         << "astoipv4 = \"" << cfg._asToIpv4File << "\";\n\n"
+         << "#------------------------------------------------------------------------\n"
+         << "#  RIPE asn.txt file location.  If not configured,\n"
+         << "#  /usr/local/etc/asn.txt will be assumed.\n"
+         << "#------------------------------------------------------------------------\n"
+         << "asntxt = \"" << cfg._asnTxtFile << "\";\n"
+         << "}\n";
+      return os;
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    void DatabaseConfig::Clear()
+    {
+      _ipv4ToASFile = "/usr/local/etc/ipv42as.db";
+      _asToIpv4File = "/usr/local/etc/as2ipv4.db";
+      _asnTxtFile = "/usr/local/etc/asn.txt";
       return;
     }
-    
+      
   }  // namespace McCurtain
 
 }  // namespace Dwm

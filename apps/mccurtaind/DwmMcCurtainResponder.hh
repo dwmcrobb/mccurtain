@@ -34,26 +34,73 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainVersion.hh
+//!  \file DwmMcCurtainResponder.hh
 //!  \author Daniel W. McRobb
-//!  \brief DWM_MCCURTAIN_VERSION macro and Dwm::McCurtain::Version declaration
+//!  \brief Dwm::McCurtain::Responder class declaration
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINVERSION_HH_
-#define _DWMMCCURTAINVERSION_HH_
+#ifndef _DWMMCCURTAINRESPONDER_HH_
+#define _DWMMCCURTAINRESPONDER_HH_
 
-#include "DwmGitVersion.hh"
+extern "C" {
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+}
 
-#define DWM_MCCURTAIN_VERSION "@DWM_VERSION@"
+#include <string>
+#include <thread>
+#include <vector>
+
+#include "DwmCredencePeer.hh"
+#include "DwmMcCurtainRequests.hh"
+#include "DwmMcCurtainResponses.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
-    extern const GitVersion  Version;
+    class Server;
+    
+    //------------------------------------------------------------------------
+    //!  Encapsulates a thread that responds to requests from a single
+    //!  client.
+    //------------------------------------------------------------------------
+    class Responder
+    {
+    public:
+      //--------------------------------------------------------------------
+      //!  Construct from the given socket @c s and Server @c server.
+      //--------------------------------------------------------------------
+      Responder(boost::asio::ip::tcp::socket && s, Server & server);
+
+      //----------------------------------------------------------------------
+      //!  Destructor.
+      //----------------------------------------------------------------------
+      ~Responder();
+      
+      //----------------------------------------------------------------------
+      //!  Join the responder's thread.  Returns true if the thread is
+      //!  joinable and done, and we successfully joined it.
+      //----------------------------------------------------------------------
+      bool Join();
+      
+    private:
+      Credence::Peer        _peer;
+      Server               &_server;
+      std::string           _agreedKey;
+      std::thread           _thread;
+      std::atomic<bool>     _running;
+
+      bool HandleRequest(Request request);
+      bool SendIpv4AddrResponse(const Ipv4Address & addr);
+      bool SendASPrefixesResponse(uint32_t asNum);
+      void Run();
+    };
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINVERSION_HH_
+#endif  // _DWMMCCURTAINRESPONDER_HH_

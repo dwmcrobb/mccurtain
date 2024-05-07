@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Unload mccurtaind from launchd.
+if [ -f /Library/LaunchDaemons/net.mcplex.mccurtaind.plist ]; then
+    launchctl unload -w /Library/LaunchDaemons/net.mcplex.mccurtaind.plist
+fi

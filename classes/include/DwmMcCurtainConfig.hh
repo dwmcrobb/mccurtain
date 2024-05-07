@@ -34,110 +34,118 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainASInfo.hh
+//!  \file DwmMcCurtainConfig.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::ASInfo class declaration
+//!  \brief Dwm::McCurtain::Config class declaration
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINASINFO_HH_
-#define _DWMMCCURTAINASINFO_HH_
+#ifndef _DWMMCCURTAINCONFIG_HH_
+#define _DWMMCCURTAINCONFIG_HH_
 
+#include <string>
 
-#include <nlohmann/json.hpp>
-
-#include "DwmIpv4Routes.hh"
+#include "DwmMcCurtainDatabaseConfig.hh"
+#include "DwmMcCurtainServiceConfig.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  Encapsulate information for a single AS.
+    //!  Encapsulates mccurtaind configuration.
     //------------------------------------------------------------------------
-    class ASInfo
+    class Config
     {
     public:
       //----------------------------------------------------------------------
-      //!  Pupulates the ASInfo from the given JSON @c j.
+      //!  
       //----------------------------------------------------------------------
-      bool FromJson(const nlohmann::json & j);
+      Config();
       
       //----------------------------------------------------------------------
-      //!  Returns a JSON representation of the ASInfo.
+      //!  
       //----------------------------------------------------------------------
-      nlohmann::json ToJson() const;
+      bool Parse(const std::string & path);
 
       //----------------------------------------------------------------------
-      //!  Returns the AS number of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline uint32_t Number() const  { return _number; }
+      const std::string & SyslogFacility() const;
       
       //----------------------------------------------------------------------
-      //!  Sets and returns the AS number of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline uint32_t Number(uint32_t number)  { return _number = number; }
+      const std::string & SyslogFacility(const std::string & facility);
 
       //----------------------------------------------------------------------
-      //!  Returns the name of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Name() const  { return _name; }
+      const std::string & SyslogLevel() const;
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the name of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Name(const std::string & name)
-      { return _name = name; }
+      const std::string & SyslogLevel(const std::string & level);
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      bool SyslogLocations() const;
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      bool SyslogLocations(bool logLocations);
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      bool RunService() const;
       
       //----------------------------------------------------------------------
-      //!  Returns the organization that owns the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Org() const  { return _org; }
+      bool RunService(bool runService);
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the organization that owns the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & Org(const std::string org)
-      { return _org = org; }
+      const ServiceConfig & Service() const;
 
       //----------------------------------------------------------------------
-      //!  Returns the country code of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & CountryCode() const  { return _countryCode; }
+      const ServiceConfig & Service(const ServiceConfig & service);
 
       //----------------------------------------------------------------------
-      //!  Sets and returns the country code of the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const std::string & CountryCode(const std::string & countryCode)
-      { return _countryCode = countryCode; }
+      const DatabaseConfig & Database() const;
 
       //----------------------------------------------------------------------
-      //!  Returns a const reference to the prefixes for the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline const Ipv4Routes<uint8_t> & Nets() const  { return _nets; }
+      const DatabaseConfig & Database(const DatabaseConfig & database);
       
       //----------------------------------------------------------------------
-      //!  Returns a mutable reference to the prefixes for the AS.
+      //!  
       //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets()   { return _nets; }
-
-      //----------------------------------------------------------------------
-      //!  Sets and returns the prefixes for the AS.
-      //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets(const Ipv4Routes<uint8_t> & nets)
-      { return _nets = nets; }
-
-      void Clear();
+      friend std::ostream &
+      operator << (std::ostream & os, const Config & cfg);
       
     private:
-      uint32_t             _number;
-      std::string          _name;
-      std::string          _org;
-      std::string          _countryCode;
-      Ipv4Routes<uint8_t>  _nets;
+      bool            _runService;
+      DatabaseConfig  _database;
+      ServiceConfig   _service;
+      std::string     _syslogFacility;
+      std::string     _syslogLevel;
+      bool            _logLocations;
+      
+      void Clear();
     };
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINASINFO_HH_
+#endif  // _DWMMCCURTAINCONFIG_HH_

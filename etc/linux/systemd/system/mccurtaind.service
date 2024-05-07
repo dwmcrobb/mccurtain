@@ -1,0 +1,17 @@
+[Unit]
+Description=mccurtaind
+DefaultDependencies=no
+After=rc-local.service
+
+[Service]
+ExecStart=/usr/local/sbin/mccurtaind -c /usr/local/etc/mccurtaind.cfg -p /run/mccurtaind.pid
+KillMode=process
+PIDFile=/run/mccurtaind.pid
+Restart=on-failure
+# StandardInput=tty
+# StandardOutput=tty
+Type=forking
+
+[Install]
+WantedBy=multi-user.target
+Alias=mccurtaind.service

@@ -1,0 +1,79 @@
+#!/bin/sh
+
+#----------------------------------------------------------------------------
+key_in_keys_file() {
+    keyfile=$1
+    keysfile=$2
+    local kikf=1
+    if [ -f ${keyfile} ]; then
+	if [ -f ${keysfile} ]; then
+	    local key=`cat ${keyfile} | cut -d' ' -f1`
+	    if [ -n "${key}" ]; then
+		grep "${key}" ${keysfile} > /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+		    kikf=0
+		fi
+	    fi
+	fi
+    fi
+    return ${kikf}
+}
+
+#----------------------------------------------------------------------------
+user_known_to_mccurtaind () {
+    return $(key_in_keys_file ${USER_KEY} ${MCCURTAIND_KNOWN_KEYS})
+}
+
+#----------------------------------------------------------------------------
+mccurtaind_known_to_user () {
+    return $(key_in_keys_file ${MCCURTAIND_KEY} ${USER_KNOWN_KEYS})
+}
+
+#----------------------------------------------------------------------------
+add_user_to_known_keys () {
+    if [ -f ${USER_KEY} ]; then
+	local key=`cat ${USER_KEY}`
+	echo ${key} >> ${MCCURTAIND_KNOWN_KEYS}
+    fi
+}
+
+#----------------------------------------------------------------------------
+add_mccurtaind_to_user_known_keys () {
+    if [ -f ${MCCURTAIND_KEY} ]; then
+	local key=`cat ${MCCURTAIND_KEY}`
+	echo ${key} >> ${USER_KNOWN_KEYS}
+    fi
+}
+
+#----------------------------------------------------------------------------
+#  main
+#----------------------------------------------------------------------------
+export PATH=${PATH}:@prefix@/bin
+
+USER_KEY=${HOME}/.credence/id_ed25519.pub
+USER_KNOWN_KEYS=${HOME}/.credence/known_keys
+MCCURTAIND_KEY=@prefix@/etc/mccurtaind/id_ed25519.pub
+MCCURTAIND_KNOWN_KEYS=@prefix@/etc/mccurtaind/known_keys
+
+#  Create directory for our credence keys if it doesn't exist.
+if [ ! -d @prefix@/etc/mccurtaind ]; then         
+    mkdir @prefix@/etc/mccurtaind
+fi                                                                          
+
+# Check for existing mccurtaind key, create if it doesn't exist.
+if [ ! -f ${MCCURTAIND_KEY} ]; then
+    credence keygen -i mccurtaind@`hostname` -d @prefix@/etc/mccurtaind
+fi
+
+# and set up the installation user to use mccurtain.
+user_known_to_mccurtaind
+if [ $? -ne 0 ]; then
+    add_user_to_known_keys
+fi
+mccurtaind_known_to_user
+if [ $? -ne 0 ]; then
+    add_mccurtaind_to_user_known_keys
+fi
+
+# And load mccurtaind into launchd.
+launchctl load -w /Library/LaunchDaemons/net.mcplex.mccurtaind.plist

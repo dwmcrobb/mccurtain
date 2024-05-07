@@ -58,8 +58,10 @@ AC_SUBST(OSLIBS)
 DWM_REQUIRES_DWMPKG(libDwm,0.9.22)
 
 DWMDIR=`pkg-config --variable=prefix libDwm`
-DWMINCS=`pkg-config --cflags-only-I libDwm`
-DWMLIBS=`pkg-config --libs libDwm`
+DWMINCS=`pkg-config --cflags-only-I libDwmCredence`
+DWMINCS=`dwmcflags ${DWMINCS}`
+DWMLIBS=`pkg-config --libs libDwmCredence`
+DWMLIBS=`dwmcflags ${DWMLIBS}`
 
 AC_SUBST(DWMDIR)
 AC_SUBST(DWMINCS)
@@ -154,5 +156,12 @@ AC_SUBST(BUILD_DOCS)
 
 AC_CONFIG_FILES([Makefile.vars classes/include/DwmMcCurtainVersion.hh
                  packaging/debcontrol packaging/fbsd_manifest
-		 packaging/mccurtain.pc doc/Doxyfile])
+		 packaging/mccurtain.pc doc/Doxyfile
+		 etc/macos/net.mcplex.mccurtaind.plist])
+AC_CONFIG_FILES([etc/macos/scripts/postinstall],
+		[chmod a+x etc/macos/scripts/postinstall])
+AC_CONFIG_FILES([etc/macos/scripts/preinstall],
+		[chmod a+x etc/macos/scripts/preinstall])
+AC_CONFIG_FILES([etc/freebsd/+POST_INSTALL],
+		[chmod a+x etc/freebsd/+POST_INSTALL])
 AC_OUTPUT

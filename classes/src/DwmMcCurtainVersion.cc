@@ -34,26 +34,22 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcCurtainVersion.hh
+//!  \file DwmMcCurtainVersion.cc
 //!  \author Daniel W. McRobb
-//!  \brief DWM_MCCURTAIN_VERSION macro and Dwm::McCurtain::Version declaration
+//!  \brief Dwm::McCurtain::Version implementation
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINVERSION_HH_
-#define _DWMMCCURTAINVERSION_HH_
-
+#include <string>
 #include "DwmGitVersion.hh"
-
-#define DWM_MCCURTAIN_VERSION "@DWM_VERSION@"
+#include "DwmMcCurtainVersion.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
-    extern const GitVersion  Version;
+    const GitVersion  Version("@(#) mccurtain-" DWM_MCCURTAIN_VERSION);
     
   }  // namespace McCurtain
 
 }  // namespace Dwm
 
-#endif  // _DWMMCCURTAINVERSION_HH_
