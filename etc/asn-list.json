@@ -828,6 +828,7 @@
         { "AS": 197439, "CC": "CH", "Org": "Sylon Hosting GmbH" },
         { "AS": 197540, "CC": "DE", "Org": "netcup GmbH" },
         { "AS": 197648, "CC": "CY", "Org": "CLOUDLAYER8 LIMITED" },
+        { "AS": 197706, "CC": "AL", "Org": "Keminet SHPK" },
         { "AS": 197795, "CC": "ES", "Org": "ColdHosting SL" },
         { "AS": 197902, "CC": "NL", "Org": "Hostnet B.V." },
         { "AS": 197914, "CC": "FR", "Org": "Ecritel SASU" },
