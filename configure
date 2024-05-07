@@ -5085,7 +5085,8 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
   fi
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <boost/asio.hpp>
+#include <utility>
+       #include <boost/asio.hpp>
 int
 main (void)
 {

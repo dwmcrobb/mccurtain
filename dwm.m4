@@ -859,7 +859,8 @@ define(DWM_COMPILE_BOOSTASIO,[
   fi
   AC_COMPILE_IFELSE(
     [AC_LANG_PROGRAM(
-      [[#include <boost/asio.hpp>]],
+      [[#include <utility>]
+       [#include <boost/asio.hpp>]],
       [[boost::asio::ip::tcp::iostream  tcpStream;]])
     ],
     [BOOSTDIR="$1"],
