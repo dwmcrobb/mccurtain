@@ -77,6 +77,22 @@ static bool GetPeer(const string & host, Credence::Peer & peer)
   }
   else {
       Syslog(LOG_ERR, "Failed to connect to %s port 2126", host.c_str());
+      peer.Disconnect();
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool GetPeer(const vector<string> & hosts, Credence::Peer & peer)
+{
+  bool  rc = false;
+  for (const auto & host : hosts) {
+    if (GetPeer(host, peer)) {
+      rc = true;
+      break;
+    }
   }
   return rc;
 }
@@ -122,6 +138,30 @@ PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp,
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static vector<string> SplitArg(const string & arg)
+{
+  vector<string>  rc;
+  size_t   startIndex = 0;
+  size_t   foundIndex;
+  while ((foundIndex = arg.find_first_of(',',startIndex)) != string::npos) {
+    string  argpiece = arg.substr(startIndex, foundIndex - startIndex);
+    if (! argpiece.empty()) {
+      rc.push_back(arg.substr(startIndex, foundIndex - startIndex));
+    }
+    startIndex = foundIndex + 1;
+  }
+  if (startIndex < arg.size()) {
+    string  argpiece = arg.substr(startIndex);
+    if (! argpiece.empty()) {
+      rc.push_back(arg.substr(startIndex));
+    }
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 static void Usage(const char *argv0)
 {
   cerr << "Usage: " << argv0 << " [-d] [-h mccurtaind_host] ipv4addr\n"
@@ -139,7 +179,7 @@ int main(int argc, char *argv[])
 {
   extern int        optind;
   int               optChar;
-  string            host;
+  string            hostList;
   bool              verbose = false;
   
   Dwm::SysLogger::Open("mccurtain", LOG_PERROR, LOG_USER);
@@ -148,7 +188,7 @@ int main(int argc, char *argv[])
 
   char *mccurtaindEnv = getenv("MCCURTAIND");
   if (nullptr != mccurtaindEnv) {
-    host = mccurtaindEnv;
+    hostList = mccurtaindEnv;
   }
   
   while ((optChar = getopt(argc, argv, "dh:vV")) != -1) {
@@ -157,7 +197,7 @@ int main(int argc, char *argv[])
         Dwm::SysLogger::MinimumPriority(LOG_DEBUG);
         break;
       case 'h':
-        host = optarg;
+        hostList = optarg;
         break;
       case 'v':
         verbose = true;
@@ -173,18 +213,20 @@ int main(int argc, char *argv[])
     }
   }
 
-  if (host.empty()) {
+  if (hostList.empty()) {
     Usage(argv[0]);
     return 1;
   }
 
+  vector<string>  hosts = SplitArg(hostList);
+  
   if (optind >= argc) {
     Usage(argv[0]);
     return 1;
   }
   
   Credence::Peer  peer;
-  if (GetPeer(host, peer)) {
+  if (GetPeer(hosts, peer)) {
     string  arg(argv[optind]);
     if (arg.find_first_of('.') != string::npos) {
       Dwm::McCurtain::Request  req{Dwm::Ipv4Address(arg)};
