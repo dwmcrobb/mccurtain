@@ -1,5 +1,9 @@
 2024-05-07  Daniel McRobb  <dwm@thrip.mcplex.net>
 
+	* tagged as mccurtain-0.0.2
+
+	* configure.ac, configure: We need at least version 0.9.23 of libDwm.
+
 	* tagged as mccurtain-0.0.1
 
 
