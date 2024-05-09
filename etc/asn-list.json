@@ -555,6 +555,7 @@
         { "AS": 48812, "CC": "NL", "Org": "Office IT B.V." },
         { "AS": 48825, "CC": "GB", "Org": "Fast4networks Ltd" },
         { "AS": 48896, "CC": "PL", "Org": "dhosting.pl Sp. z o.o." },
+        { "AS": 49100, "CC": "IR", "Org": "Pishgaman Toseeh Ertebatat Company" },
         { "AS": 49313, "CC": "GB", "Org": "Seva-Host Ltd" },
         { "AS": 49349, "CC": "PT", "Org": "Dotsi, Unipessoal Lda." },
         { "AS": 49367, "CC": "IT", "Org": "Seflow s.r.l." },
