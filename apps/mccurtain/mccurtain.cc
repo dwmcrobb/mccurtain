@@ -61,10 +61,10 @@ using namespace Dwm;
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static bool GetPeer(const string & host, Credence::Peer & peer)
+static bool GetPeer(const string & host, uint16_t port, Credence::Peer & peer)
 {
   bool  rc = false;
-  if (peer.Connect(host, 2126)) {
+  if (peer.Connect(host, port)) {
     Credence::KeyStash   keyStash;
     Credence::KnownKeys  knownKeys;
     if (peer.Authenticate(keyStash, knownKeys)) {
@@ -76,7 +76,7 @@ static bool GetPeer(const string & host, Credence::Peer & peer)
     }
   }
   else {
-      Syslog(LOG_ERR, "Failed to connect to %s port 2126", host.c_str());
+    Syslog(LOG_ERR, "Failed to connect to %s port %hu", host.c_str(), port);
       peer.Disconnect();
   }
   return rc;
@@ -85,11 +85,12 @@ static bool GetPeer(const string & host, Credence::Peer & peer)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static bool GetPeer(const vector<string> & hosts, Credence::Peer & peer)
+static bool GetPeer(const vector<string> & hosts, uint16_t port,
+                    Credence::Peer & peer)
 {
   bool  rc = false;
   for (const auto & host : hosts) {
-    if (GetPeer(host, peer)) {
+    if (GetPeer(host, port, peer)) {
       rc = true;
       break;
     }
@@ -164,8 +165,8 @@ static vector<string> SplitArg(const string & arg)
 //----------------------------------------------------------------------------
 static void Usage(const char *argv0)
 {
-  cerr << "Usage: " << argv0 << " [-d] [-h mccurtaind_host] ipv4addr\n"
-       << "       " << argv0 << " [-d] [-v] [-h mccurtaind_host] AS_number\n"
+  cerr << "Usage: " << argv0 << " [-d] [-h mccurtaind_host] [-p port] ipv4addr\n"
+       << "       " << argv0 << " [-d] [-v] [-h mccurtaind_host] [-p port] AS_number\n"
        << "       " << argv0 << " -V\n\n"
        << "  Note: MCCURTAIND environment variable will be used if\n"
        << "        '-h mccurtaind_host' option is not specified.\n";
@@ -180,6 +181,7 @@ int main(int argc, char *argv[])
   extern int        optind;
   int               optChar;
   string            hostList;
+  uint16_t          port = 2126;
   bool              verbose = false;
   
   Dwm::SysLogger::Open("mccurtain", LOG_PERROR, LOG_USER);
@@ -191,13 +193,23 @@ int main(int argc, char *argv[])
     hostList = mccurtaindEnv;
   }
   
-  while ((optChar = getopt(argc, argv, "dh:vV")) != -1) {
+  while ((optChar = getopt(argc, argv, "dh:p:vV")) != -1) {
     switch (optChar) {
       case 'd':
         Dwm::SysLogger::MinimumPriority(LOG_DEBUG);
         break;
       case 'h':
         hostList = optarg;
+        break;
+      case 'p':
+        try {
+          port = stoul(optarg, nullptr, 10);
+        }
+        catch (...) {
+          cerr << "Invalid port " << optarg << '\n';
+          Usage(argv[0]);
+          return 1;
+        }
         break;
       case 'v':
         verbose = true;
@@ -226,7 +238,7 @@ int main(int argc, char *argv[])
   }
   
   Credence::Peer  peer;
-  if (GetPeer(hosts, peer)) {
+  if (GetPeer(hosts, port, peer)) {
     string  arg(argv[optind]);
     if (arg.find_first_of('.') != string::npos) {
       Dwm::McCurtain::Request  req{Dwm::Ipv4Address(arg)};
