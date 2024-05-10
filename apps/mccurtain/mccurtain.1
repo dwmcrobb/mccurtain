@@ -7,12 +7,14 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl d
-.Op Fl h Ar mccurtaind_host
+.Op Fl h Ar mccurtaind_host(s)
+.Op Fl p Ar port
 .Cm ipv4_address
 .Nm
 .Op Fl d
 .Op Fl v
-.Op Fl h Ar mccurtaind_host
+.Op Fl h Ar mccurtaind_host(s)
+.Op Fl p Ar port
 .Cm AS_number
 .Nm
 .Cm -V
@@ -33,10 +35,16 @@ credence(1) manpage.
 The following command line options are available:
 .Pp
 .Bl -tag -width indent
-.It Fl h Ar mccurtaind_host
+.It Fl h Ar mccurtaind_host(s)
 Specify the
 .Xr mccurtaind 8
-host to be queried.
+hosts to be queried.  This is a comma-separated list of hostnames and/or
+IP addresses,  which will be tried in order.  The first successful
+connection will be used.
+.It Fl p Ar port
+Specify the port that
+.Xr mccurtaind 8
+is listening on.  The default is port 2126.
 .It Fl d
 Enable debug level logging on stderr.
 .It Fl v
@@ -79,10 +87,10 @@ AS 195 is the origin AS are returned.
       199.165.16/20
 .Ed
 .Sh ENVIRONMENT
-The MCCURTAIND environment variable can be set to the name of the host
+The MCCURTAIND environment variable can be set to the name of the hosts
 running
 .Xr mccurtaind 8 .
-It will be used when the \fI-h mccurtaind_host\fR option is not specified
+It will be used when the \fI-h mccurtaind_host(s)\fR option is not specified
 on the command line.
 .Sh FILES
 .Bl -tag -width indent
