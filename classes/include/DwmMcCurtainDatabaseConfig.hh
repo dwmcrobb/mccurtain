@@ -81,34 +81,34 @@ namespace Dwm {
       DatabaseConfig & operator = (DatabaseConfig &&) = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the path to the IPv4 to AS database file.
       //----------------------------------------------------------------------
       const std::string & Ipv4ToASFile() const  { return _ipv4ToASFile; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the path to the IPv4 prefix to AS database file.
       //----------------------------------------------------------------------
       const std::string & Ipv4ToASFile(const std::string & f)
       { return _ipv4ToASFile = f; }
         
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the path to the AS to IPv4 prefix database file.
       //----------------------------------------------------------------------
       const std::string & ASToIpv4File() const  { return _asToIpv4File; }
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the path to the AS to IPv4 prefix database file.
       //----------------------------------------------------------------------
       const std::string & ASToIpv4File(const std::string & f)
       { return _asToIpv4File = f; }
         
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the path to the RIPE asn.txt file.
       //----------------------------------------------------------------------
       const std::string & ASNTxtFile() const  { return _asnTxtFile; }
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the path to the RIPE asn.txt file.
       //----------------------------------------------------------------------
       const std::string & ASNTxtFile(const std::string & f)
       { return _asnTxtFile = f; }

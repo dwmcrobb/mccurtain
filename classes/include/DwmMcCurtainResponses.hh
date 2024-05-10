@@ -36,7 +36,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainResponses.hh
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Types of responses from mccurtaind
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINRESPONSES_HH_
@@ -53,15 +53,22 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  A tuple containing an IPV4 prefix and a vector of
+    //!  (AS_number,RipeAsnTxt::Entry) pairs.
     //------------------------------------------------------------------------
     using Ipv4AddrResponseEntry =
       std::tuple<Ipv4Prefix,
                  std::vector<std::pair<uint32_t,RipeAsnTxt::Entry>>>;
+
+    //------------------------------------------------------------------------
+    //!  For an IPv4 address request, mccurtaind responds with a vector of
+    //!  Ipv4AddrResponseEntry.
+    //------------------------------------------------------------------------
     using Ipv4AddrResponse = std::vector<Ipv4AddrResponseEntry>;
 
     //------------------------------------------------------------------------
-    //!  
+    //!  For an AS request, mccurtaind responds with a tuple of AS number,
+    //!  RipeAsnTxt::Entry and vector of IPv4 prefixes.
     //------------------------------------------------------------------------
     using ASPrefixesResponse = std::tuple<uint32_t,RipeAsnTxt::Entry,
                                           std::vector<Ipv4Prefix>>;

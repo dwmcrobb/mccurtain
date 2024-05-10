@@ -58,47 +58,52 @@ namespace Dwm {
     {
     public:
       //----------------------------------------------------------------------
-      //!  
+      //!  Default constructor
       //----------------------------------------------------------------------
       Config();
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Parse the configuration from the file at the given @c path.
+      //!  Returns true on success, false on failure.
       //----------------------------------------------------------------------
       bool Parse(const std::string & path);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the syslog facility that will be used for logging.
       //----------------------------------------------------------------------
       const std::string & SyslogFacility() const;
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the syslog facility that will be used for
+      //!  logging.
       //----------------------------------------------------------------------
       const std::string & SyslogFacility(const std::string & facility);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the minimum syslog priority that will be logged.
       //----------------------------------------------------------------------
       const std::string & SyslogLevel() const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the minimum syslog priority that will be logged.
       //----------------------------------------------------------------------
       const std::string & SyslogLevel(const std::string & level);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns true if the source file and line number of syslog messages
+      //!  will be logged.
       //----------------------------------------------------------------------
       bool SyslogLocations() const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  If @c logLocations is true, mccurtaind will log the source file
+      //!  and line number in syslog messages.
       //----------------------------------------------------------------------
       bool SyslogLocations(bool logLocations);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns true if there is a service configuration and hence the
+      //!  mccurtaind service should be run.
       //----------------------------------------------------------------------
       bool RunService() const;
       
@@ -108,27 +113,28 @@ namespace Dwm {
       bool RunService(bool runService);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a const reference to the service configuration.
       //----------------------------------------------------------------------
       const ServiceConfig & Service() const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the service configuration.
       //----------------------------------------------------------------------
       const ServiceConfig & Service(const ServiceConfig & service);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a const reference to the database configuration.
       //----------------------------------------------------------------------
       const DatabaseConfig & Database() const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the database configuration.
       //----------------------------------------------------------------------
       const DatabaseConfig & Database(const DatabaseConfig & database);
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Prints the given Config @c cfg to an ostream @c os.  Returns the
+      //!  ostream @c os.
       //----------------------------------------------------------------------
       friend std::ostream &
       operator << (std::ostream & os, const Config & cfg);

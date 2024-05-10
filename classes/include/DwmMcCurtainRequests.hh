@@ -36,7 +36,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainRequests.hh
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::McCurtain::Request class declaration
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINREQUESTS_HH_
@@ -50,7 +50,7 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates a request to mccurtaind.
     //------------------------------------------------------------------------
     class Request
       : public Dwm::StreamIOCapable
@@ -66,38 +66,41 @@ namespace Dwm {
       Request & operator = (Request &&) = default;
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Construct a request for prefixes and ASes for a given IPv4
+      //!  address.
       //----------------------------------------------------------------------
       Request(const Ipv4Address & addr)
           : _data(addr)
       {}
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Construct a request for prefixes announced by the given origin
+      //!  AS @c asnum.
       //----------------------------------------------------------------------
       Request(uint32_t asnum)
           : _data(asnum)
       {}
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Read the request from an istream.  Return the istream.
       //----------------------------------------------------------------------
       std::istream & Read(std::istream & is) override
       { return StreamIO::Read(is, _data); }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Write the request to an ostream.  Return the ostream.
       //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const override
       { return StreamIO::Write(os, _data); }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  We only have two types of requests, which we can hold in a
+      //!  std::variant.
       //----------------------------------------------------------------------
       using DataType = std::variant<Ipv4Address,uint32_t>;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the encapsulated data.
       //----------------------------------------------------------------------
       const DataType & Data() const  { return _data; }
       
