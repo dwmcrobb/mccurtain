@@ -813,6 +813,7 @@
         { "AS": 140096, "CC": "HK", "Org": "JINX CO., LIMITED" },
         { "AS": 140227, "CC": "HK", "Org": "Hong Kong Communications International Co., Limited" },
         { "AS": 140717, "CC": "CN", "Org": "China Unicom" },
+        { "AS": 140810, "CC": "VN", "Org": "Megacore Technology Company Limited" },
         { "AS": 140817, "CC": "VN", "Org": "ODS ONLINE DATA SOLUTION JOINT STOCK COMPANY" },
         { "AS": 141069, "CC": "ID", "Org": "PT Batanghari Baik Net" },
         { "AS": 141124, "CC": "ID", "Org": "Dinas Komunikasi dan Informatika Kota Makassar" },
