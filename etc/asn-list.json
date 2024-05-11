@@ -820,6 +820,7 @@
         { "AS": 141124, "CC": "ID", "Org": "Dinas Komunikasi dan Informatika Kota Makassar" },
         { "AS": 141883, "CC": "SG", "Org": "BGPNET PTE. LTD." },
         { "AS": 142002, "CC": "SG", "Org": "Scloud Pte Ltd" },
+        { "AS": 149042, "CC": "HK", "Org": "Silicon Cloud Global US" },
         { "AS": 150867, "CC": "VN", "Org": "LP TECHNOLOGY ELECTRONIC COMMERCE COMPANY LIMITED" },
         { "AS": 151160, "CC": "IN", "Org": "Shreeram Enterprise Solution" },
         { "AS": 152194, "CC": "HK", "Org": "CTG Server Limited" },
