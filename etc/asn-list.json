@@ -424,6 +424,7 @@
         { "AS": 38001, "CC": "SG", "Org": "NewMedia Express Pte Ltd" },
         { "AS": 38107, "CC": "KR", "Org": "CDNetworks" },
         { "AS": 38264, "CC": "PK", "Org": "National WiMAXIMS environment" },
+        { "AS": 38758, "CC": "ID", "Org": "PT. HIPERNET INDODATA" },
         { "AS": 38894, "CC": "AU", "Org": "ManageNET" },
         { "AS": 39020, "CC": "ES", "Org": "Comvive Servidores S.L." },
         { "AS": 39308, "CC": "IR", "Org": "ANDISHE SABZ KHAZAR CO. P.J.S." },
