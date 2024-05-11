@@ -91,6 +91,7 @@
         { "AS": 11831, "CC": "CA", "Org": "eSecureData" },
         { "AS": 11878, "CC": "US", "Org": "tzulo, inc." },
         { "AS": 12389, "CC": "RU", "Org": "PJSC Rostelecom" },
+        { "AS": 12438, "CC": "UA", "Org": "Enterpreneur Oshitjer Igor Anatolievich" },
         { "AS": 12578, "CC": "LV", "Org": "SIA Tet" },
         { "AS": 12586, "CC": "DE", "Org": "GHOSTnet GmbH" },
         { "AS": 12616, "CC": "RU", "Org": "Filanco LLC" },
