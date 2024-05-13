@@ -1,3 +1,9 @@
+2024-05-13  Daniel McRobb  <dwm@spark.mcplex.net>
+
+	* tagged as mccurtain-0.0.6
+
+	* apps/mccurtain/mccurtain.cc: Added port number command line option.
+
 2024-05-09  Daniel McRobb  <dwm@toto.mcplex.net>
 
 	* tagged as mccurtain-0.0.5
