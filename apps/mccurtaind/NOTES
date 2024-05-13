@@ -1,14 +1,59 @@
-If query is an IP address, return a list of prefixes and the
-corresponding AS that is announcing each prefix.  Return type:
-  std::vector<std::tuple<Ipv4Prefix,uint32_t,std::string>>
+Queries
+-------
 
-If query is an AS number, return a list of prefixes being
-announced by the AS, coalesced.  Return type:
-  std::tuple<uint32_t,string,std::vector<Ipv4Prefix>>
+  Prefixes for an IP address query
+  --------------------------------
+  If query is an IP address, return a list of prefixes and the
+  corresponding AS that is announcing each prefix.  Return type:
 
-If query is a country code, return a list of prefixes being
-announced by ASes in that country.  Most of the time I want
-a coalesced list.  However, I might also just want a list
-of ASes with the prefixes for each AS as a sublist.  Separate
-query?
+    std::vector<std::tuple<Ipv4Prefix,uint32_t,std::string>>
 
+  The tuple here is (prefix,AS,orgName)
+
+  Prefixes from AS query
+  ----------------------
+  If query is an AS number, return a list of prefixes being
+  announced by the AS, coalesced.  Return type:
+
+    std::tuple<uint32_t,string,std::vector<Ipv4Prefix>>
+
+  The tuple here is (AS,orgName,prefixes)
+  
+  Prefixes for country query
+  --------------------------
+  If query is a country code, return a list of prefixes being
+  announced by ASes in that country.  Most of the time I want
+  a coalesced list.  However, I might also just want a list
+  of ASes with the prefixes for each AS as a sublist.  Separate
+  query?
+
+  'What should I block?' query
+  ----------------------------
+  I also want to be able to ask if I should block something from
+  my network, and at what granularity (prefix, AS, country) and
+  for what time period.  Input is an IP address, and output should
+  be a list of (prefix,AS,orgName,countryCode,days,tables).  Return type:
+
+    vector<tuple<Ipv4Prefix,uint32_t,string,string,uint32_t,set<string>>>
+    
+  The tuple here is (prefix,AS,orgName,countryCode,days,tables).  'tables'
+  corresponds to pf tables on my gateway.
+
+  There will be cases where I return an empty list, obviously.
+
+  Note that I should have a means of specifying ranges of IP addresses
+  that should never be returned in a 'should block' list.  This avoids
+  spoofed attacks causing a denial of service.
+
+  mcblockd
+  --------
+  mcblockd already has some policy based on country, and interaction
+  with dwmrdapd.  Give how shitty some of the registries are, I'm
+  inclined to migrate away from using RDAP data.  The bummer is that
+  the alternative is routing table snapshots, which are just a snapshot
+  in time and hence don't account for routes that aren't currently
+  announced (say due to a peering outage), nor address space that isn't
+  yet utilized.  I think I'm OK with this tradeoff, given what I've
+  seen over the years from the registries (epsecially LACNIC, but also
+  JPNIC and APNIC).
+  
