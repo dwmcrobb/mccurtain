@@ -1,3 +1,9 @@
+2024-05-14  Daniel W. McRobb  <dwm@www.mcplex.net>
+
+	* tagged as mccurtain-0.0.7
+
+	* etc/asn-list.json: more ASes added.
+
 2024-05-13  Daniel McRobb  <dwm@spark.mcplex.net>
 
 	* tagged as mccurtain-0.0.6
