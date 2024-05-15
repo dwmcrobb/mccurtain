@@ -787,6 +787,7 @@
         { "AS": 63199, "CC": "US", "Org": "CDS Global Cloud Co., Ltd" },
         { "AS": 63213, "CC": "CA", "Org": "Astute Internet" },
         { "AS": 63473, "CC": "US", "Org": "HostHatch, LLC" },
+        { "AS": 63737, "CC": "VN", "Org": "VIETSERVER SERVICES TECHNOLOGY COMPANY LIMITED" },
         { "AS": 63765, "CC": "VN", "Org": "HOSTVN Technology Solutions" },
         { "AS": 63916, "CC": "HK", "Org": "Techavenue International Ltd" },
         { "AS": 63949, "CC": "US", "Org": "Akamai Technologies, Inc." },
