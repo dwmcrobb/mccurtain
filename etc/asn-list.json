@@ -513,6 +513,7 @@
         { "AS": 45179, "CC": "NZ", "Org": "SiteTech Solutions Limited" },
         { "AS": 45187, "CC": "HK", "Org": "Rackspace.com Hong Kong Limited" },
         { "AS": 45201, "CC": "AU", "Org": "Nexon Asia Pacific Pty Ltd" },
+        { "AS": 45280, "CC": "NZ", "Org": "New Zealand Technology Group Services Limited" },
         { "AS": 45458, "CC": "TH", "Org": "SBN-ISPAWN-ISP and SBN-NIXAWN-NIX" },
         { "AS": 45470, "CC": "SG", "Org": "8 To Infinity Pte Ltd" },
         { "AS": 45481, "CC": "AU", "Org": "Digital Sense Hosting Pty Ltd" },
