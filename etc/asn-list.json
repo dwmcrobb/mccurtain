@@ -242,6 +242,7 @@
         { "AS": 24679, "CC": "DE", "Org": "kyberio GmbH" },
         { "AS": 24725, "CC": "UA", "Org": "Hostmaster LLC" },
         { "AS": 24750, "CC": "BG", "Org": "MyAcct LTD" },
+        { "AS": 24757, "CC": "ET", "Org": "Ethio Telecom" },
         { "AS": 24768, "CC": "PT", "Org": "ALMOUROLTEC SERVICOS DE INFORMATICA E INTERNET LDA" },
         { "AS": 24875, "CC": "NL", "Org": "NovoServe B.V." },
         { "AS": 24940, "CC": "DE", "Org": "Hetzner Online GmbH" },
