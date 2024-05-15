@@ -1,3 +1,9 @@
+2024-05-14  dwm  <dwm@nomnom.mcplex.net>
+
+	* tagged as mccurtain-0.0.8
+
+	* etc/asn-list.json: Added AS 136052.
+
 2024-05-14  Daniel W. McRobb  <dwm@www.mcplex.net>
 
 	* tagged as mccurtain-0.0.7
