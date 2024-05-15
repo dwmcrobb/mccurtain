@@ -831,6 +831,7 @@
         { "AS": 140817, "CC": "VN", "Org": "ODS ONLINE DATA SOLUTION JOINT STOCK COMPANY" },
         { "AS": 141069, "CC": "ID", "Org": "PT Batanghari Baik Net" },
         { "AS": 141124, "CC": "ID", "Org": "Dinas Komunikasi dan Informatika Kota Makassar" },
+        { "AS": 141679, "CC": "CN", "Org": "China Telecom Beijing Tianjin Hebei Big Data Industry Park Branch" },
         { "AS": 141883, "CC": "SG", "Org": "BGPNET PTE. LTD." },
         { "AS": 142002, "CC": "SG", "Org": "Scloud Pte Ltd" },
         { "AS": 149042, "CC": "HK", "Org": "Silicon Cloud Global US" },
