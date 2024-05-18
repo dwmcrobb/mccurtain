@@ -462,6 +462,7 @@
         { "AS": 40861, "CC": "US", "Org": "Paradise Networks LLC" },
         { "AS": 41034, "CC": "RU", "Org": "Ltd. SPA Impulse" },
         { "AS": 41039, "CC": "RU", "Org": "DON-FTTH Timer, LLC" },
+        { "AS": 41046, "CC": "CZ", "Org": "Nej.cz s.r.o." },
         { "AS": 41062, "CC": "UA", "Org": "ProstoHosting LTD" },
         { "AS": 41079, "CC": "PL", "Org": "Cyber_Folks S.A." },
         { "AS": 41281, "CC": "GB", "Org": "KeFF Networks Ltd" },
