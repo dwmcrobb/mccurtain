@@ -177,6 +177,7 @@
         { "AS": 19133, "CC": "US", "Org": "Bird Hosting Inc." },
         { "AS": 19234, "CC": "CA", "Org": "Canada Web Hosting" },
         { "AS": 19318, "CC": "US", "Org": "Interserver, Inc" },
+        { "AS": 19429, "CC": "CO", "Org": "ETB - Colombia" },
         { "AS": 19437, "CC": "US", "Org": "SECURED SERVERS LLC" },
         { "AS": 19527, "CC": "US", "Org": "Google cloud" },
         { "AS": 19531, "CC": "US", "Org": "Nodes Direct" },
