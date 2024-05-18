@@ -385,6 +385,7 @@
         { "AS": 35662, "CC": "GB", "Org": "Redstation Limited" },
         { "AS": 35807, "CC": "RU", "Org": "SkyNet LLC" },
         { "AS": 35816, "CC": "RU", "Org": "SEVSTAR Lancom Ltd." },
+        { "AS": 35819, "CC": "SA", "Org": "Etihad Etisalat, a joint stock company" },
         { "AS": 35830, "CC": "GB", "Org": "BTT Group Finance Ltd" },
         { "AS": 35908, "CC": "US", "Org": "Krypt Technologies" },
         { "AS": 35914, "CC": "US", "Org": "Armor Defense Inc" },
