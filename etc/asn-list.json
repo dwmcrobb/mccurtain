@@ -521,6 +521,7 @@
         { "AS": 45544, "CC": "VN", "Org": "Super Online Data Co.,Ltd" },
         { "AS": 45577, "CC": "AU", "Org": "Intervolve Pty Ltd" },
         { "AS": 45671, "CC": "AU", "Org": "Servers Australia Pty. Ltd" },
+        { "AS": 45773, "CC": "PK", "Org": "PERN AS Content Servie Provider, Islamabad, Pakistan" },
         { "AS": 45815, "CC": "IN", "Org": "ESDS Software Solution Limited." },
         { "AS": 45887, "CC": "US", "Org": "GPLHost LLC" },
         { "AS": 46260, "CC": "US", "Org": "MEDHOST, Inc." },
