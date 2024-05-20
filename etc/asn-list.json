@@ -750,6 +750,7 @@
         { "AS": 60558, "CC": "US", "Org": "PHOENIX NAP, LLC." },
         { "AS": 60567, "CC": "BZ", "Org": "DataClub S.A." },
         { "AS": 60631, "CC": "BZ", "Org": "Pars Parva System LLC" },
+        { "AS": 60707, "CC": "TR", "Org": "Kapteyan Bilisim Teknolojileri San. ve Tic. A.S." },
         { "AS": 60721, "CC": "TR", "Org": "Bursabil Teknoloji A.S." },
         { "AS": 60739, "CC": "GB", "Org": "Pure IP Limited" },
         { "AS": 60751, "CC": "IE", "Org": "ServeByte Ltd" },
