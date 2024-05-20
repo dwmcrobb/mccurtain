@@ -599,6 +599,7 @@
         { "AS": 50613, "CC": "IS", "Org": "Advania Island ehf" },
         { "AS": 50655, "CC": "NL", "Org": "ITS HOSTED" },
         { "AS": 50673, "CC": "NL", "Org": "Serverius Holding B.V." },
+        { "AS": 50782, "CC": "AT", "Org": "COSYS DATA GmbH" },
         { "AS": 50872, "CC": "RS", "Org": "LOCALHOST d.o.o." },
         { "AS": 50915, "CC": "KG", "Org": "LLC Asia-Unicom" },
         { "AS": 50926, "CC": "ES", "Org": "AXARNET COMUNICACIONES, S.L." },
