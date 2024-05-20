@@ -14,6 +14,7 @@
         { "AS": 4323, "CC": "US", "Org": "Level 3 Parent, LLC" },
         { "AS": 4609, "CC": "MO", "Org": "Companhia de Telecomunicacoes de Macau SARL" },
         { "AS": 4694, "CC": "JP", "Org": "IDC Frontier Inc." },
+        { "AS": 4750, "CC": "TH", "Org": "CS LOXINFO PUBLIC COMPANY LIMITED" },
         { "AS": 4766, "CC": "KR", "Org": "Korea Telecom" },
         { "AS": 4773, "CC": "SG", "Org": "MobileOne Ltd." },
         { "AS": 4775, "CC": "PH", "Org": "Globe Telecoms" },
