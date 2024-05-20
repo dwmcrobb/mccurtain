@@ -142,6 +142,7 @@
         { "AS": 16116, "CC": "IL", "Org": "Pelephone Communications Ltd." },
         { "AS": 16125, "CC": "LT", "Org": "UAB Cherry Servers" },
         { "AS": 16135, "CC": "TR", "Org": "TURKCELL ILETISIM HIZMETLERI A.S." },
+        { "AS": 16245, "CC": "DK", "Org": "Sentia Denmark" },
         { "AS": 16262, "CC": "RU", "Org": "Datacheap LLC" },
         { "AS": 16276, "CC": "FR", "Org": "OVH SAS" },
         { "AS": 16284, "CC": "NG", "Org": "Inq. Digital Nigeria" },
