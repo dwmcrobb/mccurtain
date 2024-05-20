@@ -2,6 +2,7 @@
     "ASes": [
         { "AS": 979, "CC": "US", "Org": "NetLab Global" },
         { "AS": 1442, "CC": "US", "Org": "SureHosting Internet Solutions, Inc." },
+	{ "AS": 1680, "CC": "IL", "Org": "CELLCOM ltd." },
         { "AS": 3223, "CC": "GB", "Org": "Voxility LLP" },
         { "AS": 3561, "CC": "US", "Org": "CENTURYLINK-LEGACY-SAVVIS" },
         { "AS": 3722, "CC": "US", "Org": "NETACTUATE" },
