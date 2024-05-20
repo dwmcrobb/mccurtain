@@ -65,6 +65,7 @@
         { "AS": 9370, "CC": "JP", "Org": "SAKURA Internet Inc." },
         { "AS": 9412, "CC": "AU", "Org": "5G NETWORK OPERATIONS PTY LTD" },
         { "AS": 9498, "CC": "IN", "Org": "BHARTI Airtel Ltd." },
+        { "AS": 9534, "CC": "MY", "Org": "Binariang Berhad" },
         { "AS": 9541, "CC": "PK", "Org": "Cyber Internet Services Pvt Ltd." },
         { "AS": 9583, "CC": "IN", "Org": "Sify Limited" },
         { "AS": 9667, "CC": "AU", "Org": "5G NETWORK OPERATIONS PTY LTD" },
