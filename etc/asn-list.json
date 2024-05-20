@@ -970,6 +970,7 @@
         { "AS": 263236, "CC": "AR", "Org": "Itelsa" },
         { "AS": 263237, "CC": "CL", "Org": "PowerHost Telecom SPA" },
         { "AS": 263333, "CC": "BR", "Org": "VIPTURBO COMERCIO & SERVICOS DE INFORMATICA LTDA" },
+        { "AS": 263812, "CC": "AR", "Org": "SONDATECH S.A.S." },
         { "AS": 264100, "CC": "BR", "Org": "RIO CABLE TELECOM LTDA" },
         { "AS": 268466, "CC": "BR", "Org": "Suportonline Telecom Ltda" },
         { "AS": 270523, "CC": "BR", "Org": "Comfibranet Telecomunicacoes LTDA - ME" },
