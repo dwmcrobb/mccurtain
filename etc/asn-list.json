@@ -691,6 +691,7 @@
         { "AS": 56106, "CC": "AU", "Org": "Zone Networks Pty Ltd" },
         { "AS": 56110, "CC": "IN", "Org": "Everdata Technologies Pvt Ltd" },
         { "AS": 56322, "CC": "HU", "Org": "ServerAstra Kft." },
+        { "AS": 56485, "CC": "UA", "Org": "Oleksandr Siedinkin" },
         { "AS": 56617, "CC": "UA", "Org": "K-Link LLC" },
         { "AS": 56694, "CC": "RU", "Org": "SmartApe" },
         { "AS": 56630, "CC": "LT", "Org": "Melbikomas UAB" },
