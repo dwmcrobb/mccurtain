@@ -720,6 +720,7 @@
         { "AS": 58073, "CC": "NL", "Org": "YISP B.V." },
         { "AS": 58113, "CC": "IT", "Org": "NHM - S.R.L." },
         { "AS": 58212, "CC": "DE", "Org": "dataforest GmbH" },
+        { "AS": 58262, "CC": "IR", "Org": "Negah Roshan Pars Company" },
         { "AS": 58305, "CC": "GB", "Org": "SYN LTD" },
         { "AS": 58310, "CC": "RU", "Org": "TELEPORT LLC" },
         { "AS": 58405, "CC": "IN", "Org": "18A/19,DODDANEKUNDI" },
