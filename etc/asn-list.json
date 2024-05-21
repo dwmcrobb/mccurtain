@@ -29,6 +29,7 @@
         { "AS": 4851, "CC": "AU", "Org": "Host Networks" },
         { "AS": 5384, "CC": "AE", "Org": "EMIRATES TELECOMMUNICATIONS GROUP COMPANY (ETISALAT GROUP) PJSC" },
         { "AS": 5577, "CC": "LU", "Org": "ROOT" },
+        { "AS": 5617, "CC": "PL", "Org": "Orange Polska Spolka Akcyjna" },
         { "AS": 6188, "CC": "US", "Org": "Liquid Web, L.L.C" },
         { "AS": 6718, "CC": "RO", "Org": "NAV COMMUNICATIONS SRL" },
         { "AS": 6724, "CC": "DE", "Org": "Strato AG" },
