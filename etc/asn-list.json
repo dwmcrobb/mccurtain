@@ -308,6 +308,7 @@
         { "AS": 29331, "CC": "DK", "Org": "Forsikringens Datacenter A/S" },
         { "AS": 29452, "CC": "GB", "Org": "Secura Hosting Ltd" },
         { "AS": 29465, "CC": "NG", "Org": "MTN NIGERIA Communication limited" },
+        { "AS": 29486, "CC": "NO", "Org": "Webhuset AS" },
         { "AS": 29550, "CC": "GB", "Org": "Simply Transit Ltd" },
         { "AS": 29551, "CC": "DE", "Org": "Aixit GmbH" },
         { "AS": 29691, "CC": "CH", "Org": "Nine Internet Solutions AG" },
