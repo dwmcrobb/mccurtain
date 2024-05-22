@@ -961,6 +961,7 @@
         { "AS": 209372, "CC": "RU", "Org": "SIA Singularity Telecom" },
         { "AS": 209588, "CC": "PA", "Org": "Flyservers S.A." },
         { "AS": 209605, "CC": "LT", "Org": "UAB Host Baltic" },
+        { "AS": 209828, "CC": "TR", "Org": "Genc BT Bilisim Teknolojileri Limited Sirketi" },
         { "AS": 210403, "CC": "FR", "Org": "Groupe LWS SARL" },
         { "AS": 210558, "CC": "DE", "Org": "1337 Services GmbH" },
         { "AS": 210574, "CC": "TR", "Org": "YUNUS EMRE ATILGAN POYRAZ HOSTING" },
