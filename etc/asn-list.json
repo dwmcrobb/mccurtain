@@ -876,6 +876,7 @@
         { "AS": 197328, "CC": "TR", "Org": "Istanbuldc Veri Merkezi Ltd Sti" },
         { "AS": 197395, "CC": "NL", "Org": "HostGhost B.V." },
         { "AS": 197439, "CC": "CH", "Org": "Sylon Hosting GmbH" },
+        { "AS": 197450, "CC": "TR", "Org": "SUNUCUN BILGI ILETISIM TEKNOLOJILERI VE TICARET LIMITED" },
         { "AS": 197540, "CC": "DE", "Org": "netcup GmbH" },
         { "AS": 197648, "CC": "CY", "Org": "CLOUDLAYER8 LIMITED" },
         { "AS": 197706, "CC": "AL", "Org": "Keminet SHPK" },
