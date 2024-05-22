@@ -867,6 +867,7 @@
         { "AS": 150867, "CC": "VN", "Org": "LP TECHNOLOGY ELECTRONIC COMMERCE COMPANY LIMITED" },
         { "AS": 151160, "CC": "IN", "Org": "Shreeram Enterprise Solution" },
         { "AS": 151335, "CC": "IN", "Org": "Intensy Cloud Services Pvt Ltd" },
+        { "AS": 152156, "CC": "HK", "Org": "Naruto" },
         { "AS": 152194, "CC": "HK", "Org": "CTG Server Limited" },
         { "AS": 196645, "CC": "UA", "Org": "HOSTPRO LAB LLC" },
         { "AS": 196745, "CC": "GB", "Org": "Datacenta Hosting Ltd" },
