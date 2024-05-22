@@ -636,6 +636,7 @@
         { "AS": 52321, "CC": "AR", "Org": "Fideicomiso de Administración Datacenter Capitalinas" },
         { "AS": 52335, "CC": "CO", "Org": "Colombia Hosting" },
         { "AS": 52347, "CC": "AR", "Org": "HOSTCLICK, de DUCA GRACIELA MIRTA" },
+        { "AS": 52363, "CC": "AR", "Org": "Jumpnet Soluciones de Internet S.R.L." },
         { "AS": 52465, "CC": "AR", "Org": "WNet Internet y Hosting" },
         { "AS": 52674, "CC": "BR", "Org": "BRASIL TECPAR SERVICOS DE TELECOMUNICACOES SA" },
         { "AS": 52925, "CC": "BR", "Org": "Ascenty Data Centers e Telecomunicacoes S/A" },
