@@ -64,6 +64,7 @@
         { "AS": 9166, "CC": "BE", "Org": "Cegeka NV" },
         { "AS": 9198, "CC": "KZ", "Org": "JSC Kazakhtelecom" },
         { "AS": 9290, "CC": "AU", "Org": "GoHosting" },
+        { "AS": 9329, "CC": "LK", "Org": "Sri Lanka Telecom Internet" },
         { "AS": 9294, "CC": "US", "Org": "GNET INC." },
         { "AS": 9370, "CC": "JP", "Org": "SAKURA Internet Inc." },
         { "AS": 9412, "CC": "AU", "Org": "5G NETWORK OPERATIONS PTY LTD" },
