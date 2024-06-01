@@ -1,3 +1,7 @@
+2024-05-31  Daniel McRobb  <dwm@thrip.mcplex.net>
+
+	* Makefile: include apps in distclean target.
+
 2024-05-22  Daniel McRobb  <dwm@spark.mcplex.net>
 
 	* tagged as mccurtain-0.0.9
