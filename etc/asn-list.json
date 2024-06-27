@@ -290,6 +290,7 @@
         { "AS": 27640, "CC": "US", "Org": "GIGAS HOSTING USA, LLC" },
         { "AS": 28075, "CC": "AR", "Org": "ARLINK S.A." },
         { "AS": 28099, "CC": "CL", "Org": "iHosting Servicios Internet Ltda." },
+        { "AS": 28182, "CC": "BR", "Org": "JUPITER PROVEDOR DE INTERNET LTDA" },
         { "AS": 28216, "CC": "BR", "Org": "Host One Servicos de Internet Ltda" },
         { "AS": 28333, "CC": "BR", "Org": "Local Datacenter Solu&#231;&#245;es em Comunica&#231;&#227;o Ltda." },
         { "AS": 28458, "CC": "MX", "Org": "IENTC S DE RL DE CV" },
