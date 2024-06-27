@@ -852,6 +852,7 @@
         { "AS": 140096, "CC": "HK", "Org": "JINX CO., LIMITED" },
         { "AS": 140227, "CC": "HK", "Org": "Hong Kong Communications International Co., Limited" },
         { "AS": 140717, "CC": "CN", "Org": "China Unicom" },
+        { "AS": 140760, "CC": "VN", "Org": "INFINITY SOFTWARE CORPORATION" },
         { "AS": 140810, "CC": "VN", "Org": "Megacore Technology Company Limited" },
         { "AS": 140817, "CC": "VN", "Org": "ODS ONLINE DATA SOLUTION JOINT STOCK COMPANY" },
         { "AS": 141004, "CC": "IN", "Org": "QTIME BUSINESSES PRIVATE LIMITED" },
