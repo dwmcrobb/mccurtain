@@ -241,6 +241,7 @@
         { "AS": 24154, "CC": "TW", "Org": "Asia Pacific Broadband Fixed Lines Co., Ltd." },
         { "AS": 24220, "CC": "AU", "Org": "Hostcentral" },
         { "AS": 24309, "CC": "IN", "Org": "Atria Convergence Technologies Pvt. Ltd." },
+        { "AS": 24337, "CC": "LA", "Org": "SkytelecomTransit provider and ISP in Vientiene" },
         { "AS": 24381, "CC": "AU", "Org": "HostLink" },
         { "AS": 24482, "CC": "SG", "Org": "SG.GS" },
         { "AS": 24549, "CC": "HK", "Org": "Layerstack Limited" },
