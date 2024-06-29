@@ -819,6 +819,7 @@
         { "AS": 64484, "CC": "FR", "Org": "Hexanode SARL" },
         { "AS": 131386, "CC": "VN", "Org": "Long Van System Solution JSC" },
         { "AS": 131584, "CC": "TW", "Org": "Taiwan Intelligent Fiber Optic Network Co.,Ltd." },
+	{ "AS": 132005, "CC": "IN", "Org": "XCELLHOST-IN 209, Laxmi Plaza" },
         { "AS": 132070, "CC": "AU", "Org": "Intervolve Pty Ltd" },
         { "AS": 132071, "CC": "AU", "Org": "Intervolve Pty Ltd" },
         { "AS": 132203, "CC": "CN", "Org": "Tencent" },
