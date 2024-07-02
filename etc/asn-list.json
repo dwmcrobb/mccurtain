@@ -584,6 +584,7 @@
         { "AS": 49349, "CC": "PT", "Org": "Dotsi, Unipessoal Lda." },
         { "AS": 49367, "CC": "IT", "Org": "Seflow s.r.l." },
         { "AS": 49453, "CC": "NL", "Org": "Global Layer B.V." },
+        { "AS": 49467, "CC": "TR", "Org": "INETMAR INTERNET HIZMETLERI BILISM TEKNOLOJILERI SANAYI VE TICARET LIMITED" },
         { "AS": 49485, "CC": "GB", "Org": "High Availability Hosting Limited" },
         { "AS": 49505, "CC": "RU", "Org": "OOO Network of data-centers Selectel" },
         { "AS": 49524, "CC": "IT", "Org": "Wolnet SRL" },
