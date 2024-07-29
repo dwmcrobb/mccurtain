@@ -67,7 +67,6 @@ namespace Dwm {
     //!  utilities.
     //------------------------------------------------------------------------
     class AS2Ipv4NetDb
-      : public StreamIOCapable
     {
     public:
       using  ASNets = Ipv4Routes<uint8_t>;
@@ -93,12 +92,12 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  Reads the contents from an istream.  Returns the istream.
       //----------------------------------------------------------------------
-      std::istream & Read(std::istream & is) override;
+      std::istream & Read(std::istream & is);
 
       //----------------------------------------------------------------------
       //!  Writes the contents to an ostream.  Returns the ostream.
       //----------------------------------------------------------------------
-      std::ostream & Write(std::ostream & os) const override;
+      std::ostream & Write(std::ostream & os) const;
 
       //----------------------------------------------------------------------
       //!  Returns the total number of contained prefixes, across all ASes.

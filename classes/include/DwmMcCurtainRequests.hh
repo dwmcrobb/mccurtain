@@ -53,7 +53,6 @@ namespace Dwm {
     //!  Encapsulates a request to mccurtaind.
     //------------------------------------------------------------------------
     class Request
-      : public Dwm::StreamIOCapable
     {
     public:
       //----------------------------------------------------------------------
@@ -84,13 +83,13 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  Read the request from an istream.  Return the istream.
       //----------------------------------------------------------------------
-      std::istream & Read(std::istream & is) override
+      std::istream & Read(std::istream & is)
       { return StreamIO::Read(is, _data); }
 
       //----------------------------------------------------------------------
       //!  Write the request to an ostream.  Return the ostream.
       //----------------------------------------------------------------------
-      std::ostream & Write(std::ostream & os) const override
+      std::ostream & Write(std::ostream & os) const
       { return StreamIO::Write(os, _data); }
 
       //----------------------------------------------------------------------
