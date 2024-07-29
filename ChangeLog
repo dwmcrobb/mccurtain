@@ -1,5 +1,10 @@
 2024-07-29  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* classes/include/DwmMcCurtainAS2Ipv4NetDb.hh
+	* classes/include/DwmMcCurtainRequests.hh
+	* classes/include/DwmMcCurtainRipeAsnTxt.hh
+	Don't need to inherit from StreamIOCapable.
+
 	* scripts/updatecurtaindata.sh: script to update asn.txt (from
 	RIPE), as2ipv4.db and ipv42as.db,
 
