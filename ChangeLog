@@ -1,3 +1,9 @@
+2024-07-29  Daniel W. McRobb  <dwm@kiva.mcplex.net>
+
+	* tagged as mccurtain-0.0.12
+
+	* mkrelease.sh: 'push --tags' should be 'push --follow-tags'
+
 2024-07-29  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
 	* classes/include/DwmMcCurtainAS2Ipv4NetDb.hh
