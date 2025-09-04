@@ -1,3 +1,9 @@
+2025-09-03  dwm  <dwm@ria.mcplex.net>
+
+	* dwm.m4, configure: Use /opt/local/libexec/boost/1.88
+	instead of /opt/local/libexec/boost/1.81 in boost asio
+	search path.
+
 2024-07-29  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
 	* tagged as mccurtain-0.0.12
