@@ -25,7 +25,7 @@ case $host_os in
     CXXFLAGS="-O2"
     LDFLAGS="-static"
     ;;
-  freebsd1[[0123]]*)
+  freebsd1[[01234]]*)
     CXXFLAGS="-O2"
     LDFLAGS="-static"
     ;;
@@ -55,7 +55,7 @@ AC_SUBST(KVMLIB)
 AC_SUBST(LIBTOOL)
 AC_SUBST(OSLIBS)
 
-DWM_REQUIRES_DWMPKG(libDwm,0.9.23)
+DWM_REQUIRES_DWMPKG(libDwm,0.9.56)
 
 DWMDIR=`pkg-config --variable=prefix libDwm`
 DWMINCS=`pkg-config --cflags-only-I libDwmCredence`
