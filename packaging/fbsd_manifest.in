@@ -13,5 +13,5 @@ scripts: {
   post-install: "#!/bin/sh\nldconfig @prefix@/lib\n"
 }
 deps: {
-  "libDwm":{"origin":"devel/libDwm","version":"0.9.23"}
+  "libDwm":{"origin":"devel/libDwm","version":"0.9.56"}
 }
