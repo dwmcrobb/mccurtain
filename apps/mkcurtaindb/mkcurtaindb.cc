@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2025
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@
 #include "DwmSysLogger.hh"
 #include "DwmMcCurtainASes.hh"
 #include "DwmMcCurtainAS2Ipv4NetDb.hh"
+#include "DwmMcCurtainVersion.hh"
 
 using namespace std;
 

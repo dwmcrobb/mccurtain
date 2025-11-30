@@ -45,6 +45,7 @@
 #include "DwmDaemonUtils.hh"
 #include "DwmSignal.hh"
 #include "DwmSysLogger.hh"
+#include "DwmMcCurtainVersion.hh"
 #include "DwmMcCurtainServer.hh"
 
 using namespace std;

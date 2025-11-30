@@ -49,6 +49,7 @@ extern "C" {
 #include "DwmSysLogger.hh"
 #include "DwmMcCurtainASes.hh"
 #include "DwmMcCurtainAS2Ipv4NetDb.hh"
+#include "DwmMcCurtainVersion.hh"
 
 using namespace std;
 

@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
         verbose = true;
         break;
       case 'V':
-        cout << Dwm::McCurtain::Version.Version() << '\n';
+        cout << Dwm::McCurtain::version_info.data_view() << '\n';
         return 0;
         break;
       default:

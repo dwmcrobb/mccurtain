@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2025
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -36,19 +36,15 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainVersion.cc
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::Version implementation
+//!  \brief Version information
 //---------------------------------------------------------------------------
 
-#include <string>
-#include "DwmGitVersion.hh"
 #include "DwmMcCurtainVersion.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
-    const GitVersion  Version("@(#) mccurtain-" DWM_MCCURTAIN_VERSION);
-    
   }  // namespace McCurtain
 
 }  // namespace Dwm

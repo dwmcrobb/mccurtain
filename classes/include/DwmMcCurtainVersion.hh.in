@@ -36,21 +36,23 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainVersion.hh
 //!  \author Daniel W. McRobb
-//!  \brief DWM_MCCURTAIN_VERSION macro and Dwm::McCurtain::Version declaration
+//!  \brief version information
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINVERSION_HH_
 #define _DWMMCCURTAINVERSION_HH_
 
-#include "DwmGitVersion.hh"
-
-#define DWM_MCCURTAIN_VERSION "@DWM_VERSION@"
+#include "DwmCredenceVersion.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
-    extern const GitVersion  Version;
+    inline constexpr const Dwm::What::Info __attribute__((used))
+    version_info(DWM_WHAT_TYPE_EXE DWM_WHAT_TYPE_LIB, @DWM_WHAT_STATUS@,
+                 "mccurtain", "@DWM_VERSION@",
+                 "Daniel McRobb 2025 " DWM_WHAT_SYM_JACKOLANTERN,
+                 "mcplex.net");
     
   }  // namespace McCurtain
 

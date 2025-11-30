@@ -3,7 +3,7 @@ exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include/libDwmMcCurtain
 
-Name: libDwmMcCurtain
+Name: mccurtain
 Description: C++ library for small web server access list creation
 Version: @TAGVERSION@
 Requires: libDwm
