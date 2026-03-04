@@ -45,7 +45,7 @@ extern "C" {
 
 #include <thread>
 
-#include "DwmSysLogger.hh"
+#include "DwmMclogLogger.hh"
 #include "DwmMcCurtainServer.hh"
 
 namespace Dwm {
@@ -62,7 +62,7 @@ namespace Dwm {
       for (auto & a : _acceptors) {
         a.cancel();
       }
-      Syslog(LOG_INFO, "Server stopped");
+      MCLOG(LOG_INFO, "Server stopped");
       return;
     }
 
@@ -87,7 +87,7 @@ namespace Dwm {
                          AcceptLoop(a);
                        }
                        else {
-                         Syslog(LOG_ERR, "Exiting AcceptLoop()");
+                         MCLOG(LOG_ERR, "Exiting AcceptLoop()");
                        }
                      });
     }
@@ -193,18 +193,18 @@ namespace Dwm {
             rc = true;
           }
           else {
-            Syslog(LOG_ERR, "Failed to load AS text file from %s",
-                   _config.Database().ASNTxtFile().c_str());
+            MCLOG(LOG_ERR, "Failed to load AS text file from {}",
+                  _config.Database().ASNTxtFile());
           }
         }
         else {
-          Syslog(LOG_ERR, "Failed to load AS to Ipv4 database from %s",
-                 _config.Database().ASToIpv4File().c_str());
+          MCLOG(LOG_ERR, "Failed to load AS to Ipv4 database from {}",
+                _config.Database().ASToIpv4File());
         }
       }
       else {
-        Syslog(LOG_ERR, "Failed to load Ipv4 to AS database from %s",
-               _config.Database().Ipv4ToASFile().c_str());
+        MCLOG(LOG_ERR, "Failed to load Ipv4 to AS database from {}",
+              _config.Database().Ipv4ToASFile());
       }
       return rc;
     }

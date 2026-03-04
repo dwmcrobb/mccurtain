@@ -44,7 +44,7 @@
 
 #include "DwmDaemonUtils.hh"
 #include "DwmSignal.hh"
-#include "DwmSysLogger.hh"
+#include "DwmMclogLogger.hh"
 #include "DwmMcCurtainVersion.hh"
 #include "DwmMcCurtainServer.hh"
 
@@ -93,7 +93,7 @@ static void SigTermHandler(int sigNum)
   if (SIGTERM == sigNum) {
     g_gotSigTerm = true;
     g_serverContext.stop();
-    Syslog(LOG_INFO, "SigTermHandler got SIGTERM");
+    MCLOG(LOG_INFO, "SigTermHandler got SIGTERM");
   }
   return;
 }
@@ -107,7 +107,7 @@ static void BoostSignalHandler(const boost::system::error_code & ec,
   if (SIGTERM == sigNum) {
     g_gotSigTerm = true;
     g_serverContext.stop();
-    Syslog(LOG_INFO, "BoostSignalHandler got SIGTERM");
+    MCLOG(LOG_INFO, "BoostSignalHandler got SIGTERM");
   }
   return;
 }
@@ -157,9 +157,9 @@ int main(int argc, char *argv[])
     if (daemonize) {
       DaemonUtils::Daemonize();
     }
-    Dwm::SysLogger::Open("mccurtaind", LOG_PID, config.SyslogFacility());
-    Dwm::SysLogger::MinimumPriority(config.SyslogLevel());
-    Dwm::SysLogger::ShowFileLocation(config.SyslogLocations());
+    Dwm::Mclog::logger.Open(config.SyslogFacility());
+    Dwm::Mclog::logger.MinimumSeverity(config.SyslogLevel());
+    Dwm::Mclog::logger.LogLocations(config.SyslogLocations());
 
     Signal sigHup(SIGTERM);
     sigHup.PushHandler(SigTermHandler);

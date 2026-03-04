@@ -42,7 +42,7 @@
 #include <fstream>
 
 #include "DwmStreamIO.hh"
-#include "DwmSysLogger.hh"
+#include "DwmMclogLogger.hh"
 #include "DwmMcCurtainRipeAsnTxt.hh"
 
 namespace Dwm {
@@ -94,7 +94,7 @@ namespace Dwm {
             }
 #if 0
             else {
-              Syslog(LOG_ERR, "Failed to parse name and country code\n");
+              MCLOG(LOG_ERR, "Failed to parse name and country code");
               goto parseFailed;
             }
 #endif

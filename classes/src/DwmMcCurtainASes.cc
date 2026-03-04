@@ -46,7 +46,7 @@
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
-#include "DwmSysLogger.hh"
+#include "DwmMclogLogger.hh"
 #include "DwmMcCurtainASes.hh"
 #include "DwmMcCurtainAS2Ipv4NetDb.hh"
 
@@ -80,7 +80,7 @@ namespace Dwm {
                 _asMap[asinfo.Number()] = asinfo;
               }
               else {
-                Syslog(LOG_ERR, "Failed to load ASInfo from JSON");
+                MCLOG(LOG_ERR, "Failed to load ASInfo from JSON");
                 rc = false;
                 break;
               }
@@ -155,8 +155,7 @@ namespace Dwm {
           rc = true;
         }
         else {
-          Syslog(LOG_ERR, "Failed to load ASdb file '%s'",
-                 asdbFile.c_str());
+          MCLOG(LOG_ERR, "Failed to load ASdb file '{}'", asdbFile);
         }
       }
       return rc;

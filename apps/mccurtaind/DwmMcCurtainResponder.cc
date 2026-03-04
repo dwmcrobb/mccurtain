@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -51,7 +49,7 @@ extern "C" {
 
 #include <boost/asio.hpp>
 
-#include "DwmSysLogger.hh"
+#include "DwmMclogLogger.hh"
 #include "DwmCredencePeer.hh"
 #include "DwmMcCurtainServer.hh"
 
@@ -77,7 +75,7 @@ namespace Dwm {
       }
       else {
         _peer.Disconnect();
-        Syslog(LOG_ERR, "Failed to accept peer");
+        MCLOG(LOG_ERR, "Failed to accept peer");
       }
     }
     
@@ -87,7 +85,7 @@ namespace Dwm {
     Responder::~Responder()
     {
       Join();
-      Syslog(LOG_INFO, "Responder destroyed for %s", _peer.Id().c_str());
+      MCLOG(LOG_INFO, "Responder destroyed for {}", _peer.Id());
     }
 
     //------------------------------------------------------------------------
@@ -101,8 +99,7 @@ namespace Dwm {
         if (_thread.joinable()) {
           _thread.join();
           rc = true;
-          Syslog(LOG_DEBUG, "Joined thread for responder %s",
-                 _peer.Id().c_str());
+          MCLOG(LOG_DEBUG, "Joined thread for responder {}", _peer.Id());
         }
       }
       return rc;
@@ -121,8 +118,8 @@ namespace Dwm {
         rc = true;
       }
       else {
-        Syslog(LOG_ERR, "Failed to send Ipv4AddrResponse to client %s",
-               _peer.Id().c_str());
+        MCLOG(LOG_ERR, "Failed to send Ipv4AddrResponse to client {}",
+              _peer.Id());
       }
       return rc;
     }
@@ -139,8 +136,8 @@ namespace Dwm {
         rc = true;
       }
       else {
-        Syslog(LOG_ERR, "Failed to send Ipv4AddrResponse to client %s",
-               _peer.Id().c_str());
+        MCLOG(LOG_ERR, "Failed to send Ipv4AddrResponse to client {}",
+               _peer.Id());
       }
       return rc;
     }
@@ -160,7 +157,7 @@ namespace Dwm {
           rc = SendASPrefixesResponse(std::get<uint32_t>(req.Data()));
           break;
         default:
-          Syslog(LOG_ERR, "Invalid request from %s", _peer.Id().c_str());
+          MCLOG(LOG_ERR, "Invalid request from {}", _peer.Id());
           break;
       }
       return rc;
@@ -171,7 +168,7 @@ namespace Dwm {
     //------------------------------------------------------------------------
     void Responder::Run()
     {
-      Syslog(LOG_INFO, "Responder started");
+      MCLOG(LOG_INFO, "Responder started");
       if (_peer.Authenticate(_server.GetKeyStash(), _server.GetKnownKeys())) {
         Request  req;
         while (_peer.Receive(req)) {
@@ -181,10 +178,10 @@ namespace Dwm {
         }
       }
       else {
-        Syslog(LOG_ERR, "Authentication failed for client");
+        MCLOG(LOG_ERR, "Authentication failed for client");
       }
       _peer.Disconnect();
-      Syslog(LOG_DEBUG, "Responder done");
+      MCLOG(LOG_DEBUG, "Responder done");
       
       _running.store(false);
       return;

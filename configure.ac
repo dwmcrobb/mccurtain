@@ -41,26 +41,27 @@ case $host_os in
     CXX="clang++"
     CXXFLAGS="${CXXFLAGS} -O2 -stdlib=libc++"
     KVMLIB=""
-    LDFLAGS="${LDFLAGS} -O2 -stdlib=libc++ -std=c++14"
+    LDFLAGS="${LDFLAGS} -O2 -stdlib=libc++ -std=c++23"
     LIBTOOL="glibtool"
     ;;
 esac
 
 echo "host_os ${host_os}"
 
-dnl  Check for C++20
-DWM_CHECK_CPLUSPLUS_20
+dnl  Check for C++23
+DWM_CHECK_CPLUSPLUS_23
 
 AC_SUBST(KVMLIB)
 AC_SUBST(LIBTOOL)
 AC_SUBST(OSLIBS)
 
-DWM_REQUIRES_DWMPKG(libDwm,0.9.56)
+DWM_REQUIRES_DWMPKG(libDwm,0.9.66)
+DWM_REQUIRES_DWMPKG(mclog,0.0.7)
 
 DWMDIR=`pkg-config --variable=prefix libDwm`
-DWMINCS=`pkg-config --cflags-only-I libDwmCredence`
+DWMINCS=`pkg-config --cflags-only-I mclog`
 DWMINCS=`dwmcflags ${DWMINCS}`
-DWMLIBS=`pkg-config --libs libDwmCredence`
+DWMLIBS=`pkg-config --libs mclog`
 DWMLIBS=`dwmcflags ${DWMLIBS}`
 
 AC_SUBST(DWMDIR)
