@@ -1,3 +1,10 @@
+2026-03-09  dwm  <dwm@ria.mcplex.net>
+
+	* tagged as mccurtain-0.0.16
+
+	* packaging/mccurtain.pc.in: Minor cleanups, plus add the missing
+	libDwmMccurtain.
+
 2026-03-03  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
 	* tagged as mccurtain-0.0.16
