@@ -6,6 +6,6 @@ includedir=${prefix}/include/libDwmMcCurtain
 Name: mccurtain
 Description: C++ library for small web server access list creation
 Version: @TAGVERSION@
-Requires: libDwm
-Libs: @PTHREADLDFLAGS@ -L${libdir} -lDwmCredence @DWMLIBS@ @OSLIBS@
+Requires: libDwmCredence
+Libs: @PTHREADLDFLAGS@ -L${libdir} -lDwmMcCurtain @DWMLIBS@ @OSLIBS@
 Cflags: @PTHREADCXXFLAGS@ -I${includedir} @BOOSTINC@
