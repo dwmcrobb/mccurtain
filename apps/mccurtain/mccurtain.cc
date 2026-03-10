@@ -49,7 +49,7 @@ extern "C" {
 #include <regex>
 #include <thread>
 
-#include "DwmSysLogger.hh"
+#include "DwmMclogLogger.hh"
 #include "DwmCredencePeer.hh"
 #include "DwmMcCurtainRequests.hh"
 #include "DwmMcCurtainResponses.hh"
@@ -72,11 +72,11 @@ static bool GetPeer(const string & host, uint16_t port, Credence::Peer & peer)
     }
     else {
       peer.Disconnect();
-      Syslog(LOG_ERR, "Failed to authenticate with %s", host.c_str());
+      MCLOG(LOG_ERR, "Failed to authenticate with {}", host);
     }
   }
   else {
-    Syslog(LOG_ERR, "Failed to connect to %s port %hu", host.c_str(), port);
+    MCLOG(LOG_ERR, "Failed to connect to {} port {}", host, port);
       peer.Disconnect();
   }
   return rc;
@@ -183,10 +183,11 @@ int main(int argc, char *argv[])
   string            hostList;
   uint16_t          port = 2126;
   bool              verbose = false;
-  
-  Dwm::SysLogger::Open("mccurtain", LOG_PERROR, LOG_USER);
-  Dwm::SysLogger::MinimumPriority(LOG_ERR);
-  Dwm::SysLogger::ShowFileLocation(true);
+
+  Dwm::Mclog::OstreamSink  cerrSink(std::cerr);
+  Dwm::Mclog::logger.Open("user", {&cerrSink});
+  Dwm::Mclog::logger.MinimumSeverity("err");
+  Dwm::Mclog::logger.LogLocations(true);
 
   char *mccurtaindEnv = getenv("MCCURTAIND");
   if (nullptr != mccurtaindEnv) {
@@ -196,7 +197,7 @@ int main(int argc, char *argv[])
   while ((optChar = getopt(argc, argv, "dh:p:vV")) != -1) {
     switch (optChar) {
       case 'd':
-        Dwm::SysLogger::MinimumPriority(LOG_DEBUG);
+        Dwm::Mclog::logger.MinimumSeverity("debug");
         break;
       case 'h':
         hostList = optarg;
