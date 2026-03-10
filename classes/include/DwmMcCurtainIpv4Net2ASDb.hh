@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -62,7 +60,7 @@ namespace Dwm {
 
       //----------------------------------------------------------------------
       //!  Loads the contents from a gzip'ed routeviews file from CAIDA.
-      //!  Returns true on success, falue on failure.
+      //!  Returns true on success, false on failure.
       //----------------------------------------------------------------------
       bool LoadCAIDARouteViews(const std::string & path);
       
