@@ -1,3 +1,7 @@
+2026-03-10  dwm  <dwm@ria.mcplex.net>
+
+	* classes/include/DwmMcCurtainIpv4Net2ASDb.hh: fix typo in comment.
+
 2026-03-09  dwm  <dwm@ria.mcplex.net>
 
 	* tagged as mccurtain-0.0.17
