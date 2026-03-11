@@ -1,5 +1,7 @@
 2026-03-10  dwm  <dwm@ria.mcplex.net>
 
+	* tagged as mccurtain-0.0.18
+
 	* apps/mccurtain/mccurtain.cc: USe MCLOG instead of Syslog.
 
 	* classes/include/DwmMcCurtainIpv4Net2ASDb.hh: fix typo in comment.
