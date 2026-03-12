@@ -1,3 +1,8 @@
+2026-03-11  Daniel W. McRobb  <dwm@www.mcplex.net>
+
+	* apps/mccurtaincgi/Makefile, apps/mccurtaincgi/mccurtaincgi.cc:
+	Add trivial CGI program to look up IP address or AS information.
+
 2026-03-10  dwm  <dwm@ria.mcplex.net>
 
 	* tagged as mccurtain-0.0.18
