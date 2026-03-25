@@ -4790,6 +4790,48 @@ printf "%s\n" "not found!!!" >&6; }
   fi
 
 
+  if test 2 -gt 1 ; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required dwmwhat version >= 0.1.10" >&5
+printf %s "checking for required dwmwhat version >= 0.1.10... " >&6; }
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required dwmwhat" >&5
+printf %s "checking for required dwmwhat... " >&6; }
+  fi
+  pkg-config --exists dwmwhat
+  if test $? -eq 0 ; then
+    dwm_pkg_full_version=$(pkg-config --modversion dwmwhat)
+
+  dwm_triple_vers_str=$dwm_pkg_full_version
+  dwm_triple_vers_maj=${dwm_triple_vers_str%%\.*}
+  dwm_triple_vers_rev=${dwm_triple_vers_str##*.}
+  dwm_triple_vers_min=${dwm_triple_vers_str%?$dwm_triple_vers_rev}
+  dwm_triple_vers_min=${dwm_triple_vers_min##*.}
+  dwm_pkg_version_installed=$(((dwm_triple_vers_maj * 1000000) + (dwm_triple_vers_min * 1000) + dwm_triple_vers_rev))
+
+    if test 2 -gt 1 ; then
+
+  dwm_triple_vers_str=0.1.10
+  dwm_triple_vers_maj=${dwm_triple_vers_str%%\.*}
+  dwm_triple_vers_rev=${dwm_triple_vers_str##*.}
+  dwm_triple_vers_min=${dwm_triple_vers_str%?$dwm_triple_vers_rev}
+  dwm_triple_vers_min=${dwm_triple_vers_min##*.}
+  dwm_pkg_version_minimum=$(((dwm_triple_vers_maj * 1000000) + (dwm_triple_vers_min * 1000) + dwm_triple_vers_rev))
+
+      if test ${dwm_pkg_version_installed} -lt ${dwm_pkg_version_minimum} ; then
+         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: need at least version 0.1.10 of dwmwhat!!!" >&5
+printf "%s\n" "need at least version 0.1.10 of dwmwhat!!!" >&6; }
+	 exit 1
+      fi
+    fi
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: found version ${dwm_pkg_full_version}" >&5
+printf "%s\n" "found version ${dwm_pkg_full_version}" >&6; }
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: not found!!!" >&5
+printf "%s\n" "not found!!!" >&6; }
+    exit 1
+  fi
+
+
 DWMDIR=`pkg-config --variable=prefix libDwm`
 DWMINCS=`pkg-config --cflags-only-I mclog`
 DWMINCS=`dwmcflags ${DWMINCS}`
@@ -4798,54 +4840,6 @@ DWMLIBS=`dwmcflags ${DWMLIBS}`
 
 
 
-
-
-
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for dwmwhat pkg" >&5
-printf %s "checking for dwmwhat pkg... " >&6; }
-  DWM_HAVE_dwmwhat_PKG=0
-  pkg-config --exists dwmwhat
-  if [ $? -eq 0 ]; then
-    DWM_HAVE_dwmwhat_PKG=1
-
-  inc_found=0
-  for inc in ${PC_PKGS} ; do
-    if [ "dwmwhat" = "${inc}" ]; then
-      inc_found=1
-      break
-    fi
-  done
-  if [ ${inc_found} -eq 0 ]; then
-    if [ -n "${PC_PKGS}" ]; then
-      PC_PKGS="${PC_PKGS} dwmwhat"
-    else
-      PC_PKGS="dwmwhat"
-    fi
-  fi
-
-
-  inc_found=0
-  for inc in ${PC_REQ_PKGS} ; do
-    if [ "dwmwhat" = "${inc}" ]; then
-      inc_found=1
-      break
-    fi
-  done
-  if [ ${inc_found} -eq 0 ]; then
-    if [ -n "${PC_REQ_PKGS}" ]; then
-      PC_REQ_PKGS="${PC_REQ_PKGS}, dwmwhat"
-    else
-      PC_REQ_PKGS="dwmwhat"
-    fi
-  fi
-
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: found" >&5
-printf "%s\n" "found" >&6; }
-  else
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: not found" >&5
-printf "%s\n" "not found" >&6; }
-    exit 1
-  fi
 
 
 

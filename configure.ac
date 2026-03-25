@@ -57,6 +57,7 @@ AC_SUBST(OSLIBS)
 
 DWM_REQUIRES_DWMPKG(libDwm,0.9.70)
 DWM_REQUIRES_DWMPKG(mclog,0.0.14)
+DWM_REQUIRES_DWMPKG(dwmwhat,0.1.10)
 
 DWMDIR=`pkg-config --variable=prefix libDwm`
 DWMINCS=`pkg-config --cflags-only-I mclog`
@@ -67,8 +68,6 @@ DWMLIBS=`dwmcflags ${DWMLIBS}`
 AC_SUBST(DWMDIR)
 AC_SUBST(DWMINCS)
 AC_SUBST(DWMLIBS)
-
-DWM_CHECK_PKG(dwmwhat,[exit 1])
 
 DWM_CHECK_NEED_LIBATOMIC
 
