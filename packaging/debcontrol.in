@@ -7,4 +7,5 @@ Homepage: http://www.mcplex.net
 Package: mccurtain
 Version: @TAGVERSION@
 Architecture: @DEBARCH@
+Multi-Arch: no
 Description: C++ library and tools for creating access denial lists for small web servers.
