@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -45,7 +43,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "DwmIpv4Routes.hh"
+#include "DwmIpv4PrefixPatricia.hh"
 
 namespace Dwm {
 
@@ -113,27 +111,29 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  Returns a const reference to the prefixes for the AS.
       //----------------------------------------------------------------------
-      inline const Ipv4Routes<uint8_t> & Nets() const  { return _nets; }
+      inline const Ipv4PrefixPatricia<uint8_t> & Nets() const
+      { return _nets; }
       
       //----------------------------------------------------------------------
       //!  Returns a mutable reference to the prefixes for the AS.
       //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets()   { return _nets; }
+      inline Ipv4PrefixPatricia<uint8_t> & Nets()   { return _nets; }
 
       //----------------------------------------------------------------------
       //!  Sets and returns the prefixes for the AS.
       //----------------------------------------------------------------------
-      inline Ipv4Routes<uint8_t> & Nets(const Ipv4Routes<uint8_t> & nets)
+      inline Ipv4PrefixPatricia<uint8_t> &
+      Nets(const Ipv4PrefixPatricia<uint8_t> & nets)
       { return _nets = nets; }
 
       void Clear();
       
     private:
-      uint32_t             _number;
-      std::string          _name;
-      std::string          _org;
-      std::string          _countryCode;
-      Ipv4Routes<uint8_t>  _nets;
+      uint32_t                     _number;
+      std::string                  _name;
+      std::string                  _org;
+      std::string                  _countryCode;
+      Ipv4PrefixPatricia<uint8_t>  _nets;
     };
     
   }  // namespace McCurtain

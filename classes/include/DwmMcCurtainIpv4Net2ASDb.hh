@@ -40,24 +40,28 @@
 #ifndef _DWMMCCURTAINIPV4NET2ASDB_HH_
 #define _DWMMCCURTAINIPV4NET2ASDB_HH_
 
+#include <list>
 #include <set>
 
-#include "DwmIpv4Routes.hh"
+#include "DwmIpv4PrefixPatricia.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  Just a wrapper around an Ipv4Routes<std::set<uint32_t>>.  The
+    //!  Just a wrapper around an Ipv4PrefixPatricia<std::set<uint32_t>>.  The
     //!  set<uint32_t> values for each route (prefix) contain all of the
     //!  origin AS numbers for the prefix.
     //------------------------------------------------------------------------
     class Ipv4Net2ASDb
     {
     public:
-      using  NetASes = Ipv4Routes<std::set<uint32_t>>;
+      using NetASes = Ipv4PrefixPatricia<std::set<uint32_t>>;
 
+      Ipv4Net2ASDb() = default;
+      ~Ipv4Net2ASDb() = default;
+      
       //----------------------------------------------------------------------
       //!  Loads the contents from a gzip'ed routeviews file from CAIDA.
       //!  Returns true on success, false on failure.

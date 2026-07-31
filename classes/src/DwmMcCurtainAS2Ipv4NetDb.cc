@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -36,7 +34,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainAS2Ipv4NetDb.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::McCurtain::AS2Ipv4NetDb implementation
 //---------------------------------------------------------------------------
 
 #include <fstream>
@@ -56,15 +54,10 @@ namespace Dwm {
     bool AS2Ipv4NetDb::Load(const Ipv4Net2ASDb & net2asdb)
     {
       _asNets.clear();
-      const auto & hashMaps = net2asdb.Entries().HashMaps();
-      for (uint8_t i = 0; i < 33; ++i) {
-        auto  addri = hashMaps[i].begin();
-        for ( ; addri != hashMaps[i].end(); ++addri) {
-          for (auto asi = addri->second.begin();
-               asi != addri->second.end(); ++asi) {
-            Ipv4Prefix net(addri->first, i);
-            _asNets[*asi][net] = 1;
-          }
+      const auto & entries = net2asdb.Entries();
+      for (const auto & entry : entries) {
+        for (const auto & as : entry.second) {
+          _asNets[as][entry.first] = 1;
         }
       }
       return (! _asNets.empty());
@@ -105,37 +98,7 @@ namespace Dwm {
     //------------------------------------------------------------------------
     std::istream & AS2Ipv4NetDb::Read(std::istream & is)
     {
-      _asNets.clear();
-      uint32_t  numASes;
-      if (StreamIO::Read(is, numASes)) {
-        for (uint32_t asidx = 0; asidx < numASes; ++asidx) {
-          uint32_t  asNum;
-          if (StreamIO::Read(is, asNum)) {
-            uint8_t  pfxlens;
-            if (StreamIO::Read(is, pfxlens)) {
-              for (uint8_t pfxnum = 0; pfxnum < pfxlens; ++pfxnum) {
-                uint8_t  pfxlen;
-                if (StreamIO::Read(is, pfxlen)) {
-                  uint32_t  numpfxs;
-                  if (StreamIO::Read(is, numpfxs)) {
-                    Ipv4Address  addr;
-                    for (uint32_t pfxnum = 0; pfxnum < numpfxs; ++pfxnum) {
-                      if (StreamIO::Read(is, addr)) {
-                        _asNets[asNum][Ipv4Prefix(addr, pfxlen)] = 1;
-                      }
-                      else {
-                        break;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      
-      return is;
+      return StreamIO::Read(is, _asNets);
     }
     
     //------------------------------------------------------------------------
@@ -143,37 +106,7 @@ namespace Dwm {
     //------------------------------------------------------------------------
     std::ostream & AS2Ipv4NetDb::Write(std::ostream & os) const
     {
-      uint32_t  numASes = _asNets.size();
-      if (StreamIO::Write(os, numASes)) {
-        for (auto asi = _asNets.begin(); asi != _asNets.end(); ++asi) {
-          uint32_t  asNum = asi->first;
-          if (StreamIO::Write(os, asNum)) {
-            uint8_t  pfxlens = 0;
-            for (uint8_t pfxlen = 0; pfxlen < 33; ++pfxlen) {
-              if (! asi->second.HashMaps()[pfxlen].empty()) {
-                ++pfxlens;
-              }
-            }
-            if (StreamIO::Write(os, pfxlens)) {
-              for (uint8_t pfxlen = 0; pfxlen < 33; ++pfxlen) {
-                if (! asi->second.HashMaps()[pfxlen].empty()) {
-                  if (StreamIO::Write(os, pfxlen)) {
-                    uint32_t  numpfxs = asi->second.HashMaps()[pfxlen].size();
-                    if (StreamIO::Write(os, numpfxs)) {
-                      for (auto addri = asi->second.HashMaps()[pfxlen].begin();
-                           addri != asi->second.HashMaps()[pfxlen].end();
-                           ++addri) {
-                        StreamIO::Write(os, addri->first);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      return os;
+      return StreamIO::Write(os, _asNets);
     }
     
   }  // namespace McCurtain

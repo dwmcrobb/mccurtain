@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -36,14 +34,13 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainASes.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::McCurtain::ASes implementation
 //---------------------------------------------------------------------------
 
 #include <fstream>
 #include <regex>
 
 #include <boost/iostreams/filtering_streambuf.hpp>
-#include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
 #include "DwmMclogLogger.hh"
@@ -113,11 +110,7 @@ namespace Dwm {
     void ASes::Coalesce()
     {
       for (auto & as : _asMap) {
-        size_t  numNets;
-        do {
-          numNets = as.second.Nets().Size();
-          as.second.Nets().Coalesce();
-        } while (numNets != as.second.Nets().Size());
+        as.second.Nets().Aggregate();
       }
       return;
     }
@@ -149,7 +142,7 @@ namespace Dwm {
       bool  rc = false;
       if (FromJsonFile(jsonFile)) {
         for (auto & as : _asMap) {
-          as.second.Nets().Clear();
+          as.second.Nets().clear();
         }
         if (LoadASDb(asdbFile)) {
           rc = true;
@@ -164,14 +157,12 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    bool ASes::MakePfList(vector<Dwm::Ipv4Prefix> & pfList,                    
+    bool ASes::MakePfList(vector<Dwm::Ipv4Prefix> & pfList,
                           const vector<Dwm::Ipv4Prefix> & exceptions)
     {
-      Ipv4Routes<uint8_t>  routes;
+      Ipv4PrefixPatricia<uint8_t>  routes;
       for (auto & as : _asMap) {
-        vector<pair<Ipv4Prefix,uint8_t>> asnets;
-        as.second.Nets().SortByKey(asnets);
-        for (const auto & asnet : asnets) {
+        for (const auto & asnet : as.second.Nets()) {
           bool  accept = true;
           for (const auto & exc : exceptions) {
             if (asnet.first.Contains(exc) || exc.Contains(asnet.first)) {
@@ -185,10 +176,7 @@ namespace Dwm {
         }
       }
       pfList.clear();
-      routes.Coalesce();
-      vector<pair<Ipv4Prefix,uint8_t>>  nets;
-      routes.SortByKey(nets);
-      for (const auto & net : nets) {
+      for (const auto & net : routes) {
         pfList.push_back(net.first);
       }
       return (! pfList.empty());

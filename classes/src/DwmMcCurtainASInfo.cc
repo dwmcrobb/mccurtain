@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -105,12 +103,11 @@ namespace Dwm {
       j["Name"] = _name;
       j["Org"]  = _org;
       j["CC"]   = _countryCode;
-      if (! _nets.Empty()) {
+      if (! _nets.empty()) {
         j["nets"] = nlohmann::json::array();
-        vector<pair<Ipv4Prefix,uint8_t>>  netvec;
-        _nets.SortByKey(netvec);
-        for (size_t i = 0; i < netvec.size(); ++i) {
-          j["nets"][i] = netvec[i].first.ToString();
+        size_t  i = 0;
+        for (const auto & pfx : _nets) {
+          j["nets"][i] = pfx.first.ToString();
         }
       }
       return j;
@@ -125,7 +122,7 @@ namespace Dwm {
       _name.clear();
       _org.clear();
       _countryCode.clear();
-      _nets.Clear();
+      _nets.clear();
       return;
     }
     

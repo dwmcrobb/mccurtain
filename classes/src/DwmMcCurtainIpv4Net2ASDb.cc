@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -36,14 +34,13 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainIpv4Net2ASDb.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::McCurtain::Ipv4Net2ASDb implementation
 //---------------------------------------------------------------------------
 
 #include <fstream>
 #include <regex>
 
 #include <boost/iostreams/filtering_streambuf.hpp>
-#include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
 #include "DwmMcCurtainIpv4Net2ASDb.hh"
@@ -53,7 +50,7 @@ namespace Dwm {
   namespace McCurtain {
 
     using namespace std;
-    
+
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
@@ -77,7 +74,7 @@ namespace Dwm {
       using boost::iostreams::gzip_decompressor;
       using boost::iostreams::gzip_compressor;
 
-      _netASes.Clear();
+      _netASes.clear();
       ifstream  is(path);
       if (is) {
         filtering_streambuf<boost::iostreams::input>  gzin;
@@ -94,9 +91,9 @@ namespace Dwm {
         }
         is.close();
       }
-      bool  rc = (! _netASes.Empty());
+      bool  rc = (! _netASes.empty());
       if (rc) {
-        _netASes.Coalesce();
+        _netASes.Aggregate();
       }
       return rc;
     }
@@ -130,7 +127,6 @@ namespace Dwm {
       }
       return rc;
     }
-    
     
   }  // namespace McCurtain
 

@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -132,8 +130,8 @@ namespace Dwm {
                                      Ipv4AddrResponse & resp)
     {
       resp.clear();
-      std::vector<std::pair<Dwm::Ipv4Prefix,set<uint32_t>>>  matches;
-      if (_ipv42asdb.Entries().Find(addr, matches)) {
+      std::vector<Ipv4PrefixPatricia<std::set<uint32_t>>::value_type>  matches;
+      if (_ipv42asdb.Entries().find_matches(addr, matches)) {
         for (const auto & match : matches) {
           Ipv4AddrResponseEntry  entry;
           get<0>(entry) = match.first;
@@ -171,10 +169,9 @@ namespace Dwm {
       auto  asit = _as2ipv4db.Nets().find(asNum);
       if (asit != _as2ipv4db.Nets().end()) {
         auto  netsCopy = asit->second;
-        netsCopy.Coalesce();
+        netsCopy.Aggregate();
         std::vector<std::pair<Dwm::Ipv4Prefix,uint8_t>>  prefixes;
-        netsCopy.SortByKey(prefixes);
-        for (const auto & pfx : prefixes) {
+        for (const auto & pfx : netsCopy) {
           std::get<2>(resp).push_back(pfx.first);
         }
       }

@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -51,10 +49,11 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  Holds IPv4 prefixes for a set of Autonomous Systems (ASes) on a
     //!  per-AS basis.  I do this by using an unordered_map whose keys are
-    //!  AS numbers and whose values are Ipv4Routes<uint8_t>.  Note that
-    //!  the uint8_t value in the Ipv4Routes is always set to 1 because it's
-    //!  effectively unused.  I'm just using Ipv4Routes because it has some
-    //!  desirable functionality for a set of IPv4 prefixes.
+    //!  AS numbers and whose values are Ipv4PrefixPatricia<uint8_t>.  Note
+    //!  that the uint8_t value in the Ipv4PrefixPatricia is always set to 1
+    //!  because it's effectively unused.  I'm just using Ipv4PrefixPatricia
+    //!  because it has some desirable functionality for a set of IPv4
+    //!  prefixes.
     //!
     //!  The contents of an instance of this class can be loaded in 2 ways:
     //!   - from an existing Ipv4Net2ASDb
@@ -69,7 +68,7 @@ namespace Dwm {
     class AS2Ipv4NetDb
     {
     public:
-      using  ASNets = Ipv4Routes<uint8_t>;
+      using  ASNets = Ipv4PrefixPatricia<uint8_t>;
 
       //----------------------------------------------------------------------
       //!  Load from the given Ipv4Net2ASDb @c net2asdb.  Returns true on
@@ -109,7 +108,7 @@ namespace Dwm {
       {
         uint32_t  rc = 0;
         for (auto it = _asNets.begin(); it != _asNets.end(); ++it) {
-          rc += it->second.Size();
+          rc += it->second.size();
         }
         return rc;
       }

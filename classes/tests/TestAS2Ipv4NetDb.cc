@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -36,7 +34,7 @@
 //---------------------------------------------------------------------------
 //!  \file TestAS2Ipv4NetDb.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::McCurtain::AS2Ipv4NetDb unit tests
 //---------------------------------------------------------------------------
 
 #include <iostream>
@@ -75,7 +73,7 @@ static bool TestLoad(const Dwm::McCurtain::Ipv4Net2ASDb & netdb,
 {
   bool  rc = false;
   if (UnitAssert(asdb.Load(netdb))) {
-    rc = UnitAssert(asdb.Size() >= netdb.Entries().Size());
+    rc = UnitAssert(asdb.Size() >= netdb.Entries().size());
   }
   return rc;
 }

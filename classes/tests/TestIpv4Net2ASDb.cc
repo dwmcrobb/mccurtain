@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -36,11 +34,17 @@
 //---------------------------------------------------------------------------
 //!  \file mkcurtain.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::McCurtain::Ipv4Net2ASDb unit tests
 //---------------------------------------------------------------------------
 
+#include <cassert>
+#include <fstream>
 #include <iostream>
+#include <regex>
 #include <string>
+
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
 
 #include "DwmSysLogger.hh"
 #include "DwmUnitAssert.hh"
@@ -61,6 +65,56 @@ static bool TestMakeIpv4ToASDb(Dwm::McCurtain::Ipv4Net2ASDb & db,
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static set<uint32_t> GetASNumbers(string asnumstr)
+{
+  static regex  s_rgx("([0-9]+)", regex::optimize|regex::ECMAScript);
+  set<uint32_t>  rc;
+  for (smatch sm; regex_search(asnumstr, sm, s_rgx); ) {
+    rc.insert(stoul(sm.str()));
+    asnumstr = sm.suffix();
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void TestLookups(const Dwm::McCurtain::Ipv4Net2ASDb & db,
+                        const std::string & routeViewsPath)
+{
+  using boost::iostreams::filtering_streambuf;
+  using boost::iostreams::gzip_decompressor;
+  using boost::iostreams::gzip_compressor;
+
+  vector<pair<Ipv4Prefix,string>>  pfxVec;
+  
+  ifstream  is(routeViewsPath);
+  if (UnitAssert(is)) {
+    filtering_streambuf<boost::iostreams::input>  gzin;
+    gzin.push(gzip_decompressor());
+    gzin.push(is);
+    istream   gzis(&gzin);
+    uint16_t  maskLen;
+    string    addrstr, asstr;
+    while (gzis >> addrstr >> maskLen >> asstr) {
+      Ipv4Prefix  pfx(Ipv4Address(addrstr),(uint8_t)maskLen);
+      pfxVec.push_back({pfx,asstr});
+    }
+    is.close();
+  }
+
+  for (const auto & entry : pfxVec) {
+    auto  it = db.Entries().find_longest(entry.first);
+    if (UnitAssert(it != db.Entries().cend())) {
+      UnitAssert(it->second == GetASNumbers(entry.second));
+    }
+  }
+  return;
+}
+        
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 static bool TestSave(Dwm::McCurtain::Ipv4Net2ASDb & db,
                      const std::string & outPath)
 {
@@ -76,7 +130,7 @@ static bool TestLoad(const Dwm::McCurtain::Ipv4Net2ASDb & db,
   bool  rc = false;
   Dwm::McCurtain::Ipv4Net2ASDb  db2;
   if (UnitAssert(db2.Load(inPath))) {
-    rc = UnitAssert(db.Entries().Size() == db2.Entries().Size());
+    rc = UnitAssert(db.Entries().size() == db2.Entries().size());
   }
   return rc;
 }
@@ -90,10 +144,11 @@ int main(int argc, char *argv[])
 
   Dwm::McCurtain::Ipv4Net2ASDb  db;
   if (TestMakeIpv4ToASDb(db, "inputs/routeviews-rv2-20240406.pfx2as.gz")) {
+    TestLookups(db, "inputs/routeviews-rv2-20240406.pfx2as.gz");
     if (TestSave(db, "ipv42as.db")) {
       TestLoad(db, "ipv42as.db");
     }
-    // std::remove("ipv42as.db");
+    std::remove("ipv42as.db");
   }
   
   if (Assertions::Total().Failed())
