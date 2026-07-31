@@ -168,10 +168,7 @@ namespace Dwm {
       }
       auto  asit = _as2ipv4db.Nets().find(asNum);
       if (asit != _as2ipv4db.Nets().end()) {
-        auto  netsCopy = asit->second;
-        netsCopy.Aggregate();
-        std::vector<std::pair<Dwm::Ipv4Prefix,uint8_t>>  prefixes;
-        for (const auto & pfx : netsCopy) {
+        for (const auto & pfx : asit->second) {
           std::get<2>(resp).push_back(pfx.first);
         }
       }

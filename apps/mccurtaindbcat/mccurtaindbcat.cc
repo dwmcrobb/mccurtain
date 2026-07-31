@@ -1,6 +1,4 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
 //  Copyright (c) Daniel W. McRobb 2026
 //  All rights reserved.
 //
@@ -39,6 +37,7 @@
 //!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
+#include "DwmMcCurtainAS2Ipv4NetDb.hh"
 #include "DwmMcCurtainIpv4Net2ASDb.hh"
 
 //----------------------------------------------------------------------------
@@ -46,6 +45,16 @@
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+  Dwm::McCurtain::AS2Ipv4NetDb  as2ipv4db;
+  if (as2ipv4db.Load("/usr/local/etc/as2ipv4.db")) {
+    for (const auto & entry : as2ipv4db.Nets()) {
+      std::cout << entry.first << '\n';
+      for (const auto & pfx : entry.second) {
+        std::cout << "  " << pfx.first << '\n';
+      }
+    }
+  }
+  
   Dwm::McCurtain::Ipv4Net2ASDb  ipv42asdb;
   if (ipv42asdb.Load("/tmp/ipv42as.db")) {
     for (const auto & entry : ipv42asdb.Entries()) {

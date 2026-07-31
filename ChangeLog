@@ -1,5 +1,10 @@
 2026-07-31  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
+	* tagged as mccurtain-0.0.23
+
+	* apps/mccurtaind/DwmMcCurtainServer.cc:
+	Fixed GetASPrefixesResponse().
+
 	* tagged as mccurtain-0.0.22
 
 	* Migrated from Ipv4Routes to Ipv4PrefixPatricia to contain the
