@@ -1,7 +1,10 @@
 2026-07-31  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
-	* Migrating from Ipv4Routes to Ipv4PrefixPatricia to contain
-	the prefix to AS mapping.
+	* tagged as mccurtain-0.0.22
+
+	* Migrated from Ipv4Routes to Ipv4PrefixPatricia to contain the
+	prefix to AS mapping.  The IP to AS lookups are twice as fast, and
+	the resident set size for mccurtaind is roughly halved.
 
 2026-03-30  Daniel McRobb  <dwm@thrip.mcplex.net>
 
