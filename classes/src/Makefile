@@ -7,6 +7,7 @@ OBJS         = DwmMcCurtainASInfo.o \
                DwmMcCurtainConfigLex.o \
                DwmMcCurtainConfigParse.o \
                DwmMcCurtainDatabaseConfig.o \
+               DwmMcCurtainIpv4Net2AS.o \
                DwmMcCurtainIpv4Net2ASDb.o \
                DwmMcCurtainRipeAsnTxt.o \
                DwmMcCurtainServiceConfig.o \
