@@ -1,6 +1,7 @@
 *.o
 *.db
 TestAS2Ipv4NetDb
+TestCaidaV4Routeviews
 TestConfig
 TestIpv4Net2AS
 TestIpv4Net2ASDb
