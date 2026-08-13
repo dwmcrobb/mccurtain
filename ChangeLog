@@ -1,3 +1,13 @@
+2026-08-13  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* Testing started on kiva.
+
+	* A bunch of changes to use new CaidaV4Routeviews to load CAIDA
+	routeviews in a form more amenable to the desired aggrregation.
+	Post-aggregation, the contents of a CaidaV4Routeviews can be
+	used to create Ipv4Net2AS and AS2Ipv4Net instances.  These are
+	new, replacing Ipv4Net2ASDb and AS2Ipv4NetDb.
+
 2026-07-31  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
 	* tagged as mccurtain-0.0.23
