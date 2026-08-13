@@ -44,7 +44,6 @@
 
 #include "DwmSysLogger.hh"
 #include "DwmMcCurtainASes.hh"
-// #include "DwmMcCurtainAS2Ipv4NetDb.hh"
 #include "DwmMcCurtainAS2Ipv4Net.hh"
 #include "DwmMcCurtainVersion.hh"
 
@@ -91,33 +90,28 @@ int main(int argc, char *argv[])
     Usage(argv[0]);
     exit(1);
   }
-  
-  Dwm::McCurtain::Ipv4Net2AS  net2as;
-  if (net2as.LoadCAIDARouteViews(argv[optind])) {
-    Dwm::McCurtain::AS2Ipv4Net  as2net;
-    if (as2net.Load(net2as)) {
-      if (net2as.Save(ipv42AsDbFile)) {
-        if (as2net.Save(as2Ipv4DbFile)) {
-          return 0;
-        }
-        else {
-          cerr << "Failed to save AS to ipv4 net database to '"
-               << as2Ipv4DbFile << "'\n";
-        }
+
+  Dwm::McCurtain::CaidaV4Routeviews  rv;
+  if (rv.Load(argv[optind])) {
+    rv.Aggregate();
+    Dwm::McCurtain::Ipv4Net2AS  net2as(rv);
+    Dwm::McCurtain::AS2Ipv4Net  as2net(rv);
+    if (net2as.Save(ipv42AsDbFile)) {
+      if (as2net.Save(as2Ipv4DbFile)) {
+        return 0;
       }
       else {
-        cerr << "Failed to save ipv4 net to AS database to '"                
-             << ipv42AsDbFile << "'\n";
+        cerr << "Failed to save AS to ipv4 net database to '"
+             << as2Ipv4DbFile << "'\n";
       }
     }
     else {
-      cerr << "Failed to load AS to ipv4 net database from ipv4 to AS "
-           << "database\n";
+      cerr << "Failed to save ipv4 net to AS database to '"                
+           << ipv42AsDbFile << "'\n";
     }
   }
   else {
-    cerr << "Failed to load ipv4 net to AS database from routeviews file '"
-         << argv[optind] << "'\n";
+    cerr << "Failed to load routeviews file '" << argv[optind] << "'\n";
   }
 
   return 1;
