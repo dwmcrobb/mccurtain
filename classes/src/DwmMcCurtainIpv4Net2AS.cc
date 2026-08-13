@@ -62,6 +62,27 @@ namespace Dwm {
       }
       return rc;
     }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    Ipv4Net2AS::Ipv4Net2AS(const CaidaV4Routeviews & rv)
+        : _root(nullptr), _size(0)
+    {
+      for (const auto & asSet : rv.ASSets()) {
+        for (const auto & pfxSet : asSet.second.PrefixSets()) {
+          for (const auto & pfx : pfxSet.second) {
+            for (auto as : asSet.first) {
+#if 0
+              std::cerr << "inserting " << pfx << ' ' << as << '\n'
+                        << std::flush;
+#endif
+              (*this)[pfx].insert(as);
+            }
+          }
+        }
+      }
+    }
     
     //------------------------------------------------------------------------
     //!  Loads the contents from a gzip'ed routeviews file from CAIDA.

@@ -40,6 +40,7 @@
 #ifndef _DWMMCCURTAINAS2IPV4NET_HH_
 #define _DWMMCCURTAINAS2IPV4NET_HH_
 
+#include "DwmIpv4PrefixPatricia.hh"
 #include "DwmMcCurtainIpv4Net2AS.hh"
 
 namespace Dwm {
@@ -70,11 +71,15 @@ namespace Dwm {
     public:
       using  ASNets = Ipv4PrefixPatricia<uint8_t>;
 
+      AS2Ipv4Net() = default;
+
+      AS2Ipv4Net(const CaidaV4Routeviews & rv);
+      
       //----------------------------------------------------------------------
       //!  Load from the given Ipv4Net2ASDb @c net2asdb.  Returns true on
       //!  success, false on failure.
       //----------------------------------------------------------------------
-      bool Load(const Ipv4Net2ASDb & net2asdb);
+      bool Load(const Ipv4Net2AS & net2asdb);
 
       //----------------------------------------------------------------------
       //!  Load from a file at the given @c path.  Returns true on       

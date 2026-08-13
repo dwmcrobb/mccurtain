@@ -51,11 +51,11 @@
 #include <utility>
 #include <vector>
 
-#include "DwmIpv4Prefix.hh"
 #include "DwmBZ2IO.hh"
 #include "DwmDescriptorIO.hh"
 #include "DwmFileIO.hh"
 #include "DwmGZIO.hh"
+#include "DwmMcCurtainCaidaV4Routeviews.hh"
 
 static inline std::ostream &
 operator << (std::ostream & os, const std::set<uint32_t> & ases)
@@ -170,6 +170,8 @@ namespace Dwm {
           : _root(nullptr), _size(0)
       {}
 
+      Ipv4Net2AS(const CaidaV4Routeviews & rv);
+      
       //----------------------------------------------------------------------
       //!  Destructor.  Deletes all nodes.
       //----------------------------------------------------------------------
@@ -275,28 +277,6 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void Aggregate()
-      {
-        std::map<mapped_type,std::list<Ipv4Prefix>>  m;
-        for (const_iterator it = begin(); it != end(); ++it) {
-          m[it->second].push_back(it->first);
-        }
-        uint64_t  count = 0;
-        for (auto & e : m) {
-          CombinePrefixes(e.second, e.first);
-        }
-        clear();
-        for (auto & e : m) {
-          for (const auto & p : e.second) {
-            insert({p,e.first});
-          }
-        }
-        return;
-      }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
       bool CombinableAdjacents(const_iterator it1, const_iterator it2)
       {
         if (! it1->first.Bit(it1->first.MaskLength() - 1)) {
@@ -356,33 +336,76 @@ namespace Dwm {
         }
         return;
       }
-        
+
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void Aggregate2()
+      const_iterator find_combinable_adjacent(const_iterator it) 
+      {
+        if (! it->first.Bit(it->first.MaskLength() - 1)) {
+          Ipv4Prefix  pfx(it->first); ++pfx;
+          mapped_type  ases{it->second};
+          for (++it; it != cend(); ++it) {
+            if (it->first > pfx) {
+              break;
+            }
+            else if ((it->first == pfx) && (it->second == ases)) {
+              return it;
+            }
+          }
+        }
+        return cend();
+      }
+      
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      void CombineAdjacents2()
+      {
+        if (_size > 1) {
+          bool  combining = true;
+          while (combining) {
+            auto it = cbegin();
+            combining = false;
+            while (it != cend()) {
+              auto  nxtit = find_combinable_adjacent(it);
+              if (nxtit != cend()) {
+                erase(nxtit);
+                value_type  agg{Ipv4Prefix(it->first.Network(),
+                                           it->first.MaskLength() - 1),
+                  it->second};
+                erase(it);
+                auto [iit, inserted] = insert(agg);
+                if (! inserted) {
+                  iit->second.insert_range(agg.second);
+                }
+                it = iit;
+                combining = true;
+              }
+              else {
+                ++it;
+              }
+            }
+          }
+        }
+      }
+      
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      void Aggregate()
       {
         iterator  it = begin();
         while (it != end()) {
-#if 0
-          std::cerr << "it: " << it->first << ' ' << it->second << '\n';
-#endif
           auto  wit = wider_covering(it);
           if (wit != end()) {
-#if 0
-            std::cerr << "erasing " << it->first << ' ' << it->second
-                      << " due to wider entry " << wit->first << ' '
-                      << wit->second << '\n';
-#endif
             it = erase(it);
           }
           else {
             ++it;
           }
         }
-
-        CombineAdjacents();
-        
+        CombineAdjacents2();
         return;
       }
           
@@ -1708,6 +1731,7 @@ namespace Dwm {
         return;
       }
 
+#if 0
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
@@ -1736,7 +1760,8 @@ namespace Dwm {
         }
         return false;
       }
-      
+#endif
+
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
@@ -1773,54 +1798,6 @@ namespace Dwm {
         return rc;
       }
 
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool get_higher_adjacents(iterator it,
-                                std::vector<iterator> & adjacents)
-      {
-        adjacents.clear();
-        if (it != end()) {
-          auto  fit = it;
-          auto  nit = it;
-          for (++nit; nit != end(); ++nit) {
-            if (fit->first.UpperAdjacent(nit->first)) {
-              if (nit->second == it->second) {
-                adjacents.push_back(nit);
-              }
-            }
-            else if (nit->first > it->first) {
-              break;
-            }
-            ++fit;
-          }
-        }
-        if (! adjacents.empty()) {
-          std::cerr << "adjacents for " << it->first << ' ' << it->second
-                    << ":\n";
-          for (const auto & adj : adjacents) {
-            std::cerr << "  " << adj->first << ' ' << adj->second << '\n';
-          }
-        }
-        return (! adjacents.empty());
-      }
-      
-#if 0
-      const_iterator find_last_adjacent(const_iterator it) const
-      {
-        const_iterator  rc = it;
-        if ((it != cend()) && it->first.Bit(it->first.MaskLength() - 1)) {
-          for (; it != cend(); ++it) {
-            Ipv4Prefix  nxt(it->first);  ++next;
-            const_iterator  nit = it; ++nit;
-            for (++nit; nit != cend(); ++nit) {
-              
-          if (nit != cend()) {
-            
-          while ((fit != cend()) && 
-        
-      }
-#endif 
     };
 
   }  // namespace McCurtain

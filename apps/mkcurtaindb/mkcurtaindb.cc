@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024, 2025
+//  Copyright (c) Daniel W. McRobb 2024, 2025, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,8 @@
 
 #include "DwmSysLogger.hh"
 #include "DwmMcCurtainASes.hh"
-#include "DwmMcCurtainAS2Ipv4NetDb.hh"
+// #include "DwmMcCurtainAS2Ipv4NetDb.hh"
+#include "DwmMcCurtainAS2Ipv4Net.hh"
 #include "DwmMcCurtainVersion.hh"
 
 using namespace std;
@@ -91,12 +92,12 @@ int main(int argc, char *argv[])
     exit(1);
   }
   
-  Dwm::McCurtain::Ipv4Net2ASDb  netdb;
-  if (netdb.LoadCAIDARouteViews(argv[optind])) {
-    Dwm::McCurtain::AS2Ipv4NetDb  asdb;
-    if (asdb.Load(netdb)) {
-      if (netdb.Save(ipv42AsDbFile)) {
-        if (asdb.Save(as2Ipv4DbFile)) {
+  Dwm::McCurtain::Ipv4Net2AS  net2as;
+  if (net2as.LoadCAIDARouteViews(argv[optind])) {
+    Dwm::McCurtain::AS2Ipv4Net  as2net;
+    if (as2net.Load(net2as)) {
+      if (net2as.Save(ipv42AsDbFile)) {
+        if (as2net.Save(as2Ipv4DbFile)) {
           return 0;
         }
         else {

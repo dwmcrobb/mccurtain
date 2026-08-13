@@ -60,8 +60,9 @@ static bool TestMakeIpv4ToAS(Dwm::McCurtain::Ipv4Net2AS & db,
                              const std::string & routeViewsPath)
 {
   if (UnitAssert(db.LoadCAIDARouteViews(routeViewsPath))) {
-    db.Aggregate2();
-    cerr << "db.size(): " << db.size() << '\n';
+    size_t preaggsize = db.size();
+    db.Aggregate();
+    cerr << "db.size(): " << preaggsize << " -> " << db.size() << '\n';
     return true;
   }
   return false;
@@ -170,12 +171,13 @@ int main(int argc, char *argv[])
   Dwm::McCurtain::Ipv4Net2AS  db;
   if (TestMakeIpv4ToAS(db, "inputs/routeviews-rv2-20240406.pfx2as.gz")) {
     TestLookups(db, "inputs/routeviews-rv2-20240406.pfx2as.gz");
-#if 0
     if (TestSave(db, "ipv42as.db")) {
       TestLoad(db, "ipv42as.db");
     }
-    std::remove("ipv42as.db");
-#endif
+    // std::remove("ipv42as.db");
+  }
+  for (auto it = db.cbegin(); it != db.cend(); ++it) {
+    cout << it->first << ' ' << it->second << '\n';
   }
   
   if (Assertions::Total().Failed())
