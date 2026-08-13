@@ -131,7 +131,7 @@ namespace Dwm {
     {
       resp.clear();
       std::vector<Ipv4PrefixPatricia<std::set<uint32_t>>::value_type>  matches;
-      if (_ipv42asdb.Entries().find_matches(addr, matches)) {
+      if (_ipv42as.find_matches(addr, matches)) {
         for (const auto & match : matches) {
           Ipv4AddrResponseEntry  entry;
           get<0>(entry) = match.first;
@@ -166,8 +166,8 @@ namespace Dwm {
       if (asnit != _asntxt.Entries().end()) {
         std::get<1>(resp) = asnit->second;
       }
-      auto  asit = _as2ipv4db.Nets().find(asNum);
-      if (asit != _as2ipv4db.Nets().end()) {
+      auto  asit = _as2ipv4.Nets().find(asNum);
+      if (asit != _as2ipv4.Nets().end()) {
         for (const auto & pfx : asit->second) {
           std::get<2>(resp).push_back(pfx.first);
         }
@@ -181,8 +181,8 @@ namespace Dwm {
     bool Server::InitDatabases()
     {
       bool  rc = false;
-      if (_ipv42asdb.Load(_config.Database().Ipv4ToASFile())) {
-        if (_as2ipv4db.Load(_config.Database().ASToIpv4File())) {
+      if (_ipv42as.Load(_config.Database().Ipv4ToASFile())) {
+        if (_as2ipv4.Load(_config.Database().ASToIpv4File())) {
           if (_asntxt.Load(_config.Database().ASNTxtFile())) {
             rc = true;
           }

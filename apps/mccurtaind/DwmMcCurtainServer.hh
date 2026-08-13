@@ -44,8 +44,8 @@
 
 #include "DwmCredenceKeyStash.hh"
 #include "DwmCredenceKnownKeys.hh"
-#include "DwmMcCurtainAS2Ipv4NetDb.hh"
-#include "DwmMcCurtainIpv4Net2ASDb.hh"
+#include "DwmMcCurtainAS2Ipv4Net.hh"
+#include "DwmMcCurtainIpv4Net2AS.hh"
 #include "DwmMcCurtainConfig.hh"
 #include "DwmMcCurtainResponses.hh"
 #include "DwmMcCurtainResponder.hh"
@@ -109,8 +109,8 @@ namespace Dwm {
 
     private:
       Config                                      _config;
-      Ipv4Net2ASDb                                _ipv42asdb;
-      AS2Ipv4NetDb                                _as2ipv4db;
+      Ipv4Net2AS                                  _ipv42as;
+      AS2Ipv4Net                                  _as2ipv4;
       RipeAsnTxt                                  _asntxt;
       Credence::KeyStash                          _keyStash;
       Credence::KnownKeys                         _knownKeys;
