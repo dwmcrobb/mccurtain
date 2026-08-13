@@ -64,60 +64,40 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
     Ipv4Net2AS::Ipv4Net2AS(const CaidaV4Routeviews & rv)
         : _root(nullptr), _size(0)
     {
+      LoadCAIDAV4Routeviews(rv);
+    }
+
+    //------------------------------------------------------------------------
+    bool Ipv4Net2AS::LoadCAIDAV4Routeviews(const CaidaV4Routeviews & rv)
+    {
+      clear();
       for (const auto & asSet : rv.ASSets()) {
         for (const auto & pfxSet : asSet.second.PrefixSets()) {
           for (const auto & pfx : pfxSet.second) {
             for (auto as : asSet.first) {
-#if 0
-              std::cerr << "inserting " << pfx << ' ' << as << '\n'
-                        << std::flush;
-#endif
               (*this)[pfx].insert(as);
             }
           }
         }
       }
+      return (! empty());
     }
     
     //------------------------------------------------------------------------
     //!  Loads the contents from a gzip'ed routeviews file from CAIDA.
     //!  Returns true on success, false on failure.
     //------------------------------------------------------------------------
-    bool Ipv4Net2AS::LoadCAIDARouteViews(const std::string & path)
+    bool Ipv4Net2AS::LoadCAIDARouteViews(const std::string & filePath)
     {
-      using boost::iostreams::filtering_streambuf;
-      using boost::iostreams::gzip_decompressor;
-      using boost::iostreams::gzip_compressor;
-
       clear();
-      ifstream  is(path);
-      if (is) {
-        filtering_streambuf<boost::iostreams::input>  gzin;
-        gzin.push(gzip_decompressor());
-        gzin.push(is);
-        istream   gzis(&gzin);
-        string    addrstr, asnumstr;
-        uint16_t  maskLen;
-        while (gzis >> addrstr >> maskLen >> asnumstr) {
-          if (maskLen < 33) {
-            Dwm::Ipv4Prefix  pfx(addrstr, (uint8_t)maskLen);
-            (*this)[pfx] = GetASNumbers(asnumstr);
-          }
-        }
-        is.close();
+      CaidaV4Routeviews  rv;
+      if (rv.Load(filePath)) {
+        return LoadCAIDAV4Routeviews(rv);
       }
-      bool  rc = (! empty());
-#if 0
-      if (rc) {
-        Aggregate();
-      }
-#endif
-      return rc;
+      return false;
     }
     
     //------------------------------------------------------------------------

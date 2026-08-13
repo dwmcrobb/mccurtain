@@ -1009,7 +1009,13 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  Loads the contents from a gzip'ed routeviews file from CAIDA.
+      //!  Loads the contents from a CaidaV4Routeviews object.  Returns true
+      //!  on success, false on failure.
+      //----------------------------------------------------------------------
+      bool LoadCAIDAV4Routeviews(const CaidaV4Routeviews & rv);
+      
+      //----------------------------------------------------------------------
+      //!   Loads the contents from a gzip'ed routeviews file from CAIDA.
       //!  Returns true on success, false on failure.
       //----------------------------------------------------------------------
       bool LoadCAIDARouteViews(const std::string & path);
