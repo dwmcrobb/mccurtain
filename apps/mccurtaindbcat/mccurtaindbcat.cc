@@ -37,17 +37,48 @@
 //!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#include "DwmMcCurtainAS2Ipv4NetDb.hh"
-#include "DwmMcCurtainIpv4Net2ASDb.hh"
+extern "C" {
+  #include <unistd.h>
+}
+
+#include <cstdlib>
+
+#include "DwmMcCurtainAS2Ipv4Net.hh"
+#include "DwmMcCurtainIpv4Net2AS.hh"
 
 //----------------------------------------------------------------------------
-//!  
+static void Usage(const char *argv0)
+{
+  std::cerr << "Usage: " << argv0 << " [-i ipv42as_db] [-a as2ipv4_db]\n";
+  return;
+}
+
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  Dwm::McCurtain::AS2Ipv4NetDb  as2ipv4db;
-  if (as2ipv4db.Load("/usr/local/etc/as2ipv4.db")) {
-    for (const auto & entry : as2ipv4db.Nets()) {
+  std::string  ip2asFile("/usr/local/etc/ipv42as.db");
+  std::string  as2ipFile("/usr/local/etc/as2ipv4.db");
+
+  int  optchar;
+  
+  while ((optchar = getopt(argc, argv, "a:i:")) != -1) {
+    switch (optchar) {
+      case 'a':
+        as2ipFile = optarg;
+        break;
+      case 'i':
+        ip2asFile = optarg;
+        break;
+      default:
+        Usage(argv[0]);
+        exit(1);
+        break;
+    }
+  }
+  
+  Dwm::McCurtain::AS2Ipv4Net  as2ipv4;
+  if (as2ipv4.Load(as2ipFile)) {
+    for (const auto & entry : as2ipv4.Nets()) {
       std::cout << entry.first << '\n';
       for (const auto & pfx : entry.second) {
         std::cout << "  " << pfx.first << '\n';
@@ -55,9 +86,9 @@ int main(int argc, char *argv[])
     }
   }
   
-  Dwm::McCurtain::Ipv4Net2ASDb  ipv42asdb;
-  if (ipv42asdb.Load("/tmp/ipv42as.db")) {
-    for (const auto & entry : ipv42asdb.Entries()) {
+  Dwm::McCurtain::Ipv4Net2AS  ipv42as;
+  if (ipv42as.Load(ip2asFile)) {
+    for (const auto & entry : ipv42as) {
       std::cout << entry.first << ' ';
       std::string  sep("");
       for (const auto & as : entry.second) {
