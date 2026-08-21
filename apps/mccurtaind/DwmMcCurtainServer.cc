@@ -60,6 +60,7 @@ namespace Dwm {
       for (auto & a : _acceptors) {
         a.cancel();
       }
+      _dnsServer.Stop();
       MCLOG(LOG_INFO, "Server stopped");
       return;
     }

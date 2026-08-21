@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -50,6 +48,7 @@
 #include "DwmMcCurtainResponses.hh"
 #include "DwmMcCurtainResponder.hh"
 #include "DwmMcCurtainRipeAsnTxt.hh"
+#include "DwmMcCurtainDnsServer.hh"
 
 namespace Dwm {
 
@@ -66,7 +65,8 @@ namespace Dwm {
       //----------------------------------------------------------------------
       template <typename Ex>
       Server(Ex executor, const Config & config)
-          : _config(config), _keyStash(config.Service().KeyDirectory()),
+          : _config(config), _ipv42as(), _as2ipv4(), _dnsServer(_ipv42as),
+            _keyStash(config.Service().KeyDirectory()),
             _knownKeys(config.Service().KeyDirectory()),
             _allowedClients(config.Service().AllowedClients()),
             _acceptors(), _responders()
@@ -75,6 +75,7 @@ namespace Dwm {
         using boost::asio::ip::tcp;
 
         InitDatabases();
+        _dnsServer.Start();
         
         for (auto & ep : config.Service().Addresses()) {
           ip::tcp::acceptor  acc(executor);
@@ -111,6 +112,7 @@ namespace Dwm {
       Config                                      _config;
       Ipv4Net2AS                                  _ipv42as;
       AS2Ipv4Net                                  _as2ipv4;
+      DnsServer                                   _dnsServer;
       RipeAsnTxt                                  _asntxt;
       Credence::KeyStash                          _keyStash;
       Credence::KnownKeys                         _knownKeys;

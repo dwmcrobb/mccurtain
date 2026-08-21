@@ -1,3 +1,15 @@
+2026-08-20  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* apps/mccurtaind/DwmMcCurtainDnsServer.cc
+	* apps/mccurtaind/DwmMcCurtainDnsServer.hh
+	* apps/mccurtaind/DwmMcCurtainServer.cc
+	* apps/mccurtaind/DwmMcCurtainServer.hh
+	* apps/mccurtaind/Makefile
+	* configure
+	* configure.ac
+	Work toward providing a DNS server for ORIGIN record lookups
+	in in-addr.arpa.
+
 2026-08-13  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
 	* Add LoadCAIDAV4Routeviews(const CaidaV4Routeviews &) and use

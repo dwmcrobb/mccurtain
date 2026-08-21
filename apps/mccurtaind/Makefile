@@ -2,6 +2,7 @@ include ../../Makefile.vars
 
 ALLINCS      = -I../../classes/include ${DWMINCS}
 OBJS         = mccurtaind.o \
+               DwmMcCurtainDnsServer.o \
                DwmMcCurtainResponder.o \
                DwmMcCurtainServer.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)

@@ -58,11 +58,11 @@ AC_SUBST(OSLIBS)
 DWM_REQUIRES_DWMPKG(libDwm,0.9.70)
 DWM_REQUIRES_DWMPKG(mclog,0.0.14)
 DWM_REQUIRES_DWMPKG(dwmwhat,0.1.10)
-
+DWM_REQUIRES_DWMPKG(DwmDns,0.2.20)
 DWMDIR=`pkg-config --variable=prefix libDwm`
-DWMINCS=`pkg-config --cflags-only-I mclog`
+DWMINCS=`pkg-config --cflags-only-I mclog DwmDns`
 DWMINCS=`dwmcflags ${DWMINCS}`
-DWMLIBS=`pkg-config --libs mclog`
+DWMLIBS=`pkg-config --libs mclog DwmDns`
 DWMLIBS=`dwmcflags ${DWMLIBS}`
 
 AC_SUBST(DWMDIR)
