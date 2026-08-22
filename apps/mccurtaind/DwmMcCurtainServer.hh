@@ -65,7 +65,8 @@ namespace Dwm {
       //----------------------------------------------------------------------
       template <typename Ex>
       Server(Ex executor, const Config & config)
-          : _config(config), _ipv42as(), _as2ipv4(), _dnsServer(_ipv42as),
+          : _config(config), _ipv42as(), _as2ipv4(),
+            _dnsServer(_ipv42as, _asntxt),
             _keyStash(config.Service().KeyDirectory()),
             _knownKeys(config.Service().KeyDirectory()),
             _allowedClients(config.Service().AllowedClients()),

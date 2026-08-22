@@ -84,9 +84,10 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    DnsServer::DnsServer(const Ipv4Net2AS & ipv42as)
+    DnsServer::DnsServer(const Ipv4Net2AS & ipv42as,
+                         const RipeAsnTxt & asntxt)
         : _v4fd(-1), _stopfds{-1,-1}, _thread(), _shouldRun(false),
-          /* _running(false), */ _ipv42as(ipv42as)
+          _ipv42as(ipv42as), _asntxt(asntxt)
     { }
 
     //------------------------------------------------------------------------
@@ -187,7 +188,7 @@ namespace Dwm {
         memset(&sockAddr, 0, sizeof(sockAddr));
         sockAddr.sin_family = AF_INET;
         sockAddr.sin_addr.s_addr = INADDR_ANY;
-        sockAddr.sin_port = htons(5353);
+        sockAddr.sin_port = htons(533);
 #ifndef __linux__
         sockAddr.sin_len = sizeof(sockAddr);
 #endif
@@ -204,7 +205,8 @@ namespace Dwm {
 
     //------------------------------------------------------------------------
     static void PopulateAnswer(Dns::Message & reply,
-                               std::vector<Ipv4Net2AS::value_type> & matches)
+                               std::vector<Ipv4Net2AS::value_type> & matches,
+                               const RipeAsnTxt & asntxt)
     {
       std::vector<Dns::RRDataORIGIN::PrefixEntry>  pfxEntries;
       for (const auto & match : matches) {
@@ -212,6 +214,11 @@ namespace Dwm {
         pfxEntry.prefix = match.first;
         for (const auto & AS : match.second) {
           Dns::RRDataORIGIN::ASEntry  asentry{AS,{"--",""}};
+          auto  asnit = asntxt.Entries().find(AS);
+          if (asnit != asntxt.Entries().end()) {
+            asentry.asinfo.countryCode = asnit->second.CountryCode();
+            asentry.asinfo.name = asnit->second.Name();
+          }
           pfxEntry.asentries.push_back(asentry);
         }
         pfxEntries.push_back(pfxEntry);
@@ -245,7 +252,7 @@ namespace Dwm {
           if (_ipv42as.find_matches(ipv4Addr, matches)) {
             Dns::Message  reply = msg;
             reply.Header().IsResponse(true);
-            PopulateAnswer(reply, matches);
+            PopulateAnswer(reply, matches, _asntxt);
             reply.SendTo(fd, 0, (const sockaddr *)&addr, sizeof(addr));
           }
           else {

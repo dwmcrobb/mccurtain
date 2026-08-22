@@ -45,6 +45,7 @@
 
 #include "DwmDnsMessage.hh"
 #include "DwmMcCurtainAS2Ipv4Net.hh"
+#include "DwmMcCurtainRipeAsnTxt.hh"
 
 namespace Dwm {
 
@@ -56,7 +57,7 @@ namespace Dwm {
     class DnsServer
     {
     public:
-      DnsServer(const Ipv4Net2AS & ipv42as);
+      DnsServer(const Ipv4Net2AS & ipv42as, const RipeAsnTxt & asntxt);
       ~DnsServer();
       bool Start();
       bool Stop();
@@ -70,7 +71,8 @@ namespace Dwm {
       std::atomic<bool>    _running;
 #endif
       const Ipv4Net2AS   & _ipv42as;
-
+      const RipeAsnTxt   & _asntxt;
+      
       int OpenV4Socket();
       void Run();
       void SendResponse(int fd, const Dns::Message & msg,
