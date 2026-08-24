@@ -5,6 +5,7 @@ OBJFILES = TestCaidaV4Routeviews.o \
            TestIpv4Net2AS.o \
            TestAS2Ipv4NetDb.o \
            TestConfig.o \
+           TestMessageHeader.o \
            TestOriginPrefix.o \
            TestOriginRequest.o \
            TestOriginResponse.o \
