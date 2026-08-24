@@ -5,6 +5,7 @@ OBJFILES = TestCaidaV4Routeviews.o \
            TestIpv4Net2AS.o \
            TestAS2Ipv4NetDb.o \
            TestConfig.o \
+           TestOriginPrefix.o \
            TestRipeAsnTxt.o
 OBJDEPS  = $(OBJFILES:%.o=deps/%_deps)
 TESTS    = $(OBJFILES:%.o=%)

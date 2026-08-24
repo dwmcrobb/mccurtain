@@ -1,0 +1,15 @@
+{
+   "ases" : [
+      {
+         "as" : 174,
+         "cc" : "US",
+         "nm" : "Cogent Communications, LLC"
+      },
+      {
+         "as" : 53107,
+         "cc" : "BR",
+         "nm" : "EVEO S.A."
+      }
+   ],
+   "pfx" : "38.19.214.0/24"
+}
