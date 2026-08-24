@@ -11,6 +11,10 @@ OBJS         = DwmMcCurtainASInfo.o \
                DwmMcCurtainDatabaseConfig.o \
                DwmMcCurtainIpv4Net2AS.o \
                DwmMcCurtainIpv4Net2ASDb.o \
+               DwmMcCurtainOriginAS.o \
+               DwmMcCurtainOriginPrefix.o \
+               DwmMcCurtainOriginResponse.o \
+               DwmMcCurtainOriginRequest.o \
                DwmMcCurtainRipeAsnTxt.o \
                DwmMcCurtainServiceConfig.o \
                DwmMcCurtainVersion.o
