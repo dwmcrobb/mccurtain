@@ -1,0 +1,25 @@
+{
+    "req": "38.19.214.1",
+    "resp": [
+       { "pfx": "38.0.0.0/8",
+         "ases": [
+             { "as": 174,
+               "cc": "US",
+               "nm": "Cogent Communications, LLC"
+             }
+         ]
+       },
+       { "pfx": "38.19.214.0/24",
+         "ases": [
+             { "as": 174,
+               "cc": "US",
+               "nm": "Cogent Communications, LLC"
+             },
+             { "as": 53107,
+               "cc": "BR",
+               "nm": "EVEO S.A."
+             }
+          ]
+       }
+    ]
+}
