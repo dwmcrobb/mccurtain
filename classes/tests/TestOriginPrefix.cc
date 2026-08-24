@@ -59,7 +59,23 @@ void TestJson()
         const Ipv4Prefix  *v4pfx = origpfx.Prefix().Prefix<Ipv4Prefix>();
         if (UnitAssert(v4pfx)) {
           UnitAssert(*v4pfx == Ipv4Prefix("38.19.214.0/24"));
-          UnitAssert(origpfx.ASes().size() == 2);
+          if (UnitAssert(origpfx.ASes().size() == 2)) {
+            UnitAssert(origpfx.ASes()[0].Number() == 174);
+            UnitAssert(origpfx.ASes()[0].CountryCode() == "US");
+            UnitAssert(origpfx.ASes()[0].Name()
+                       == "Cogent Communications, LLC");
+            
+            UnitAssert(origpfx.ASes()[1].Number() == 53107);
+            UnitAssert(origpfx.ASes()[1].CountryCode() == "BR");
+            UnitAssert(origpfx.ASes()[1].Name() == "EVEO S.A.");
+          }
+        }
+        nlohmann::json  j2 = origpfx.ToJson();
+        if (UnitAssert(! j2.is_discarded())) {
+          McCurtain::OriginPrefix  origpfx2;
+          if (UnitAssert(origpfx2.FromJson(j2))) {
+            UnitAssert(origpfx2 == origpfx);
+          }
         }
       }
     }
