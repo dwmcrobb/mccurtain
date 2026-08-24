@@ -38,6 +38,7 @@
 //---------------------------------------------------------------------------
 
 #include <fstream>
+#include <sstream>
 
 #include "DwmUnitAssert.hh"
 #include "DwmMcCurtainOriginPrefix.hh"
@@ -81,6 +82,31 @@ void TestJson()
     }
     is.close();
   }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+void TestIO()
+{
+  ifstream  is("inputs/origin_prefix.json");
+  if (UnitAssert(is)) {
+    nlohmann::json  j = nlohmann::json::parse(is, nullptr, false);
+    if (UnitAssert(! j.is_discarded())) {
+      McCurtain::OriginPrefix  origpfx;
+      if (UnitAssert(origpfx.FromJson(j))) {
+        stringstream  ss;
+        if (UnitAssert(origpfx.Write(ss))) {
+          McCurtain::OriginPrefix  origpfx2;
+          if (UnitAssert(origpfx2.Read(ss))) {
+            UnitAssert(origpfx2 == origpfx);
+          }
+        }
+      }
+    }
+  }
+  return;
 }
 
 //----------------------------------------------------------------------------
@@ -89,7 +115,8 @@ void TestJson()
 int main(int argc, char *argv[])
 {
   TestJson();
-
+  TestIO();
+  
   if (Assertions::Total().Failed())
     Assertions::Print(cerr, true);
   else
