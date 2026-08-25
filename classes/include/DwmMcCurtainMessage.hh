@@ -40,6 +40,10 @@
 #ifndef _DWMMCCURTAINMESSAGE_HH_
 #define _DWMMCCURTAINMESSAGE_HH_
 
+extern "C" {
+  #include <sys/socket.h>
+}
+
 #include <variant>
 
 #include "DwmMcCurtainMessageHeader.hh"
@@ -90,9 +94,21 @@ namespace Dwm {
       const OriginResponse *OrigResponse(const OriginResponse & resp)
       { _payload = resp; return OrigResponse(); }
       
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
       std::istream & Read(std::istream & is);
 
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const;
+
+      ssize_t SendTo(int fd, sockaddr *dest, socklen_t destlen) const;
+
+      ssize_t RecvFrom(int fd, sockaddr *src, socklen_t *srclen);
+
+      bool operator == (const Message &) const = default;
       
     private:
       MessageHeader                               _header;
