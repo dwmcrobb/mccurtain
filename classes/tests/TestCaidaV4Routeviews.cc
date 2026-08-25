@@ -113,7 +113,6 @@ static void TestLookups(const Dwm::McCurtain::Ipv4Net2AS & db)
           }
         }
       }
-      // cerr << "count: " << count << '\n';
       return false;
     };
     
@@ -139,18 +138,7 @@ int main(int argc, char *argv[])
   if (UnitAssert(rv.Load("inputs/routeviews-rv2-20240406.pfx2as.gz"))) {
     rv.Aggregate();
     Dwm::McCurtain::Ipv4Net2AS  ipv42as(rv);
-    std::cerr << "ipv42as.size(): " << ipv42as.size() << '\n';
     TestLookups(ipv42as);
-
-    Dwm::McCurtain::AS2Ipv4Net  as2ipv4(rv);
-    std::cerr << "as2ipv4.Size(): " << as2ipv4.Size() << '\n'
-              << "as2ipv4.Nets().size(): " << as2ipv4.Nets().size() << '\n';
-    
-#if 0
-    for (const auto & e : ipv42as) {
-      std::cout << e.first << ' ' << e.second << '\n';
-    }
-#endif
   }
 
   if (Dwm::Assertions::Total().Failed())

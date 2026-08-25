@@ -62,20 +62,6 @@ namespace Dwm {
       if (_header.Read(is)) {
         if (_header.Format() == MessageFormat::e_binary) {
           StreamIO::Read(is, _payload);
-#if 0
-          if (_header.IsResponse()) {
-            OriginResponse  resp;
-            if (resp.Read(is)) {
-              _payload = resp;
-            }
-          }
-          else {
-            OriginRequest  req;
-            if (req.Read(is)) {
-              _payload = req;
-            }
-          }
-#endif
         }
         else if (_header.Format() == MessageFormat::e_json) {
           nlohmann::json  j = nlohmann::json::parse(is, nullptr, false);

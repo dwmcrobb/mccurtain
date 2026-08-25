@@ -125,7 +125,8 @@ static void TestIO()
   msg.Header(hdr);
   if (UnitAssert(PopulateRequest(msg))) {
     char  buf[4096];
-    std::spanstream  ss{std::span{buf,sizeof(buf)}};
+    // std::spanstream  ss{std::span{buf,sizeof(buf)}};
+    std::stringstream  ss;
     if (UnitAssert(msg.Write(ss))) {
       McCurtain::Message  msg2;
       if (UnitAssert(msg2.Read(ss))) {
@@ -165,6 +166,7 @@ static void TestJsonIO()
   msg.Header(hdr);
   if (UnitAssert(PopulateRequest(msg))) {
     char  buf[4096];
+    memset(buf, 0, sizeof(buf));
     std::spanstream  ss{std::span{buf,sizeof(buf)}};
     if (UnitAssert(msg.Write(ss))) {
       McCurtain::Message  msg2;

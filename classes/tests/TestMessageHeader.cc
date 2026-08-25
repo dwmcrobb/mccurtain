@@ -48,7 +48,7 @@ using namespace Dwm;
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-void TestIO()
+static void TestIO()
 {
   McCurtain::MessageHeader  hdr;
   hdr.Format(McCurtain::MessageFormat::e_binary);
