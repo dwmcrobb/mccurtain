@@ -121,8 +121,12 @@ namespace Dwm {
       
       ssize_t SendTo(int fd, sockaddr_in *dest) const;
 
+      ssize_t SendTo(int fd, sockaddr_in6 *dest) const;
+      
       ssize_t RecvFrom(int fd, sockaddr_in *src);
 
+      ssize_t RecvFrom(int fd, sockaddr_in6 *src);
+      
       bool operator == (const Message &) const = default;
       
     private:
