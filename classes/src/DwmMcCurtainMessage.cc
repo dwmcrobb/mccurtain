@@ -128,33 +128,16 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    ssize_t Message::SendTo(int fd, sockaddr_in *dest) const
-    {
-      ssize_t  rc = -1;
-      if ((0 <= fd) && dest) {
-        char  pktbuf[4096];
-        std::spanstream  ss{std::span{pktbuf, sizeof(pktbuf)}};
-        if (Write(ss)) {
-          socklen_t  destlen = sizeof(*dest);
-          size_t  buflen = ss.tellp();
-          rc = sendto(fd, pktbuf, buflen, 0, (sockaddr *)dest, destlen);
-          if (0 > rc) {
-            MCLOG(LOG_ERR, "sendto({},{},{},0,{},{}) failed: {}",
-                  fd, &pktbuf[0], buflen, *dest, destlen, strerror(errno));
-          }
-        }
-      }
-      return rc;
-    }
-
+    //!  
     //------------------------------------------------------------------------
-    ssize_t Message::SendTo(int fd, sockaddr_in6 *dest) const
+    template <typename AT>
+    ssize_t SendTo(int fd, AT *dest, const Message *msg)
     {
       ssize_t  rc = -1;
       if ((0 <= fd) && dest) {
         char  pktbuf[4096];
         std::spanstream  ss{std::span{pktbuf, sizeof(pktbuf)}};
-        if (Write(ss)) {
+        if (msg->Write(ss)) {
           socklen_t  destlen = sizeof(*dest);
           size_t  buflen = ss.tellp();
           rc = sendto(fd, pktbuf, buflen, 0, (sockaddr *)dest, destlen);
@@ -168,7 +151,20 @@ namespace Dwm {
     }
     
     //------------------------------------------------------------------------
-    ssize_t Message::RecvFrom(int fd, sockaddr_in *src)
+    ssize_t Message::SendTo(int fd, sockaddr_in *dest) const
+    {
+      return SendTo<sockaddr_in>(fd, dest, this);
+    }
+
+    //------------------------------------------------------------------------
+    ssize_t Message::SendTo(int fd, sockaddr_in6 *dest) const
+    {
+      return SendTo<sockaddr_in6>(fd, dest, this);
+    }
+
+    //------------------------------------------------------------------------
+    template <typename AT>
+    ssize_t RecvFrom(int fd, AT *src, Message *msg)
     {
       ssize_t  rc = -1;
       if (0 <= fd) {
@@ -177,16 +173,60 @@ namespace Dwm {
         rc = recvfrom(fd, buf, sizeof(buf), 0, (sockaddr *)src, &srclen);
         if (0 < rc) {
           std::spanstream  ss{std::span{buf, (size_t)rc}};
-          if (! Read(ss)) {
+          if (! msg->Read(ss)) {
             rc = -1;
           }
         }
       }
       return rc;
     }
+    
+    //------------------------------------------------------------------------
+    ssize_t Message::RecvFrom(int fd, sockaddr_in *src)
+    {
+      return RecvFrom<sockaddr_in>(fd, src, this);
+    }
 
     //------------------------------------------------------------------------
     ssize_t Message::RecvFrom(int fd, sockaddr_in6 *src)
+    {
+      return RecvFrom<sockaddr_in6>(fd, src, this);
+    }
+
+    //------------------------------------------------------------------------
+    template <typename AT>
+    ssize_t SendJsonTo(int fd, AT *dest, const Message *msg)
+    {
+      ssize_t  rc = -1;
+      if (0 <= fd) {
+        nlohmann::json  j = msg->ToJson();
+        char  buf[4096];
+        memset(buf, 0, sizeof(buf));
+        std::spanstream  ss{std::span{buf, sizeof(buf)}};
+        if (ss << j.dump()) {
+          rc = sendto(fd, buf, ss.tellp(), 0, (sockaddr *)dest, sizeof(*dest));
+        }
+      }
+      return rc;
+    }
+    
+    //------------------------------------------------------------------------
+    ssize_t Message::SendJsonTo(int fd, sockaddr_in *dest) const
+    {
+      return SendJsonTo<sockaddr_in>(fd, dest, this);
+    }
+
+    //------------------------------------------------------------------------
+    ssize_t Message::SendJsonTo(int fd, sockaddr_in6 *dest) const
+    {
+      return SendJsonTo<sockaddr_in6>(fd, dest, this);
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    template <typename AT>
+    ssize_t RecvJsonFrom(int fd, AT *src, Message *msg)
     {
       ssize_t  rc = -1;
       if (0 <= fd) {
@@ -195,12 +235,30 @@ namespace Dwm {
         rc = recvfrom(fd, buf, sizeof(buf), 0, (sockaddr *)src, &srclen);
         if (0 < rc) {
           std::spanstream  ss{std::span{buf, (size_t)rc}};
-          if (! Read(ss)) {
+          nlohmann::json  j = nlohmann::json::parse(ss, nullptr, false);
+          if (! j.is_discarded()) {
+            if (! msg->FromJson(j)) {
+              rc = -1;
+            }
+          }
+          else {
             rc = -1;
           }
         }
       }
       return rc;
+    }
+    
+    //------------------------------------------------------------------------
+    ssize_t Message::RecvJsonFrom(int fd, sockaddr_in *src)
+    {
+      return RecvJsonFrom<sockaddr_in>(fd, src, this);
+    }
+
+    //------------------------------------------------------------------------
+    ssize_t Message::RecvJsonFrom(int fd, sockaddr_in6 *src)
+    {
+      return RecvJsonFrom<sockaddr_in6>(fd, src, this);
     }
     
       

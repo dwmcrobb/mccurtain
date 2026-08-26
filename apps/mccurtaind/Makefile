@@ -4,7 +4,8 @@ ALLINCS      = -I../../classes/include ${DWMINCS}
 OBJS         = mccurtaind.o \
                DwmMcCurtainDnsServer.o \
                DwmMcCurtainResponder.o \
-               DwmMcCurtainServer.o
+               DwmMcCurtainServer.o \
+               DwmMcCurtainUdpServer.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
 TARTARGETS   = ${TARDIR}/sbin/mccurtaind
 
