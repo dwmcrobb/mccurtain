@@ -61,7 +61,41 @@ namespace Dwm {
       }
       return os;
     }
+
+    //------------------------------------------------------------------------
+    bool MessageHeader::FromJson(const nlohmann::json & j)
+    {
+      if (j.is_object()) {
+        auto  it = j.find("v");
+        if ((j.end() != it) && it->is_number()) {
+          Version(it->get<uint8_t>());
+          it = j.find("ty");
+          if ((j.end() != it) && it->is_number()) {
+            Type((MsgType)(it->get<uint8_t>()));
+            it = j.find("tr");
+            if ((j.end() != it) && it->is_boolean()) {
+              Truncated(it->get<bool>());
+            }
+            else {
+              Truncated(false);
+            }
+            return true;
+          }
+        }
+      }
+      return false;
+    }
     
+    //------------------------------------------------------------------------
+    nlohmann::json MessageHeader::ToJson() const
+    {
+      nlohmann::json  j;
+      j["v"] = (uint16_t)Version();
+      j["ty"] = (uint16_t)Type();
+      j["tr"] = Truncated();
+      return j;
+    }
+
   }  // namespace McCurtain
 
 }  // namespace Dwm

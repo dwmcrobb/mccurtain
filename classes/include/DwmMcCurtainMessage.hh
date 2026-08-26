@@ -104,6 +104,9 @@ namespace Dwm {
       //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const;
 
+      bool FromJson(const nlohmann::json & j);
+      nlohmann::json ToJson() const;
+      
       ssize_t SendTo(int fd, sockaddr *dest, socklen_t destlen) const;
 
       ssize_t RecvFrom(int fd, sockaddr *src, socklen_t *srclen);

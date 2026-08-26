@@ -60,32 +60,7 @@ namespace Dwm {
     std::istream & Message::Read(std::istream & is)
     {
       if (_header.Read(is)) {
-        if (_header.Format() == MessageFormat::e_binary) {
-          StreamIO::Read(is, _payload);
-        }
-        else if (_header.Format() == MessageFormat::e_json) {
-          nlohmann::json  j = nlohmann::json::parse(is, nullptr, false);
-          if (! j.is_discarded()) {
-            if (_header.IsResponse()) {
-              OriginResponse  resp;
-              if (resp.FromJson(j)) {
-                _payload = resp;
-              }
-            }
-            else {
-              OriginRequest  req;
-              if (req.FromJson(j)) {
-                _payload = req;
-              }
-              else {
-                is.setstate(std::ios_base::failbit);
-              }
-            }
-          }
-          else {
-            is.setstate(std::ios_base::failbit);
-          }
-        }
+        StreamIO::Read(is, _payload);
       }
       return is;
     }
@@ -94,21 +69,58 @@ namespace Dwm {
     std::ostream & Message::Write(std::ostream & os) const
     {
       if (_header.Write(os)) {
-        if (_header.Format() == MessageFormat::e_binary) {
-          StreamIO::Write(os, _payload);
-        }
-        else if (_header.Format() == MessageFormat::e_json) {
-          nlohmann::json  j;
-          if (std::holds_alternative<OriginRequest>(_payload)) {
-            j = std::get<0>(_payload).ToJson();
-          }
-          else if (std::holds_alternative<OriginResponse>(_payload)) {
-            j = std::get<1>(_payload).ToJson();
-          }
-          os << j.dump();
-        }
+        StreamIO::Write(os, _payload);
       }
       return os;
+    }
+
+    //------------------------------------------------------------------------
+    bool Message::FromJson(const nlohmann::json & j)
+    {
+      if (j.is_object()) {
+        auto  it = j.find("hdr");
+        if (j.end() != it) {
+          if (_header.FromJson(*it)) {
+            if (_header.Type()
+                == MessageHeader::MsgType::e_typeOriginRequest) {
+              it = j.find("req");
+              if (j.end() != it) {
+                OriginRequest  req;
+                if (req.FromJson(*it)) {
+                  _payload = req;
+                  return true;
+                }
+              }
+            }
+            else if (_header.Type()
+                     == MessageHeader::MsgType::e_typeOriginResponse) {
+              it = j.find("resp");
+              if (j.end() != it) {
+                OriginResponse  resp;
+                if (resp.FromJson(*it)) {
+                  _payload = resp;
+                  return true;
+                }
+              }
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    //------------------------------------------------------------------------
+    nlohmann::json Message::ToJson() const
+    {
+      nlohmann::json j;
+      j["hdr"] = _header.ToJson();
+      if (_payload.index() == 0) {
+        j["req"] = std::get<0>(_payload).ToJson();
+      }
+      else if (_payload.index() == 1) {
+        j["resp"] = std::get<1>(_payload).ToJson();
+      }
+      return j;
     }
 
     //------------------------------------------------------------------------

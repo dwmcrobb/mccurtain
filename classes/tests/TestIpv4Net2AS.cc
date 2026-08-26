@@ -62,7 +62,6 @@ static bool TestMakeIpv4ToAS(Dwm::McCurtain::Ipv4Net2AS & db,
   if (UnitAssert(db.LoadCAIDARouteViews(routeViewsPath))) {
     size_t preaggsize = db.size();
     db.Aggregate();
-    cerr << "db.size(): " << preaggsize << " -> " << db.size() << '\n';
     return true;
   }
   return false;
@@ -122,7 +121,6 @@ static void TestLookups(const Dwm::McCurtain::Ipv4Net2AS & db,
         }
       }
     }
-    cerr << "count: " << count << '\n';
     return false;
   };
     
@@ -174,10 +172,7 @@ int main(int argc, char *argv[])
     if (TestSave(db, "ipv42as.db")) {
       TestLoad(db, "ipv42as.db");
     }
-    // std::remove("ipv42as.db");
-  }
-  for (auto it = db.cbegin(); it != db.cend(); ++it) {
-    cout << it->first << ' ' << it->second << '\n';
+    std::remove("ipv42as.db");
   }
   
   if (Assertions::Total().Failed())

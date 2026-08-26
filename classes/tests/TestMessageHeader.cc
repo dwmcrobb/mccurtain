@@ -51,9 +51,8 @@ using namespace Dwm;
 static void TestIO()
 {
   McCurtain::MessageHeader  hdr;
-  hdr.Format(McCurtain::MessageFormat::e_binary);
   hdr.Truncated(false);
-  hdr.IsResponse(true);
+  hdr.Type(McCurtain::MessageHeader::MsgType::e_typeOriginResponse);
   hdr.Id(8647);
   
   stringstream  ss;

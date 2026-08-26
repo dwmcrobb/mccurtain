@@ -180,8 +180,10 @@ namespace Dwm {
       for (auto & asSet : _asSets) {
         asSet.second.Aggregate();
       }
+#if 0
       std::cerr << "aggregated " << origTotalPrefixes << " -> "
-                << TotalPrefixes() << '\n';      
+                << TotalPrefixes() << '\n';
+#endif
       return;
     }
     

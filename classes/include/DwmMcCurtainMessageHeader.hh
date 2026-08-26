@@ -41,8 +41,7 @@
 #define _DWMMCCURTAINMESSAGEHEADER_HH_
 
 #include <iostream>
-
-#include "DwmMcCurtainMessageFormat.hh"
+#include <nlohmann/json.hpp>
 
 namespace Dwm {
 
@@ -55,11 +54,15 @@ namespace Dwm {
     {
     public:
       static constexpr uint16_t  k_versionMask   = 0xF800;  //  5 bits
-      static constexpr uint16_t  k_formatMask    = 0x0700;  //  3 bits
+      static constexpr uint16_t  k_typeMask      = 0x0700;  //  3 bits
       static constexpr uint16_t  k_truncatedMask = 0x0080;  //  1 bit
-      static constexpr uint16_t  k_responseMask  = 0x0040;  //  1 bit
+      static constexpr uint16_t  k_unusedMask    = 0x007F;  //  7 bits
 
-      static constexpr uint16_t  k_unusedMask    = 0x003F;  //  6 bits
+      enum class MsgType : uint8_t {
+        e_typeNone            = 0,
+        e_typeOriginRequest   = 1,
+        e_typeOriginResponse  = 2
+      };
       
       //----------------------------------------------------------------------
       //!  
@@ -68,7 +71,7 @@ namespace Dwm {
           : _id(0)
       {
         Version(version);
-        Format(MessageFormat::e_binary);
+        Type(MsgType::e_typeNone);
         Truncated(false);
       }
 
@@ -93,19 +96,19 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      MessageFormat Format() const
+      MsgType Type() const
       {
-        return (MessageFormat)((_flags & k_formatMask) >> 8);
+        return (MsgType)((_flags & k_typeMask) >> 8);
       }
 
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      MessageFormat Format(MessageFormat format)
+      MsgType Type(MsgType msgType)
       {
-        _flags &= ~k_formatMask;
-        _flags |= ((uint16_t)format) << 8;
-        return Format();
+        _flags &= ~k_typeMask;
+        _flags |= ((uint16_t)msgType) << 8;
+        return Type();
       }
 
       //----------------------------------------------------------------------
@@ -128,26 +131,6 @@ namespace Dwm {
         return Truncated();
       }
 
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool IsResponse() const
-      {
-        return (0 != (_flags & k_responseMask));
-      }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool IsResponse(bool isResponse)
-      {
-        _flags &= ~k_responseMask;
-        if (isResponse) {
-          _flags |= k_responseMask;
-        }
-        return IsResponse();
-      }
-      
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
@@ -175,6 +158,10 @@ namespace Dwm {
       //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const;
 
+      bool FromJson(const nlohmann::json & j);
+      
+      nlohmann::json ToJson() const;
+      
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------

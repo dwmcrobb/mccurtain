@@ -62,19 +62,16 @@ using namespace Dwm;
 //----------------------------------------------------------------------------
 static bool PopulateResponse(McCurtain::Message & msg)
 {
-  bool  rc = false;
-  ifstream  is("inputs/origin_response.json");
+  ifstream  is("inputs/origin_response_msg.json");
   if (UnitAssert(is)) {
     nlohmann::json  j = nlohmann::json::parse(is, nullptr, false);
     if (UnitAssert(! j.is_discarded())) {
-      McCurtain::OriginResponse  resp;
-      if (UnitAssert(resp.FromJson(j))) {
-        msg.OrigResponse(resp);
-        rc = true;
+      if (UnitAssert(msg.FromJson(j))) {
+        return true;
       }
     }
   }
-  return rc;
+  return false;
 }
 
 //----------------------------------------------------------------------------
@@ -82,19 +79,16 @@ static bool PopulateResponse(McCurtain::Message & msg)
 //----------------------------------------------------------------------------
 static bool PopulateRequest(McCurtain::Message & msg)
 {
-  bool  rc = false;
-  ifstream  is("inputs/origin_request.json");
+  ifstream  is("inputs/origin_request_msg.json");
   if (UnitAssert(is)) {
     nlohmann::json  j = nlohmann::json::parse(is, nullptr, false);
     if (UnitAssert(! j.is_discarded())) {
-      McCurtain::OriginRequest  req;
-      if (UnitAssert(req.FromJson(j))) {
-        msg.OrigRequest(req);
-        rc = true;
+      if (UnitAssert(msg.FromJson(j))) {
+        return true;
       }
     }
   }
-  return rc;
+  return false;
 }
 
 //----------------------------------------------------------------------------
@@ -104,9 +98,8 @@ static void TestIO()
 {
   McCurtain::Message        msg;
   McCurtain::MessageHeader  hdr;
-  hdr.Format(McCurtain::MessageFormat::e_binary);
+  hdr.Type(McCurtain::MessageHeader::MsgType::e_typeOriginResponse);
   hdr.Truncated(false);
-  hdr.IsResponse(true);
   hdr.Id(8647);
 
   msg.Header(hdr);
@@ -121,11 +114,10 @@ static void TestIO()
     }
   }
 
-  hdr.IsResponse(false);
+  hdr.Type(McCurtain::MessageHeader::MsgType::e_typeOriginRequest);
   msg.Header(hdr);
   if (UnitAssert(PopulateRequest(msg))) {
     char  buf[4096];
-    // std::spanstream  ss{std::span{buf,sizeof(buf)}};
     std::stringstream  ss;
     if (UnitAssert(msg.Write(ss))) {
       McCurtain::Message  msg2;
@@ -145,9 +137,8 @@ static void TestJsonIO()
 {
   McCurtain::Message        msg;
   McCurtain::MessageHeader  hdr;
-  hdr.Format(McCurtain::MessageFormat::e_json);
   hdr.Truncated(false);
-  hdr.IsResponse(true);
+  hdr.Type(McCurtain::MessageHeader::MsgType::e_typeOriginResponse);
   hdr.Id(8647);
 
   msg.Header(hdr);
@@ -162,7 +153,7 @@ static void TestJsonIO()
     }
   }
 
-  hdr.IsResponse(false);
+  hdr.Type(McCurtain::MessageHeader::MsgType::e_typeOriginRequest);
   msg.Header(hdr);
   if (UnitAssert(PopulateRequest(msg))) {
     char  buf[4096];
