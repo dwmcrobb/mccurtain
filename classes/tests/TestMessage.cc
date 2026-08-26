@@ -67,6 +67,7 @@ static bool PopulateResponse(McCurtain::Message & msg)
     nlohmann::json  j = nlohmann::json::parse(is, nullptr, false);
     if (UnitAssert(! j.is_discarded())) {
       if (UnitAssert(msg.FromJson(j))) {
+        msg.Header().Type(McCurtain::MessageHeader::MsgType::e_typeOriginResponse);
         return true;
       }
     }
@@ -84,11 +85,58 @@ static bool PopulateRequest(McCurtain::Message & msg)
     nlohmann::json  j = nlohmann::json::parse(is, nullptr, false);
     if (UnitAssert(! j.is_discarded())) {
       if (UnitAssert(msg.FromJson(j))) {
+        McCurtain::MessageHeader  hdr;
+        msg.Header().Type(McCurtain::MessageHeader::MsgType::e_typeOriginRequest);
         return true;
       }
     }
   }
   return false;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void TestSendRecv()
+{
+  int  recvfd = socket(PF_INET, SOCK_DGRAM, 0);
+  if (UnitAssert(0 <= recvfd)) {
+    sockaddr_in  recvAddr;
+    memset(&recvAddr, 0, sizeof(recvAddr));
+    recvAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    recvAddr.sin_port = htons(8647);
+    recvAddr.sin_family = PF_INET;
+#ifndef __linux__
+    recvAddr.sin_len = sizeof(recvAddr);
+#endif    
+    socklen_t    recvAddrLen = sizeof(recvAddr);
+    if (UnitAssert(0 == ::bind(recvfd, (sockaddr *)&recvAddr, recvAddrLen))) {
+      if (UnitAssert(0 == getsockname(recvfd, (sockaddr *)&recvAddr,
+                                      &recvAddrLen))) {
+        int  sendfd = socket(PF_INET, SOCK_DGRAM, 0);
+        if (UnitAssert(0 <= sendfd)) {
+          McCurtain::Message  msg;
+          if (UnitAssert(PopulateRequest(msg))) {
+            struct sockaddr_in  sendAddr = recvAddr;
+            if (UnitAssert(0 < msg.SendTo(sendfd, &sendAddr))) {
+              McCurtain::Message  msg2;
+              sockaddr_in  fromAddr;
+              if (UnitAssert(0 < msg2.RecvFrom(recvfd, &fromAddr))) {
+                UnitAssert(msg2 == msg);
+              }
+            }
+          }
+          ::close(sendfd);
+        }
+      }
+    }
+    else {
+      std::cerr << "bind(" << recvfd << ") failed: " << strerror(errno)
+                << '\n';
+    }
+    ::close(recvfd);
+  }
+  return;
 }
 
 //----------------------------------------------------------------------------
@@ -177,6 +225,7 @@ int main(int argc, char *argv[])
 {
   TestIO();
   TestJsonIO();
+  TestSendRecv();
   
   if (Assertions::Total().Failed())
     Assertions::Print(cerr, true);

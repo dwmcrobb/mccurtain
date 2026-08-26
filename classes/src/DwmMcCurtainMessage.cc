@@ -37,6 +37,8 @@
 //!  @brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
+#include <cerrno>
+
 #if defined(__cpp_lib_spanstream)
 #  if (__cpp_lib_spanstream >= 202106L)
 #    if __has_include(<spanstream>)
@@ -50,6 +52,8 @@
 #  include "DwmDnsSpanstream.hh"
 #endif
 
+#include "DwmFormatters.hh"
+#include "DwmMclogLogger.hh"
 #include "DwmMcCurtainMessage.hh"
 
 namespace Dwm {
@@ -124,28 +128,35 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    ssize_t Message::SendTo(int fd, sockaddr *dest, socklen_t destlen) const
+    ssize_t Message::SendTo(int fd, sockaddr_in *dest) const
     {
       ssize_t  rc = -1;
-      if (0 <= fd) {
+      if ((0 <= fd) && dest) {
         char  pktbuf[4096];
         std::spanstream  ss{std::span{pktbuf, sizeof(pktbuf)}};
         if (Write(ss)) {
-          rc = sendto(fd, pktbuf, ss.tellp(), 0, dest, destlen);
+          socklen_t  destlen = sizeof(*dest);
+          size_t  buflen = ss.tellp();
+          rc = sendto(fd, pktbuf, buflen, 0, (sockaddr *)dest, destlen);
+          if (0 > rc) {
+            MCLOG(LOG_ERR, "sendto({},{},{},0,{},{}) failed: {}",
+                  fd, &pktbuf[0], buflen, *dest, destlen, strerror(errno));
+          }
         }
       }
       return rc;
     }
     
     //------------------------------------------------------------------------
-    ssize_t Message::RecvFrom(int fd, sockaddr *src, socklen_t *srclen)
+    ssize_t Message::RecvFrom(int fd, sockaddr_in *src)
     {
       ssize_t  rc = -1;
       if (0 <= fd) {
-        char  pktbuf[4096];
-        rc = recvfrom(fd, pktbuf, sizeof(pktbuf), 0, src, srclen);
+        char       buf[4096];
+        socklen_t  srclen = sizeof(*src);
+        rc = recvfrom(fd, buf, sizeof(buf), 0, (sockaddr *)src, &srclen);
         if (0 < rc) {
-          std::spanstream  ss{std::span{pktbuf, (size_t)rc}};
+          std::spanstream  ss{std::span{buf, (size_t)rc}};
           if (! Read(ss)) {
             rc = -1;
           }
