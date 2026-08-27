@@ -128,6 +128,12 @@ namespace Dwm {
       //!  
       //----------------------------------------------------------------------
       bool operator == (const OriginAS &) const = default;
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      friend std::ostream & operator << (std::ostream & os,
+                                         const OriginAS & origas);
       
     private:
       uint32_t     _number;
