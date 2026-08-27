@@ -169,6 +169,8 @@ static void UdpGetOrigin(const vector<string> & hostAddrs,
                          const string & ipAddrStr,
                          bool useJson)
 {
+  using MsgType = McCurtain::MessageHeader::MsgType;
+  
   for (const string & hostAddr : hostAddrs) {
     IpAddress  ipAddr(hostAddr);
     if (ipAddr.IsV4()) {
@@ -190,7 +192,7 @@ static void UdpGetOrigin(const vector<string> & hostAddrs,
 #endif
           McCurtain::Message  msg;
           msg.Header().Id(getpid() & 0xFFFF);
-          msg.Header().Type(McCurtain::MessageHeader::MsgType::e_typeOriginRequest);
+          msg.Header().Type(MsgType::e_typeOriginRequest);
           McCurtain::OriginRequest  req{Dwm::Ipv4Address(ipAddrStr)};
           msg.OrigRequest(req);
           ssize_t  sendrc = -1;
@@ -218,8 +220,8 @@ static void UdpGetOrigin(const vector<string> & hostAddrs,
                   recvrc = rmsg.RecvFrom(fd, &fromAddr);
                 }
                 if (0 < recvrc) {
-                  if (rmsg.Header().Type()
-                      == McCurtain::MessageHeader::MsgType::e_typeOriginResponse) {
+                  if ((rmsg.Header().Type() == MsgType::e_typeOriginResponse)
+                      && (rmsg.Header().Id() == msg.Header().Id())) {
                     if (useJson) {
                       cout << rmsg.OrigResponse()->ToJson().dump() << '\n';
                     }
