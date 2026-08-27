@@ -70,7 +70,7 @@ namespace Dwm {
       int                 _json6fd;
       int                 _stopfds[2];
       std::thread         _thread;
-      bool                _shouldRun;
+      std::atomic<bool>   _shouldRun;
       
       bool BindSockets();
       bool OpenSockets();
@@ -109,7 +109,7 @@ namespace Dwm {
         if (0 <= fd) {
           Message  msg;
           AT       sockAddr;
-          if (msg.RecvFrom(fd, &sockAddr)) {
+          if (msg.RecvJsonFrom(fd, &sockAddr)) {
             if (msg.Header().Type()
                 == MessageHeader::MsgType::e_typeOriginRequest) {
               auto  *req = msg.OrigRequest();
@@ -118,7 +118,7 @@ namespace Dwm {
                 if (GetResponse(*req, resp)) {
                   msg.OrigResponse(resp);
                   msg.Header().Type(MessageHeader::MsgType::e_typeOriginResponse);
-                  msg.SendTo(fd, &sockAddr);
+                  msg.SendJsonTo(fd, &sockAddr);
                 }
               }
             }

@@ -40,6 +40,7 @@
 //---------------------------------------------------------------------------
 
 extern "C" {
+  #include <sys/select.h>
   #include <unistd.h>
 }
 
@@ -51,6 +52,7 @@ extern "C" {
 
 #include "DwmMclogLogger.hh"
 #include "DwmCredencePeer.hh"
+#include "DwmMcCurtainMessage.hh"
 #include "DwmMcCurtainRequests.hh"
 #include "DwmMcCurtainResponses.hh"
 #include "DwmMcCurtainVersion.hh"
@@ -163,9 +165,86 @@ static vector<string> SplitArg(const string & arg)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static void UdpGetOrigin(const vector<string> & hostAddrs,
+                         const string & ipAddrStr,
+                         bool useJson)
+{
+  for (const string & hostAddr : hostAddrs) {
+    IpAddress  ipAddr(hostAddr);
+    if (ipAddr.IsV4()) {
+      if (ipAddr.Addr<Ipv4Address>()->Raw() != INADDR_NONE) {
+        int  fd = socket(PF_INET, SOCK_DGRAM, 0);
+        if (0 <= fd) {
+          struct sockaddr_in  dstAddr;
+          memset(&dstAddr, 0, sizeof(dstAddr));
+          dstAddr.sin_addr.s_addr = ipAddr.Addr<Ipv4Address>()->Raw();
+          if (useJson) {
+            dstAddr.sin_port = htons(8647);
+          }
+          else {
+            dstAddr.sin_port = htons(8645);
+          }
+          dstAddr.sin_family = PF_INET;
+#ifndef __linux__
+          dstAddr.sin_len = sizeof(dstAddr);
+#endif
+          McCurtain::Message  msg;
+          msg.Header().Id(getpid() & 0xFFFF);
+          msg.Header().Type(McCurtain::MessageHeader::MsgType::e_typeOriginRequest);
+          McCurtain::OriginRequest  req{Dwm::Ipv4Address(ipAddrStr)};
+          msg.OrigRequest(req);
+          ssize_t  sendrc = -1;
+          if (useJson) {
+            sendrc = msg.SendJsonTo(fd, &dstAddr);
+          }
+          else {
+            sendrc = msg.SendTo(fd, &dstAddr);
+          }
+          if (0 < sendrc) {
+            fd_set  fds;
+            FD_ZERO(&fds);
+            FD_SET(fd, &fds);
+            struct timeval  timeout{2,0};
+            int  selrc = select(fd+1, &fds, nullptr, nullptr, &timeout);
+            if (selrc > 0) {
+              if (FD_ISSET(fd, &fds)) {
+                McCurtain::Message  rmsg;
+                sockaddr_in         fromAddr;
+                ssize_t             recvrc = -1;
+                if (useJson) {
+                  recvrc = rmsg.RecvJsonFrom(fd, &fromAddr);
+                }
+                else {
+                  recvrc = rmsg.RecvFrom(fd, &fromAddr);
+                }
+                if (0 < recvrc) {
+                  if (rmsg.Header().Type()
+                      == McCurtain::MessageHeader::MsgType::e_typeOriginResponse) {
+                    cout << rmsg.OrigResponse()->ToJson().dump() << '\n';
+                    ::close(fd);
+                    return;
+                  }
+                }
+              }
+            }
+            else {
+              cerr << "select() failed\n";
+            }
+          }
+          ::close(fd);
+        }
+      }
+    }
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 static void Usage(const char *argv0)
 {
-  cerr << "Usage: " << argv0 << " [-d] [-h mccurtaind_host] [-p port] ipv4addr\n"
+  cerr << "Usage: " << argv0 << " [-d] [-j] [-u] [-h mccurtaind_host] [-p port] ipv4addr\n"
        << "       " << argv0 << " [-d] [-v] [-h mccurtaind_host] [-p port] AS_number\n"
        << "       " << argv0 << " -V\n\n"
        << "  Note: MCCURTAIND environment variable will be used if\n"
@@ -182,6 +261,8 @@ int main(int argc, char *argv[])
   int               optChar;
   string            hostList;
   uint16_t          port = 2126;
+  bool              useUdp = false;
+  bool              useJson = false;
   bool              verbose = false;
 
   Dwm::Mclog::OstreamSink  cerrSink(std::cerr);
@@ -194,13 +275,16 @@ int main(int argc, char *argv[])
     hostList = mccurtaindEnv;
   }
   
-  while ((optChar = getopt(argc, argv, "dh:p:vV")) != -1) {
+  while ((optChar = getopt(argc, argv, "dh:jp:uvV")) != -1) {
     switch (optChar) {
       case 'd':
         Dwm::Mclog::logger.MinimumSeverity("debug");
         break;
       case 'h':
         hostList = optarg;
+        break;
+      case 'j':
+        useJson = true;
         break;
       case 'p':
         try {
@@ -211,6 +295,9 @@ int main(int argc, char *argv[])
           Usage(argv[0]);
           return 1;
         }
+        break;
+      case 'u':
+        useUdp = true;
         break;
       case 'v':
         verbose = true;
@@ -236,6 +323,11 @@ int main(int argc, char *argv[])
   if (optind >= argc) {
     Usage(argv[0]);
     return 1;
+  }
+
+  if (useUdp) {
+    UdpGetOrigin(hosts, argv[optind], useJson);
+    return 0;
   }
   
   Credence::Peer  peer;

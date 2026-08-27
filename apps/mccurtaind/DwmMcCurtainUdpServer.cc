@@ -68,6 +68,7 @@ namespace Dwm {
       if (0 == ::pipe(_stopfds)) {
         if (OpenSockets()) {
           if (BindSockets()) {
+            _shouldRun = true;
             _thread = std::thread(&UdpServer::Run, this);
             rc = true;
           }
@@ -111,7 +112,7 @@ namespace Dwm {
       
       while (_shouldRun) {
         reset_fds();
-        int  selectrc = select(maxfd, &fds, nullptr, nullptr, nullptr);
+        int  selectrc = select(maxfd+1, &fds, nullptr, nullptr, nullptr);
         if (FD_ISSET(_stopfds[0], &fds))  { break; }
         if (FD_ISSET(_binfd, &fds))       { RespondBinary(_binfd); }
         if (FD_ISSET(_bin6fd, &fds))      { RespondBinary6(_bin6fd); }
@@ -227,6 +228,7 @@ namespace Dwm {
             prefixes.push_back(prefix);
           }
           resp.Prefixes(prefixes);
+          resp.Request(req);
           rc = true;
         }
       }
@@ -245,11 +247,17 @@ namespace Dwm {
       return RespondBinary<sockaddr_in6>(fd);
     }
 
+    //------------------------------------------------------------------------
     void UdpServer::RespondJson(int fd)
-    {}
+    {
+      return RespondJson<sockaddr_in>(fd);
+    }
 
+    //------------------------------------------------------------------------
     void UdpServer::RespondJson6(int fd)
-    {}
+    {
+      return RespondJson<sockaddr_in6>(fd);
+    }
     
   
   }  // namespace McCurtain
