@@ -1,5 +1,7 @@
 2026-08-27  dwm  <dwm@ria.mcplex.net>
 
+	* tagged as tagged as mccurtain-0.0.24
+
 	* Added support for new UDP messaging with no encryption or
 	authentication: a single round trip will fetch the origin
 	prefixes and ASes for a given IPv4 address.  The server
