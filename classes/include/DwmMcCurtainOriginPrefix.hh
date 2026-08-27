@@ -114,6 +114,12 @@ namespace Dwm {
       //!  
       //----------------------------------------------------------------------
       bool operator == (const OriginPrefix &) const = default;
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      friend std::ostream & operator << (std::ostream & os,
+                                         const OriginPrefix & origpfx);
       
     private:
       IpPrefix               _prefix;
