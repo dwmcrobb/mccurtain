@@ -220,7 +220,12 @@ static void UdpGetOrigin(const vector<string> & hostAddrs,
                 if (0 < recvrc) {
                   if (rmsg.Header().Type()
                       == McCurtain::MessageHeader::MsgType::e_typeOriginResponse) {
-                    cout << rmsg.OrigResponse()->ToJson().dump() << '\n';
+                    if (useJson) {
+                      cout << rmsg.OrigResponse()->ToJson().dump() << '\n';
+                    }
+                    else {
+                      cout << *(rmsg.OrigResponse());
+                    }
                     ::close(fd);
                     return;
                   }
