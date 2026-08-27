@@ -115,7 +115,18 @@ namespace Dwm {
       }
       return j;
     }
-          
+
+    //------------------------------------------------------------------------
+    std::ostream & operator << (std::ostream & os,
+                                const OriginResponse & origresp)
+    {
+      os << origresp._request << '\n';
+      for (const auto & pfx : origresp._prefixes) {
+        os << pfx;
+      }
+      return os;
+    }
+    
   }  // namespace McCurtain
 
 }  // namespace Dwm

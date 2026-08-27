@@ -142,6 +142,12 @@ namespace Dwm {
       //!  
       //----------------------------------------------------------------------
       bool operator == (const OriginResponse &) const = default;
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      friend std::ostream & operator << (std::ostream & os,
+                                         const OriginResponse & origresp);
       
     private:
       OriginRequest              _request;
