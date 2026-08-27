@@ -141,6 +141,12 @@ namespace Dwm {
       //!  
       //----------------------------------------------------------------------
       bool operator == (const OriginRequest &) const = default;
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      friend std::ostream & operator << (std::ostream & os,
+                                         const OriginRequest & origreq);
       
     private:
       IpAddress  _address;
