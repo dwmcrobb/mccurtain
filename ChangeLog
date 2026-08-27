@@ -1,3 +1,11 @@
+2026-08-27  dwm  <dwm@ria.mcplex.net>
+
+	* Added support for new UDP messaging with no encryption or
+	authentication: a single round trip will fetch the origin
+	prefixes and ASes for a given IPv4 address.  The server
+	can handle the binary form or JSON.  The encpasulation is
+	in Dwm::McCurtain::Message.
+
 2026-08-20  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
 	* apps/mccurtaind/DwmMcCurtainDnsServer.cc
@@ -12,7 +20,9 @@
 
 2026-08-13  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
-	* Add LoadCAIDAV4Routeviews(const CaidaV4Routeviews &) and use
+	* classes/include/DwmMcCurtainIpv4Net2AS.hh
+	* classes/src/DwmMcCurtainIpv4Net2AS.cc
+	Add LoadCAIDAV4Routeviews(const CaidaV4Routeviews &) and use
 	it to simplify the constructor and
 	LoadCAIDAV4Routeviews(const std::string & path).
 
