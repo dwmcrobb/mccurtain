@@ -1,5 +1,10 @@
 2026-08-27  dwm  <dwm@ria.mcplex.net>
 
+	* tagged as mccurtain-0.0.25
+
+	* apps/mccurtain/mccurtain.cc: Check ID match in message
+	header when using UDP.
+
 	* tagged as tagged as mccurtain-0.0.24
 
 	* Added support for new UDP messaging with no encryption or
