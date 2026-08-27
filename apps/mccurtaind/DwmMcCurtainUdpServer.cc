@@ -37,6 +37,10 @@
 //!  @brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
+extern "C" {
+  #include <sys/select.h>
+}
+
 #include "DwmMcCurtainMessage.hh"
 #include "DwmMcCurtainUdpServer.hh"
 
@@ -47,7 +51,8 @@ namespace Dwm {
     //------------------------------------------------------------------------
     UdpServer::UdpServer(const Ipv4Net2AS & ipv42as, const RipeAsnTxt & asntxt)
         : _ipv42as(ipv42as), _asntxt(asntxt), _binfd(-1), _jsonfd(-1),
-          _bin6fd(-1), _json6fd(-1), _stopfds{-1,-1}
+          _bin6fd(-1), _json6fd(-1), _stopfds{-1,-1}, _thread(),
+          _shouldRun(false)
     {}
 
     //------------------------------------------------------------------------
@@ -60,6 +65,14 @@ namespace Dwm {
     bool UdpServer::Start()
     {
       bool  rc = false;
+      if (0 == ::pipe(_stopfds)) {
+        if (OpenSockets()) {
+          if (BindSockets()) {
+            _thread = std::thread(&UdpServer::Run, this);
+            rc = true;
+          }
+        }
+      }
       return rc;
     }
 
@@ -67,9 +80,48 @@ namespace Dwm {
     bool UdpServer::Stop()
     {
       bool  rc = false;
+      _shouldRun = false;
+      char  stop = 's';
+      ::write(_stopfds[1], &stop, sizeof(stop));
+      if (_thread.joinable()) {
+        _thread.join();
+        CloseStopPipe();
+        CloseSockets();
+        rc = true;
+      }
       return rc;
     }
 
+    //------------------------------------------------------------------------
+    void UdpServer::Run()
+    {
+      fd_set        fds;
+      int           maxfd;
+      auto reset_fds = [&] () -> void
+      {
+        FD_ZERO(&fds);
+        maxfd = 0;
+        if (0 <= _binfd)       { FD_SET(_binfd, &fds); }
+        if (0 <= _jsonfd)      { FD_SET(_jsonfd, &fds); }
+        if (0 <= _bin6fd)      { FD_SET(_bin6fd, &fds); }
+        if (0 <= _json6fd)     { FD_SET(_json6fd, &fds); }
+        if (0 <= _stopfds[0])  { FD_SET(_stopfds[0], &fds); }
+        maxfd = std::max({_binfd,_jsonfd,_bin6fd,_json6fd,_stopfds[0]});
+      };
+      
+      while (_shouldRun) {
+        reset_fds();
+        int  selectrc = select(maxfd, &fds, nullptr, nullptr, nullptr);
+        if (FD_ISSET(_stopfds[0], &fds))  { break; }
+        if (FD_ISSET(_binfd, &fds))       { RespondBinary(_binfd); }
+        if (FD_ISSET(_bin6fd, &fds))      { RespondBinary6(_bin6fd); }
+        if (FD_ISSET(_jsonfd, &fds))      { RespondJson(_jsonfd); }
+        if (FD_ISSET(_json6fd, &fds))     { RespondJson6(_json6fd); }
+      }
+      
+      return;
+    }
+    
     //------------------------------------------------------------------------
     bool UdpServer::BindSockets()
     {

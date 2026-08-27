@@ -49,6 +49,7 @@
 #include "DwmMcCurtainResponder.hh"
 #include "DwmMcCurtainRipeAsnTxt.hh"
 #include "DwmMcCurtainDnsServer.hh"
+#include "DwmMcCurtainUdpServer.hh"
 
 namespace Dwm {
 
@@ -66,7 +67,7 @@ namespace Dwm {
       template <typename Ex>
       Server(Ex executor, const Config & config)
           : _config(config), _ipv42as(), _as2ipv4(),
-            _dnsServer(_ipv42as, _asntxt),
+            _dnsServer(_ipv42as, _asntxt), _udpServer(_ipv42as, _asntxt),
             _keyStash(config.Service().KeyDirectory()),
             _knownKeys(config.Service().KeyDirectory()),
             _allowedClients(config.Service().AllowedClients()),
@@ -77,6 +78,7 @@ namespace Dwm {
 
         InitDatabases();
         _dnsServer.Start();
+        _udpServer.Start();
         
         for (auto & ep : config.Service().Addresses()) {
           ip::tcp::acceptor  acc(executor);
@@ -114,6 +116,7 @@ namespace Dwm {
       Ipv4Net2AS                                  _ipv42as;
       AS2Ipv4Net                                  _as2ipv4;
       DnsServer                                   _dnsServer;
+      UdpServer                                   _udpServer;
       RipeAsnTxt                                  _asntxt;
       Credence::KeyStash                          _keyStash;
       Credence::KnownKeys                         _knownKeys;

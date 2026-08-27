@@ -42,11 +42,15 @@
 
 #include "DwmMcCurtainAS2Ipv4Net.hh"
 #include "DwmMcCurtainRipeAsnTxt.hh"
+#include "DwmMcCurtainMessage.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
     class UdpServer
     {
     public:
@@ -55,6 +59,7 @@ namespace Dwm {
       ~UdpServer();
       bool Start();
       bool Stop();
+      void Run();
       
     private:
       const Ipv4Net2AS  & _ipv42as;
@@ -64,7 +69,9 @@ namespace Dwm {
       int                 _bin6fd;
       int                 _json6fd;
       int                 _stopfds[2];
-
+      std::thread         _thread;
+      bool                _shouldRun;
+      
       bool BindSockets();
       bool OpenSockets();
       void CloseSockets();

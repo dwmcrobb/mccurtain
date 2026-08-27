@@ -61,6 +61,7 @@ namespace Dwm {
         a.cancel();
       }
       _dnsServer.Stop();
+      _udpServer.Stop();
       MCLOG(LOG_INFO, "Server stopped");
       return;
     }
