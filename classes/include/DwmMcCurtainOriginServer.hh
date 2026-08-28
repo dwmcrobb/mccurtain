@@ -36,7 +36,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcCurtainOriginServer.hh
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief NOT Dwm::McCurtain::OriginServer class declaration
 //---------------------------------------------------------------------------
 
 #include <atomic>
@@ -49,13 +49,32 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates an origin server from the perspective of a client.
+    //!  Currently can only be used for IP -> origin queries.  Queries and
+    //!  responses are sent via UDP, ununecrypted and unauthenticated.  This
+    //!  is the fastest remote lookup machanism, due to a very small header
+    //!  and binary transport.
     //------------------------------------------------------------------------
     class OriginServer
     {
     public:
+      //----------------------------------------------------------------------
+      //!  Construct for a server at @c host on port @c port.  Throws a
+      //!  std::invalid_argument if @c host is not an IP address (v4 or v6)
+      //!  and cannot be resolved as a host name.  Throws a std::system_error
+      //!  if a UDP socket can not be opened.
+      //----------------------------------------------------------------------
       OriginServer(const std::string & host, uint16_t port = 8645);
+      
+      //----------------------------------------------------------------------
+      //!  Destrudtor.  Closes the encapsulated socket.
+      //----------------------------------------------------------------------
       ~OriginServer();
+      
+      //----------------------------------------------------------------------
+      //!  Requests origin information for @c addr, storing it in  @c orig.
+      //!  Returns true on success, false on failure.
+      //----------------------------------------------------------------------
       bool GetOrigin(const Ipv4Address & addr, OriginResponse & orig) const;
       
     private:
