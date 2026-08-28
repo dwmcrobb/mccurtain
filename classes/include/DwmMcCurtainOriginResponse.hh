@@ -34,7 +34,7 @@
 //---------------------------------------------------------------------------
 //!  @file DwmMcCurtainOriginResponse.hh
 //!  @author Daniel W. McRobb
-//!  @brief NOT YET DOCUMENTED
+//!  @brief Dwm::McCurtain::OriginResponse class definition
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINORIGINRESPONSE_HH_
@@ -50,18 +50,18 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates a response to a query for IP address origin information.
     //------------------------------------------------------------------------
     class OriginResponse
     {
     public:
       //----------------------------------------------------------------------
-      //!  
+      //!  default constructor
       //----------------------------------------------------------------------
       OriginResponse() = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Construct from the given @c request and @c prefixes.
       //----------------------------------------------------------------------
       OriginResponse(const OriginRequest & request,
                      const std::vector<OriginPrefix> & prefixes)
@@ -69,82 +69,83 @@ namespace Dwm {
       {}
 
       //----------------------------------------------------------------------
-      //!  
+      //!  copy constructor
       //----------------------------------------------------------------------
       OriginResponse(const OriginResponse &) = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  move constructor
       //----------------------------------------------------------------------
       OriginResponse(OriginResponse &&) = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  copy assignment operator
       //----------------------------------------------------------------------
       OriginResponse & operator = (const OriginResponse &) = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  move assignment operator
       //----------------------------------------------------------------------
       OriginResponse & operator = (OriginResponse &&) = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  destructor
       //----------------------------------------------------------------------
       ~OriginResponse() = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the encapsulated request.
       //----------------------------------------------------------------------
       const OriginRequest & Request() const
       { return _request; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the encapsulated request.
       //----------------------------------------------------------------------
       const OriginRequest & Request(const OriginRequest & request)
       { return _request = request; }
         
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the encapsulated prefixes.
       //----------------------------------------------------------------------
       const std::vector<OriginPrefix> & Prefixes() const
       { return _prefixes; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the encapsulated prefixes.
       //----------------------------------------------------------------------
       const std::vector<OriginPrefix> &
       Prefixes(const std::vector<OriginPrefix> & prefixes)
       { return _prefixes = prefixes; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Reads the OriginResponse from an istream.  Returns the istream.
       //----------------------------------------------------------------------
       std::istream & Read(std::istream & is);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Writes the OriginResponse to an ostream.  Returns the ostream.
       //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Populqtes the OriginResponse from the given json @c j.  Returns
+      //!  true on success, false on failure.
       //----------------------------------------------------------------------
       bool FromJson(const nlohmann::json & j);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a json representation of the OriginResponse.
       //----------------------------------------------------------------------
       nlohmann::json ToJson() const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Equality operator
       //----------------------------------------------------------------------
       bool operator == (const OriginResponse &) const = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  ostream output operator
       //----------------------------------------------------------------------
       friend std::ostream & operator << (std::ostream & os,
                                          const OriginResponse & origresp);
