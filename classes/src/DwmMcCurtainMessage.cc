@@ -38,6 +38,8 @@
 //---------------------------------------------------------------------------
 
 #include <cerrno>
+#include <span>
+#include <version>
 
 #if defined(__cpp_lib_spanstream)
 #  if (__cpp_lib_spanstream >= 202106L)
@@ -131,7 +133,7 @@ namespace Dwm {
     //!  
     //------------------------------------------------------------------------
     template <typename AT>
-    ssize_t SendTo(int fd, const AT *dest, const Message *msg)
+    ssize_t SendToTmpl(int fd, const AT *dest, const Message *msg)
     {
       ssize_t  rc = -1;
       if ((0 <= fd) && dest) {
@@ -153,18 +155,18 @@ namespace Dwm {
     //------------------------------------------------------------------------
     ssize_t Message::SendTo(int fd, const sockaddr_in *dest) const
     {
-      return SendTo<sockaddr_in>(fd, dest, this);
+      return SendToTmpl<sockaddr_in>(fd, dest, this);
     }
 
     //------------------------------------------------------------------------
     ssize_t Message::SendTo(int fd, const sockaddr_in6 *dest) const
     {
-      return SendTo<sockaddr_in6>(fd, dest, this);
+      return SendToTmpl<sockaddr_in6>(fd, dest, this);
     }
 
     //------------------------------------------------------------------------
     template <typename AT>
-    ssize_t RecvFrom(int fd, AT *src, Message *msg)
+    ssize_t RecvFromTmpl(int fd, AT *src, Message *msg)
     {
       ssize_t  rc = -1;
       if (0 <= fd) {
@@ -184,18 +186,18 @@ namespace Dwm {
     //------------------------------------------------------------------------
     ssize_t Message::RecvFrom(int fd, sockaddr_in *src)
     {
-      return RecvFrom<sockaddr_in>(fd, src, this);
+      return RecvFromTmpl<sockaddr_in>(fd, src, this);
     }
 
     //------------------------------------------------------------------------
     ssize_t Message::RecvFrom(int fd, sockaddr_in6 *src)
     {
-      return RecvFrom<sockaddr_in6>(fd, src, this);
+      return RecvFromTmpl<sockaddr_in6>(fd, src, this);
     }
 
     //------------------------------------------------------------------------
     template <typename AT>
-    ssize_t SendJsonTo(int fd, const AT *dest, const Message *msg)
+    ssize_t SendJsonToTmpl(int fd, const AT *dest, const Message *msg)
     {
       ssize_t  rc = -1;
       if (0 <= fd) {
@@ -213,20 +215,20 @@ namespace Dwm {
     //------------------------------------------------------------------------
     ssize_t Message::SendJsonTo(int fd, const sockaddr_in *dest) const
     {
-      return SendJsonTo<sockaddr_in>(fd, dest, this);
+      return SendJsonToTmpl<sockaddr_in>(fd, dest, this);
     }
 
     //------------------------------------------------------------------------
     ssize_t Message::SendJsonTo(int fd, const sockaddr_in6 *dest) const
     {
-      return SendJsonTo<sockaddr_in6>(fd, dest, this);
+      return SendJsonToTmpl<sockaddr_in6>(fd, dest, this);
     }
     
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
     template <typename AT>
-    ssize_t RecvJsonFrom(int fd, AT *src, Message *msg)
+    ssize_t RecvJsonFromTmpl(int fd, AT *src, Message *msg)
     {
       ssize_t  rc = -1;
       if (0 <= fd) {
@@ -252,13 +254,13 @@ namespace Dwm {
     //------------------------------------------------------------------------
     ssize_t Message::RecvJsonFrom(int fd, sockaddr_in *src)
     {
-      return RecvJsonFrom<sockaddr_in>(fd, src, this);
+      return RecvJsonFromTmpl<sockaddr_in>(fd, src, this);
     }
 
     //------------------------------------------------------------------------
     ssize_t Message::RecvJsonFrom(int fd, sockaddr_in6 *src)
     {
-      return RecvJsonFrom<sockaddr_in6>(fd, src, this);
+      return RecvJsonFromTmpl<sockaddr_in6>(fd, src, this);
     }
     
       
