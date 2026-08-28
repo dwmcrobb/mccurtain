@@ -34,7 +34,7 @@
 //---------------------------------------------------------------------------
 //!  @file DwmMcCurtainOriginAS.hh
 //!  @author Daniel W. McRobb
-//!  @brief NOT YET DOCUMENTED
+//!  @brief Dwm::McCurtain::OriginAS class declaration
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINORIGINAS_HH_
@@ -50,18 +50,20 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates autonomous system informationL AS number, country code
+    //!  and AS name.
     //------------------------------------------------------------------------
     class OriginAS
     {
     public:
       //----------------------------------------------------------------------
-      //!  
+      //!  default constructor
       //----------------------------------------------------------------------
       OriginAS() = default;
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Construct from the given AS number @c asnum, country code
+      //!  @c countryCode and AS name @c name.
       //----------------------------------------------------------------------
       OriginAS(uint32_t asnum, const std::string & countryCode,
                const std::string & name)
@@ -69,68 +71,69 @@ namespace Dwm {
       {}
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the contained AS number.
       //----------------------------------------------------------------------
       uint32_t Number() const
       { return _number; }
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the contained AS number.
       //----------------------------------------------------------------------
       uint32_t Number(uint32_t asnum)
       { return _number = asnum; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the contained country code.
       //----------------------------------------------------------------------
       const std::string & CountryCode() const
       { return _countryCode; }
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the contained country code.
       //----------------------------------------------------------------------
       const std::string & CountryCode(const std::string & countryCode)
       { return _countryCode = countryCode; }
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the contained name.
       //----------------------------------------------------------------------
       const std::string & Name() const
       { return _name; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the contained name.
       //----------------------------------------------------------------------
       const std::string & Name(const std::string & name)
       { return _name = name; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Reads the OriginAS from an istream.  Returns the istream.
       //----------------------------------------------------------------------
       std::istream & Read(std::istream & is);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Writes the OriginAS to an ostream.  Returns the ostream.
       //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Populates the OriginAS from the given json @c j.  Returns true on
+      //!  success, false on failure.
       //----------------------------------------------------------------------
       bool FromJson(const nlohmann::json & j);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a json representation of the OriginAS.
       //----------------------------------------------------------------------
       nlohmann::json ToJson() const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Equality operator.
       //----------------------------------------------------------------------
       bool operator == (const OriginAS &) const = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  ostream output operator (human readable)
       //----------------------------------------------------------------------
       friend std::ostream & operator << (std::ostream & os,
                                          const OriginAS & origas);
