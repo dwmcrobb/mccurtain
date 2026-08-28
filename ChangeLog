@@ -1,5 +1,8 @@
 2026-08-28  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
+	* classes/include/DwmMcCurtainOriginServer.hh
+	Added comments.
+
 	* apps/mccurtain/mccurtain.cc
 	Use new OriginServer interface for UDP.
 
