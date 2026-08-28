@@ -1,5 +1,7 @@
 2026-08-28  dwm  <dwm@nomnom.mcplex.net>
 
+	* tagged as mccurtain-0.0.26
+
 	* classes/tests/TestMessage.cc
 	#include <span> and <version>
 
