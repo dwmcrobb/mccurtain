@@ -1,5 +1,6 @@
 2026-08-28  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
+	* classes/include/DwmMcCurtainOriginPrefix.hh
 	* classes/include/DwmMcCurtainOriginAS.hh
 	* classes/include/DwmMcCurtainMessageHeader.hh
 	* classes/include/DwmMcCurtainOriginServer.hh
