@@ -38,6 +38,9 @@
 //---------------------------------------------------------------------------
 
 #include <fstream>
+#include <span>
+#include <version>
+
 #if defined(__cpp_lib_spanstream)
 #  if (__cpp_lib_spanstream >= 202106L)
 #    if __has_include(<spanstream>)
