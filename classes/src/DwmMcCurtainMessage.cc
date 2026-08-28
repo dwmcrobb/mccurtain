@@ -131,7 +131,7 @@ namespace Dwm {
     //!  
     //------------------------------------------------------------------------
     template <typename AT>
-    ssize_t SendTo(int fd, AT *dest, const Message *msg)
+    ssize_t SendTo(int fd, const AT *dest, const Message *msg)
     {
       ssize_t  rc = -1;
       if ((0 <= fd) && dest) {
@@ -151,13 +151,13 @@ namespace Dwm {
     }
     
     //------------------------------------------------------------------------
-    ssize_t Message::SendTo(int fd, sockaddr_in *dest) const
+    ssize_t Message::SendTo(int fd, const sockaddr_in *dest) const
     {
       return SendTo<sockaddr_in>(fd, dest, this);
     }
 
     //------------------------------------------------------------------------
-    ssize_t Message::SendTo(int fd, sockaddr_in6 *dest) const
+    ssize_t Message::SendTo(int fd, const sockaddr_in6 *dest) const
     {
       return SendTo<sockaddr_in6>(fd, dest, this);
     }
@@ -195,7 +195,7 @@ namespace Dwm {
 
     //------------------------------------------------------------------------
     template <typename AT>
-    ssize_t SendJsonTo(int fd, AT *dest, const Message *msg)
+    ssize_t SendJsonTo(int fd, const AT *dest, const Message *msg)
     {
       ssize_t  rc = -1;
       if (0 <= fd) {
@@ -211,13 +211,13 @@ namespace Dwm {
     }
     
     //------------------------------------------------------------------------
-    ssize_t Message::SendJsonTo(int fd, sockaddr_in *dest) const
+    ssize_t Message::SendJsonTo(int fd, const sockaddr_in *dest) const
     {
       return SendJsonTo<sockaddr_in>(fd, dest, this);
     }
 
     //------------------------------------------------------------------------
-    ssize_t Message::SendJsonTo(int fd, sockaddr_in6 *dest) const
+    ssize_t Message::SendJsonTo(int fd, const sockaddr_in6 *dest) const
     {
       return SendJsonTo<sockaddr_in6>(fd, dest, this);
     }

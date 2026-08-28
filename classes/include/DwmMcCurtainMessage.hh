@@ -122,12 +122,12 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      ssize_t SendTo(int fd, sockaddr_in *dest) const;
+      ssize_t SendTo(int fd, const sockaddr_in *dest) const;
 
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      ssize_t SendTo(int fd, sockaddr_in6 *dest) const;
+      ssize_t SendTo(int fd, const sockaddr_in6 *dest) const;
       
       //----------------------------------------------------------------------
       //!  
@@ -139,9 +139,9 @@ namespace Dwm {
       //----------------------------------------------------------------------
       ssize_t RecvFrom(int fd, sockaddr_in6 *src);
 
-      ssize_t SendJsonTo(int fd, sockaddr_in *dest) const;
+      ssize_t SendJsonTo(int fd, const sockaddr_in *dest) const;
 
-      ssize_t SendJsonTo(int fd, sockaddr_in6 *dest) const;
+      ssize_t SendJsonTo(int fd, const sockaddr_in6 *dest) const;
       
       //----------------------------------------------------------------------
       //!  

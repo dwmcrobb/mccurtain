@@ -1,3 +1,17 @@
+2026-08-28  Daniel W. McRobb  <dwm@kiva.mcplex.net>
+
+	* apps/mccurtain/mccurtain.cc
+	Use new OriginServer interface for UDP.
+
+	* classes/include/DwmMcCurtainMessage.hh
+	* classes/include/DwmMcCurtainMessage.hh
+	SendTo() and SendJsonTo() methods now have pointer to const
+	destination address.
+
+	* classes/include/DwmMcCurtainOriginServer.hh
+	* classes/src/DwmMcCurtainOriginServer.cc
+	New interface that may be used by UDP clients.
+
 2026-08-27  dwm  <dwm@ria.mcplex.net>
 
 	* tagged as mccurtain-0.0.25
