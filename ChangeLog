@@ -1,5 +1,7 @@
 2026-08-29  dwm  <dwm@nomnom.mcplex.net>
 
+	* tagged as mccurtain-0.0.27
+
 	* classes/src/DwmMcCurtainConfigParse.y: g_configPath and g_config
 	are now static.
 
