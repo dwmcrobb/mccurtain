@@ -111,6 +111,14 @@ namespace Dwm {
       j["nm"] = _name;
       return j;
     }
+
+    //------------------------------------------------------------------------
+    std::ostream & operator << (std::ostream & os, const OriginAS & origas)
+    {
+      os << origas._number << ' ' << origas._countryCode << ' '
+         << origas._name;
+      return os;
+    }
     
     //------------------------------------------------------------------------
     void OriginAS::Clear()

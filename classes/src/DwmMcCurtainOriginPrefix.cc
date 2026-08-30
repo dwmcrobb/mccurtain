@@ -102,6 +102,21 @@ namespace Dwm {
       }
       return j;
     }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    std::ostream & operator << (std::ostream & os,
+                                const OriginPrefix & origpfx)
+    {
+      os << "   " << origpfx.Prefix() << '\n';
+      if (! origpfx.ASes().empty()) {
+        for (const auto & as : origpfx.ASes()) {
+          os << "      " << as << '\n';
+        }
+      }
+      return os;
+    }
     
   }  // namespace McCurtain
 

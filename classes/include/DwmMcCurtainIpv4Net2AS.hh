@@ -50,6 +50,7 @@
 #include <set>
 #include <utility>
 #include <vector>
+#include <version>
 
 #include "DwmBZ2IO.hh"
 #include "DwmDescriptorIO.hh"
@@ -377,7 +378,13 @@ namespace Dwm {
                 erase(it);
                 auto [iit, inserted] = insert(agg);
                 if (! inserted) {
+#if (__cpp_lib_containers_ranges >= 202202L)
                   iit->second.insert_range(agg.second);
+#else
+                  for (const auto & as : agg.second) {
+                    iit->second.insert(as);
+                  }
+#endif
                 }
                 it = iit;
                 combining = true;

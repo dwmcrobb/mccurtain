@@ -17,6 +17,7 @@ OBJS         = DwmMcCurtainASInfo.o \
                DwmMcCurtainOriginPrefix.o \
                DwmMcCurtainOriginResponse.o \
                DwmMcCurtainOriginRequest.o \
+               DwmMcCurtainOriginServer.o \
                DwmMcCurtainRipeAsnTxt.o \
                DwmMcCurtainServiceConfig.o \
                DwmMcCurtainVersion.o

@@ -34,7 +34,7 @@
 //---------------------------------------------------------------------------
 //!  @file DwmMcCurtainMessageHeader.hh
 //!  @author Daniel W. McRobb
-//!  @brief NOT YET DOCUMENTED
+//!  @brief Dwm::McCurtain::MessageHeader class declaration
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINMESSAGEHEADER_HH_
@@ -48,7 +48,8 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates the Message header used for IP -> origin requests and
+    //!  responses.  Currently only used for UDP messaging.
     //------------------------------------------------------------------------
     class MessageHeader
     {
@@ -58,14 +59,17 @@ namespace Dwm {
       static constexpr uint16_t  k_truncatedMask = 0x0080;  //  1 bit
       static constexpr uint16_t  k_unusedMask    = 0x007F;  //  7 bits
 
+      //----------------------------------------------------------------------
+      //!  Valid message types.
+      //----------------------------------------------------------------------
       enum class MsgType : uint8_t {
         e_typeNone            = 0,
-        e_typeOriginRequest   = 1,
-        e_typeOriginResponse  = 2
+        e_typeOriginRequest   = 1,   //  IP address origin request
+        e_typeOriginResponse  = 2    //  Response to IP address origin request
       };
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Constructor
       //----------------------------------------------------------------------
       MessageHeader(uint8_t version = 1)
           : _id(0)
@@ -76,7 +80,7 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the version.
       //----------------------------------------------------------------------
       uint8_t Version() const
       {
@@ -84,7 +88,7 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the version.
       //----------------------------------------------------------------------
       uint8_t Version(const uint8_t version)
       {
@@ -94,7 +98,7 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the message type.
       //----------------------------------------------------------------------
       MsgType Type() const
       {
@@ -102,7 +106,7 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the message type.
       //----------------------------------------------------------------------
       MsgType Type(MsgType msgType)
       {
@@ -112,7 +116,7 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns true if the message is truncated.
       //----------------------------------------------------------------------
       bool Truncated() const
       {
@@ -120,7 +124,7 @@ namespace Dwm {
       }
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the truncation flag.
       //----------------------------------------------------------------------
       bool Truncated(bool truncated)
       {
@@ -132,7 +136,8 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the message ID.  This can be used by a client to match
+      //!  queries to requests.
       //----------------------------------------------------------------------
       uint16_t Id() const
       {
@@ -140,7 +145,7 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the message ID.
       //----------------------------------------------------------------------
       uint16_t Id(uint16_t id)
       {
@@ -149,21 +154,27 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Reads the header from an istream.  Returns the istream.
       //----------------------------------------------------------------------
       std::istream & Read(std::istream & is);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Writes the header to an ostream.  Returns the ostream.
       //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const;
 
+      //----------------------------------------------------------------------
+      //!  Populates the header from the given json @c j.
+      //----------------------------------------------------------------------
       bool FromJson(const nlohmann::json & j);
       
+      //----------------------------------------------------------------------
+      //!  Returns a json representation of the header.
+      //----------------------------------------------------------------------
       nlohmann::json ToJson() const;
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Equality operator
       //----------------------------------------------------------------------
       bool operator == (const MessageHeader &) const = default;
       

@@ -28,8 +28,8 @@
 
   using namespace std;
   
-  string                   g_configPath;
-  Dwm::McCurtain::Config    *g_config = nullptr;
+  static string                   g_configPath;
+  static Dwm::McCurtain::Config  *g_config = nullptr;
 
 %}
 

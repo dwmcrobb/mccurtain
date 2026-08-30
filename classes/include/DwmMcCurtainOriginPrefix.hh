@@ -34,7 +34,7 @@
 //---------------------------------------------------------------------------
 //!  @file DwmMcCurtainOriginPrefix.hh
 //!  @author Daniel W. McRobb
-//!  @brief NOT YET DOCUMENTED
+//!  @brief Dwm::McCurtain::OriginPrefix class definition
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINORIGINPREFIX_HH_
@@ -50,70 +50,78 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates an IP prefix and the ASes that appear to be origin
+    //!  ASes for the prefix.
     //------------------------------------------------------------------------
     class OriginPrefix
     {
     public:
       //----------------------------------------------------------------------
-      //!  
+      //!  default constructor
       //----------------------------------------------------------------------
       OriginPrefix() = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the contained prefix.
       //----------------------------------------------------------------------
       const IpPrefix & Prefix() const
       { return _prefix; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the contained prefix.
       //----------------------------------------------------------------------
       const IpPrefix & Prefix(const IpPrefix & pfx)
       { return _prefix = pfx; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a const reference to the contained ASes.
       //----------------------------------------------------------------------
       const std::vector<OriginAS> & ASes() const
       { return _ases; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a mutable reference to the contained ASes.
       //----------------------------------------------------------------------
       std::vector<OriginAS> & ASes()
       { return _ases; }
         
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the contained ASes.
       //----------------------------------------------------------------------
       const std::vector<OriginAS> & ASes(const std::vector<OriginAS> & ases)
       { return _ases = ases; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Reads the OriginPrefix from an istream.  Returns the istream.
       //----------------------------------------------------------------------
       std::istream & Read(std::istream & is);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Writes the OriginPrefix to an ostream.  Returns the ostream.
       //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Populate the OriginPrefix from the given json @c j.  Returns true
+      //!  on success, false on failure.
       //----------------------------------------------------------------------
       bool FromJson(const nlohmann::json & j);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a json represenation of the OriginPrefix.
       //----------------------------------------------------------------------
       nlohmann::json ToJson() const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Equality operator
       //----------------------------------------------------------------------
       bool operator == (const OriginPrefix &) const = default;
+
+      //----------------------------------------------------------------------
+      //!  ostream output operator (human readable)
+      //----------------------------------------------------------------------
+      friend std::ostream & operator << (std::ostream & os,
+                                         const OriginPrefix & origpfx);
       
     private:
       IpPrefix               _prefix;

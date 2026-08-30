@@ -1,3 +1,63 @@
+2026-08-29  dwm  <dwm@nomnom.mcplex.net>
+
+	* tagged as mccurtain-0.0.27
+
+	* classes/src/DwmMcCurtainConfigParse.y: g_configPath and g_config
+	are now static.
+
+2026-08-28  dwm  <dwm@nomnom.mcplex.net>
+
+	* tagged as mccurtain-0.0.26
+
+	* classes/tests/TestMessage.cc
+	#include <span> and <version>
+
+	* classes/src/DwmMcCurtainMessage.cc
+	Renamed function templates to allow older gcc overload resolution
+	to function correctly.
+
+	* classes/include/DwmMcCurtainIpv4Net2AS.hh
+	Need to check for __cpp_lib_containers_ranges >= 202202L before
+	using std::set::insert_range()
+
+2026-08-28  Daniel W. McRobb  <dwm@kiva.mcplex.net>
+
+	* classes/include/DwmMcCurtainMessage.hh
+	* include/DwmMcCurtainOriginResponse.hh
+	* classes/include/DwmMcCurtainOriginRequest.hh
+	* classes/include/DwmMcCurtainOriginPrefix.hh
+	* classes/include/DwmMcCurtainOriginAS.hh
+	* classes/include/DwmMcCurtainMessageHeader.hh
+	* classes/include/DwmMcCurtainOriginServer.hh
+	Added comments.
+
+	* apps/mccurtain/mccurtain.cc
+	Use new OriginServer interface for UDP.
+
+	* classes/include/DwmMcCurtainMessage.hh
+	* classes/include/DwmMcCurtainMessage.hh
+	SendTo() and SendJsonTo() methods now have pointer to const
+	destination address.
+
+	* classes/include/DwmMcCurtainOriginServer.hh
+	* classes/src/DwmMcCurtainOriginServer.cc
+	New interface that may be used by UDP clients.
+
+2026-08-27  dwm  <dwm@ria.mcplex.net>
+
+	* tagged as mccurtain-0.0.25
+
+	* apps/mccurtain/mccurtain.cc: Check ID match in message
+	header when using UDP.
+
+	* tagged as tagged as mccurtain-0.0.24
+
+	* Added support for new UDP messaging with no encryption or
+	authentication: a single round trip will fetch the origin
+	prefixes and ASes for a given IPv4 address.  The server
+	can handle the binary form or JSON.  The encpasulation is
+	in Dwm::McCurtain::Message.
+
 2026-08-20  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
 	* apps/mccurtaind/DwmMcCurtainDnsServer.cc
@@ -12,7 +72,9 @@
 
 2026-08-13  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
-	* Add LoadCAIDAV4Routeviews(const CaidaV4Routeviews &) and use
+	* classes/include/DwmMcCurtainIpv4Net2AS.hh
+	* classes/src/DwmMcCurtainIpv4Net2AS.cc
+	Add LoadCAIDAV4Routeviews(const CaidaV4Routeviews &) and use
 	it to simplify the constructor and
 	LoadCAIDAV4Routeviews(const std::string & path).
 

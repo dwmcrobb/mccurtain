@@ -34,7 +34,7 @@
 //---------------------------------------------------------------------------
 //!  @file DwmMcCurtainOriginRequest.hh
 //!  @author Daniel W. McRobb
-//!  @brief NOT YET DOCUMENTED
+//!  @brief Dwm::McCurtain::OriginRequest class definition
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCCURTAINORIGINREQUEST_HH_
@@ -49,98 +49,106 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates a request for IP address origin information.  This
+    //!  represents one potential payload inside a Message.
     //------------------------------------------------------------------------
     class OriginRequest
     {
     public:
       //----------------------------------------------------------------------
-      //!  
+      //!  default constructor
       //----------------------------------------------------------------------
       OriginRequest() = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Construct from the given IpAddress @c address
       //----------------------------------------------------------------------
       OriginRequest(const IpAddress & address)
           : _address(address)
       {}
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Construct from the given Ipv4Address @c address
       //----------------------------------------------------------------------
       OriginRequest(const Ipv4Address & address)
           : _address(address)
       {}
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Construct from the given Ipv6Address @c address
       //----------------------------------------------------------------------
       OriginRequest(const Ipv6Address & address)
           : _address(address)
       {}
       
       //----------------------------------------------------------------------
-      //!  
+      //! copy constructor
       //----------------------------------------------------------------------
       OriginRequest(const OriginRequest &) = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  move constructor
       //----------------------------------------------------------------------
       OriginRequest(OriginRequest &&) = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Copy assignment operator
       //----------------------------------------------------------------------
       OriginRequest & operator = (const OriginRequest &) = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Move assignment operator
       //----------------------------------------------------------------------
       OriginRequest & operator = (OriginRequest &&) = default;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  destructor
       //----------------------------------------------------------------------
       ~OriginRequest() = default;
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the encapsulated IP address.
       //----------------------------------------------------------------------
       const IpAddress & Address() const
       { return _address; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the encapsulated IP address.
       //----------------------------------------------------------------------
       const IpAddress & Address(const IpAddress & address)
       { return _address = address; }
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Reads the OriginRequest from an istream.  Returns the istream.
       //----------------------------------------------------------------------
       std::istream & Read(std::istream & is);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Writes the OriginRequest to an ostream.  Returns the ostream.
       //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Populates the OriginRequest from the given json @c j.  Returns
+      //!  true on success, false on failure.
       //----------------------------------------------------------------------
       bool FromJson(const nlohmann::json & j);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a json representation of the OriginRequest.
       //----------------------------------------------------------------------
       nlohmann::json ToJson() const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  equality operator
       //----------------------------------------------------------------------
       bool operator == (const OriginRequest &) const = default;
+
+      //----------------------------------------------------------------------
+      //!  ostream output operator (human-readable output)
+      //----------------------------------------------------------------------
+      friend std::ostream & operator << (std::ostream & os,
+                                         const OriginRequest & origreq);
       
     private:
       IpAddress  _address;

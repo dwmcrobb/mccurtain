@@ -74,6 +74,14 @@ namespace Dwm {
       nlohmann::json  j = (std::string)_address;
       return j;
     }
+
+    //------------------------------------------------------------------------
+    std::ostream & operator << (std::ostream & os,
+                                const OriginRequest & origreq)
+    {
+      os << origreq._address;
+      return os;
+    }
     
   }  // namespace McCurtain
 

@@ -53,6 +53,7 @@ extern "C" {
 #include "DwmMclogLogger.hh"
 #include "DwmCredencePeer.hh"
 #include "DwmMcCurtainMessage.hh"
+#include "DwmMcCurtainOriginServer.hh"
 #include "DwmMcCurtainRequests.hh"
 #include "DwmMcCurtainResponses.hh"
 #include "DwmMcCurtainVersion.hh"
@@ -165,75 +166,20 @@ static vector<string> SplitArg(const string & arg)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void UdpGetOrigin(const vector<string> & hostAddrs,
-                         const string & ipAddrStr,
-                         bool useJson)
+static void UdpGetOrigin(const vector<string> & servers,
+                         const string & ipAddrStr, bool useJson)
 {
-  for (const string & hostAddr : hostAddrs) {
-    IpAddress  ipAddr(hostAddr);
-    if (ipAddr.IsV4()) {
-      if (ipAddr.Addr<Ipv4Address>()->Raw() != INADDR_NONE) {
-        int  fd = socket(PF_INET, SOCK_DGRAM, 0);
-        if (0 <= fd) {
-          struct sockaddr_in  dstAddr;
-          memset(&dstAddr, 0, sizeof(dstAddr));
-          dstAddr.sin_addr.s_addr = ipAddr.Addr<Ipv4Address>()->Raw();
-          if (useJson) {
-            dstAddr.sin_port = htons(8647);
-          }
-          else {
-            dstAddr.sin_port = htons(8645);
-          }
-          dstAddr.sin_family = PF_INET;
-#ifndef __linux__
-          dstAddr.sin_len = sizeof(dstAddr);
-#endif
-          McCurtain::Message  msg;
-          msg.Header().Id(getpid() & 0xFFFF);
-          msg.Header().Type(McCurtain::MessageHeader::MsgType::e_typeOriginRequest);
-          McCurtain::OriginRequest  req{Dwm::Ipv4Address(ipAddrStr)};
-          msg.OrigRequest(req);
-          ssize_t  sendrc = -1;
-          if (useJson) {
-            sendrc = msg.SendJsonTo(fd, &dstAddr);
-          }
-          else {
-            sendrc = msg.SendTo(fd, &dstAddr);
-          }
-          if (0 < sendrc) {
-            fd_set  fds;
-            FD_ZERO(&fds);
-            FD_SET(fd, &fds);
-            struct timeval  timeout{2,0};
-            int  selrc = select(fd+1, &fds, nullptr, nullptr, &timeout);
-            if (selrc > 0) {
-              if (FD_ISSET(fd, &fds)) {
-                McCurtain::Message  rmsg;
-                sockaddr_in         fromAddr;
-                ssize_t             recvrc = -1;
-                if (useJson) {
-                  recvrc = rmsg.RecvJsonFrom(fd, &fromAddr);
-                }
-                else {
-                  recvrc = rmsg.RecvFrom(fd, &fromAddr);
-                }
-                if (0 < recvrc) {
-                  if (rmsg.Header().Type()
-                      == McCurtain::MessageHeader::MsgType::e_typeOriginResponse) {
-                    cout << rmsg.OrigResponse()->ToJson().dump() << '\n';
-                    ::close(fd);
-                    return;
-                  }
-                }
-              }
-            }
-            else {
-              cerr << "select() failed\n";
-            }
-          }
-          ::close(fd);
-        }
+  for (const auto & host : servers) {
+    McCurtain::OriginServer    server(host);
+    McCurtain::OriginResponse  response;
+    if (server.GetOrigin(Ipv4Address(ipAddrStr), response)) {
+      if (useJson) {
+        cout << response.ToJson() << '\n';
       }
+      else {
+        cout << response;
+      }
+      return;
     }
   }
   return;
