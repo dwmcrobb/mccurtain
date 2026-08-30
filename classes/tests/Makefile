@@ -1,9 +1,12 @@
 include ../../Makefile.vars
 
 OBJFILES = TestCaidaV4Routeviews.o \
+           TestCaidaV6Routeviews.o \
            TestIpv4Net2ASDb.o \
            TestIpv4Net2AS.o \
+           TestIpv6Net2AS.o \
            TestAS2Ipv4NetDb.o \
+           TestAS2Ipv6Net.o \
            TestConfig.o \
            TestMessage.o \
            TestMessageHeader.o \

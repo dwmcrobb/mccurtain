@@ -32,9 +32,9 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  @file DwmMcCurtainCaidaV4Routeviews.cc
+//!  @file DwmMcCurtainCaidaV6Routeviews.cc
 //!  @author Daniel W. McRobb
-//!  @brief Dwm::McCurtain::CaidaV4Routeviews implementation
+//!  @brief Dwm::McCurtain::CaidaV6Routeviews implementation
 //---------------------------------------------------------------------------
 
 #include <fstream>
@@ -42,7 +42,7 @@
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
-#include "DwmMcCurtainCaidaV4Routeviews.hh"
+#include "DwmMcCurtainCaidaV6Routeviews.hh"
 
 namespace Dwm {
 
@@ -51,9 +51,9 @@ namespace Dwm {
     using namespace std;
 
     //------------------------------------------------------------------------
-    bool CaidaV4Routeviews::ASMapValue::HaveWider(const Ipv4Prefix & pfx) const
+    bool CaidaV6Routeviews::ASMapValue::HaveWider(const Ipv6Prefix & pfx) const
     {
-      Ipv4Prefix  tmppfx(pfx);
+      Ipv6Prefix  tmppfx(pfx);
       for (auto rit = _prefixSets.rbegin(); rit != _prefixSets.rend(); ++rit) {
         if (rit->first >= pfx.MaskLength()) {
           continue;
@@ -67,7 +67,7 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    void CaidaV4Routeviews::ASMapValue::SwallowSpecifics()
+    void CaidaV6Routeviews::ASMapValue::SwallowSpecifics()
     {
       auto  sit = _prefixSets.rbegin();
       while (sit != _prefixSets.rend()) {
@@ -86,7 +86,7 @@ namespace Dwm {
     }
     
     //------------------------------------------------------------------------
-    void CaidaV4Routeviews::ASMapValue::Aggregate()
+    void CaidaV6Routeviews::ASMapValue::Aggregate()
     {
       SwallowSpecifics();
       
@@ -96,10 +96,10 @@ namespace Dwm {
           auto  curit = sit->second.begin();
           auto  nxtit = curit; ++nxtit;
           while (nxtit != sit->second.end()) {
-            Ipv4Prefix  curnxtpfx(*curit);
+            Ipv6Prefix  curnxtpfx(*curit);
             if ((! curit->Bit(curit->MaskLength() - 1))
                 && (++curnxtpfx == *nxtit)) {
-              Ipv4Prefix  aggpfx(curit->Network(), curit->MaskLength() - 1);
+              Ipv6Prefix  aggpfx(curit->Network(), curit->MaskLength() - 1);
               _prefixSets[aggpfx.MaskLength()].insert(aggpfx);
               sit->second.erase(curit);
               curit = sit->second.erase(nxtit);
@@ -146,7 +146,7 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    bool CaidaV4Routeviews::Load(const std::string & filePath)
+    bool CaidaV6Routeviews::Load(const std::string & filePath)
     {
       using boost::iostreams::filtering_streambuf;
       using boost::iostreams::gzip_decompressor;
@@ -162,8 +162,8 @@ namespace Dwm {
         string    addrstr, asnumstr;
         uint16_t  maskLen;
         while (gzis >> addrstr >> maskLen >> asnumstr) {
-          if (maskLen < 33) {
-            Dwm::Ipv4Prefix  pfx(addrstr, (uint8_t)maskLen);
+          if (maskLen < 129) {
+            Dwm::Ipv6Prefix  pfx(addrstr, (uint8_t)maskLen);
             _asSets[GetASNumbers(asnumstr)].Insert(pfx);
           }
         }
@@ -173,7 +173,7 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    void CaidaV4Routeviews::Aggregate()
+    void CaidaV6Routeviews::Aggregate()
     {
       size_t  origTotalPrefixes = TotalPrefixes();
 

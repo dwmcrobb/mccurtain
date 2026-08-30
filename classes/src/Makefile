@@ -5,6 +5,7 @@ OBJS         = DwmMcCurtainASInfo.o \
                DwmMcCurtainASes.o \
                DwmMcCurtainAS2Ipv4Net.o \
                DwmMcCurtainAS2Ipv4NetDb.o \
+               DwmMcCurtainAS2Ipv6Net.o \
                DwmMcCurtainCaidaV4Routeviews.o \
                DwmMcCurtainCaidaV6Routeviews.o \
                DwmMcCurtainConfigLex.o \
@@ -12,6 +13,7 @@ OBJS         = DwmMcCurtainASInfo.o \
                DwmMcCurtainDatabaseConfig.o \
                DwmMcCurtainIpv4Net2AS.o \
                DwmMcCurtainIpv4Net2ASDb.o \
+               DwmMcCurtainIpv6Net2AS.o \
                DwmMcCurtainMessage.o \
                DwmMcCurtainMessageHeader.o \
                DwmMcCurtainOriginAS.o \

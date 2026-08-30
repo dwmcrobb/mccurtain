@@ -1,10 +1,13 @@
 *.o
 *.db
 TestAS2Ipv4NetDb
+TestAS2Ipv6Net
 TestCaidaV4Routeviews
+TestCaidaV6Routeviews
 TestConfig
 TestIpv4Net2AS
 TestIpv4Net2ASDb
+TestIpv6Net2AS
 TestMessage
 TestMessageHeader
 TestOriginPrefix
