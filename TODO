@@ -1,0 +1,26 @@
+I'm at the point where it makes sense to combine the .db files into a
+single file.  That's 4 files into 1.  The in-memory representation
+needs to remain the same, but there's no reason I can't store all of
+the data in a single file.  This simplifies mkcurtaindb as well as
+the server code in mccurtaind.
+
+How did I get here in the first place?
+
+  Way back when, I was focused on the in-memory representation for
+  reasonably fast lookups.  Hence the separation of the prefixes->ASes
+  and ASes->prefixes mappings, as well as the AS->name mappings.  I
+  also didn't have IPv6 support, so I had 2 database files instead of
+  4.
+
+  Another primary reason: the ASes->prefixes mappings can be created
+  from the prefixes->ASes, and vice versa.  Neither representation is
+  very friendly for aggregation; they're designed for lookup.  So the
+  routeviews data gets its own representation that we use for
+  aggregation (while creating the databases).
+
+If I assume I always write all 4 of the mappings and always in the
+same order, this isn't difficult.  But I should probably create
+a free funtion or a class to encapsulate the 4 mappings, and possibly
+also the AS->name mappings.  While I need 2 routeviews files plus
+asn.txt to create what I need on the server, I could store my data
+in a single file.
