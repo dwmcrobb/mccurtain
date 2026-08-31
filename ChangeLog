@@ -1,5 +1,12 @@
 2026-08-30  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* classes/tests/inputs/cfg1
+	Added paths for Ipv6 files.
+
+	* classes/src/DwmMcCurtainConfigLex.lex
+	* classes/src/DwmMcCurtainConfigParse.y
+	Added IPv6 file path configuration.
+
 	* classes/include/DwmMcCurtainDatabaseConfig.hh
 	Added IPv6 file paths.
 
