@@ -1,5 +1,28 @@
 2026-08-31  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
+	* apps/mccurtaind/DwmMcCurtainServer.cc
+	* apps/mccurtaindbcat/mccurtaindbcat.cc
+	* apps/mkcurtaindb/mkcurtaindb.cc
+	* classes/include/DwmMcCurtainAS2Ipv6Net.hh
+	* classes/include/DwmMcCurtainDatabaseConfig.hh
+	* classes/include/DwmMcCurtainIpv4Net2AS.hh
+	* classes/include/DwmMcCurtainIpv6Net2AS.hh
+	* classes/src/DwmMcCurtainAS2Ipv6Net.cc
+	* classes/src/DwmMcCurtainConfigLex.lex
+	* classes/src/DwmMcCurtainConfigParse.y
+	* classes/src/DwmMcCurtainDatabaseConfig.cc
+	* classes/src/DwmMcCurtainIpv4Net2AS.cc
+	* classes/src/DwmMcCurtainIpv6Net2AS.cc
+	* classes/tests/TestConfig.cc
+	* classes/tests/TestMessage.cc
+	* classes/tests/inputs/cfg1
+	* classes/tests/inputs/cfg2
+	* etc/mccurtaind.cfg.example
+	* scripts/updatecurtaindata.sh
+	First pass at migration to a single database file (versus 4
+	files).  The order of objects in this file: Ipv4Net2AS,
+	AS2Ipv4Net, Ipv6Net2AS, AS2Ipv6Net.
+
 	* classes/src/DwmMcCurtainDatabaseConfig.cc
 	Set default values of _ipv6ToASFile and _asToIpv6File
 
