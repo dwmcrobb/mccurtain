@@ -1,3 +1,8 @@
+2026-08-31  Daniel W. McRobb  <dwm@kiva.mcplex.net>
+
+	* classes/include/DwmMcCurtainIpv6Net2AS.hh
+	Correct mask length when converting an Ipv6 address to a Ipv6 prefix.
+
 2026-08-30  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
 	* apps/mccurtain/mccurtain.cc
