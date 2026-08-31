@@ -129,7 +129,11 @@ namespace Dwm {
         }
         return;
       }
-      
+
+      bool GetV6AddrResponse(const OriginRequest & req,
+                             OriginResponse & resp);
+      bool GetV4AddrResponse(const OriginRequest & req,
+                             OriginResponse & resp);
       void RespondBinary(int fd);
       void RespondJson(int fd);
       void RespondBinary6(int fd);

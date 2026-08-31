@@ -206,35 +206,76 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    bool UdpServer::GetResponse(const OriginRequest & req,
-                                OriginResponse & resp)
+    bool UdpServer::GetV6AddrResponse(const OriginRequest & req,
+                                      OriginResponse & resp)
+    {
+      bool  rc = false;
+      std::vector<Ipv6Net2AS::value_type>  matches;
+      if (_ipv62as.find_matches(*(req.Address().Addr<Ipv6Address>()),
+                                matches)) {
+        std::vector<OriginPrefix>  prefixes;
+        for (const auto & match : matches) {
+          OriginPrefix  prefix;
+          prefix.Prefix(match.first);
+          for (const auto & as : match.second) {
+            OriginAS  origas(as,"--","");
+            auto  asnit = _asntxt.Entries().find(as);
+            if (asnit != _asntxt.Entries().end()) {
+              origas.CountryCode(asnit->second.CountryCode());
+              origas.Name(asnit->second.Name());
+            }
+            prefix.ASes().push_back(origas);
+          }
+          prefixes.push_back(prefix);
+        }
+        resp.Prefixes(prefixes);
+        resp.Request(req);
+        rc = true;
+      }
+      return rc;
+    }
+
+    //------------------------------------------------------------------------
+    bool UdpServer::GetV4AddrResponse(const OriginRequest & req,
+                                      OriginResponse & resp)
     {
       bool  rc = false;
       std::vector<Ipv4Net2AS::value_type>  matches;
-      if (req.Address().IsV4()) {
-        if (_ipv42as.find_matches(*(req.Address().Addr<Ipv4Address>()),
-                                  matches)) {
-          std::vector<OriginPrefix>  prefixes;
-          for (const auto & match : matches) {
-            OriginPrefix  prefix;
-            prefix.Prefix(match.first);
-            for (const auto & as : match.second) {
-              OriginAS  origas(as,"--","");
-              auto  asnit = _asntxt.Entries().find(as);
-              if (asnit != _asntxt.Entries().end()) {
-                origas.CountryCode(asnit->second.CountryCode());
-                origas.Name(asnit->second.Name());
-              }
-              prefix.ASes().push_back(origas);
+      if (_ipv42as.find_matches(*(req.Address().Addr<Ipv4Address>()),
+                                matches)) {
+        std::vector<OriginPrefix>  prefixes;
+        for (const auto & match : matches) {
+          OriginPrefix  prefix;
+          prefix.Prefix(match.first);
+          for (const auto & as : match.second) {
+            OriginAS  origas(as,"--","");
+            auto  asnit = _asntxt.Entries().find(as);
+            if (asnit != _asntxt.Entries().end()) {
+              origas.CountryCode(asnit->second.CountryCode());
+              origas.Name(asnit->second.Name());
             }
-            prefixes.push_back(prefix);
+            prefix.ASes().push_back(origas);
           }
-          resp.Prefixes(prefixes);
-          resp.Request(req);
-          rc = true;
+          prefixes.push_back(prefix);
         }
+        resp.Prefixes(prefixes);
+        resp.Request(req);
+        rc = true;
       }
       return rc;
+    }
+    
+    //------------------------------------------------------------------------
+    bool UdpServer::GetResponse(const OriginRequest & req,
+                                OriginResponse & resp)
+    {
+      if (req.Address().IsV6()) {
+        return GetV6AddrResponse(req, resp);
+      }
+      else if (req.Address().IsV4()) {
+        return GetV4AddrResponse(req, resp);
+      }
+      return false;
     }
     
     //------------------------------------------------------------------------
