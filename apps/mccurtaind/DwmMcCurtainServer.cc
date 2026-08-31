@@ -41,6 +41,7 @@ extern "C" {
   #include <unistd.h>
 }
 
+#include <fstream>
 #include <thread>
 
 #include "DwmMclogLogger.hh"
@@ -181,7 +182,7 @@ namespace Dwm {
     bool Server::InitDatabases()
     {
       bool  rc = false;
-      ifstream  is(_config.Database().DBFile());
+      std::ifstream  is(_config.Database().DBFile());
       if (is) {
         if (_ipv42as.Read(is)) {
           if (_as2ipv4.Read(is)) {
@@ -190,15 +191,36 @@ namespace Dwm {
                 if (_asntxt.Load(_config.Database().ASNTxtFile())) {
                   rc = true;
                 }
+                else {
+                  MCLOG(LOG_ERR, "Failed to load _asntxt from '{}'",
+                        _config.Database().ASNTxtFile());
+                }
+              }
+              else {
+                MCLOG(LOG_ERR, "Failed to read _as2ipv6 from '{}'",
+                      _config.Database().DBFile());
               }
             }
+            else {
+              MCLOG(LOG_ERR, "Failed to read _ipv62as from '{}'",
+                    _config.Database().DBFile());
+            }
           }
+          else {
+            MCLOG(LOG_ERR, "Failed to read _as2ipv4 from '{}'",
+                  _config.Database().DBFile());
+          }
+        }
+        else {
+          MCLOG(LOG_ERR, "Failed to read _ipv42as from '{}'",
+                _config.Database().DBFile());
         }
         is.close();
       }
       else {
         MCLOG(LOG_ERR, "Failed to open '{}'", _config.Database().DBFile());
       }
+      return rc;
     }
 
 #if 0
