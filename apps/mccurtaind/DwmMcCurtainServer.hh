@@ -43,7 +43,9 @@
 #include "DwmCredenceKeyStash.hh"
 #include "DwmCredenceKnownKeys.hh"
 #include "DwmMcCurtainAS2Ipv4Net.hh"
+#include "DwmMcCurtainAS2Ipv6Net.hh"
 #include "DwmMcCurtainIpv4Net2AS.hh"
+#include "DwmMcCurtainIpv6Net2AS.hh"
 #include "DwmMcCurtainConfig.hh"
 #include "DwmMcCurtainResponses.hh"
 #include "DwmMcCurtainResponder.hh"
@@ -66,8 +68,9 @@ namespace Dwm {
       //----------------------------------------------------------------------
       template <typename Ex>
       Server(Ex executor, const Config & config)
-          : _config(config), _ipv42as(), _as2ipv4(),
-            _dnsServer(_ipv42as, _asntxt), _udpServer(_ipv42as, _asntxt),
+          : _config(config), _ipv42as(), _as2ipv4(), _ipv62as(), _as2ipv6(),
+            _dnsServer(_ipv42as, _asntxt),
+            _udpServer(_ipv42as, _ipv62as, _asntxt),
             _keyStash(config.Service().KeyDirectory()),
             _knownKeys(config.Service().KeyDirectory()),
             _allowedClients(config.Service().AllowedClients()),
@@ -115,6 +118,8 @@ namespace Dwm {
       Config                                      _config;
       Ipv4Net2AS                                  _ipv42as;
       AS2Ipv4Net                                  _as2ipv4;
+      Ipv6Net2AS                                  _ipv62as;
+      AS2Ipv6Net                                  _as2ipv6;
       DnsServer                                   _dnsServer;
       UdpServer                                   _udpServer;
       RipeAsnTxt                                  _asntxt;

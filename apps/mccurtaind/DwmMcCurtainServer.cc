@@ -185,12 +185,24 @@ namespace Dwm {
       bool  rc = false;
       if (_ipv42as.Load(_config.Database().Ipv4ToASFile())) {
         if (_as2ipv4.Load(_config.Database().ASToIpv4File())) {
-          if (_asntxt.Load(_config.Database().ASNTxtFile())) {
-            rc = true;
+          if (_ipv62as.Load(_config.Database().Ipv6ToASFile())) {
+            if (_as2ipv6.Load(_config.Database().ASToIpv6File())) {
+              if (_asntxt.Load(_config.Database().ASNTxtFile())) {
+                rc = true;
+              }
+              else {
+                MCLOG(LOG_ERR, "Failed to load AS text file from {}",
+                      _config.Database().ASNTxtFile());
+              }
+            }
+            else {
+              MCLOG(LOG_ERR, "Failed to load AS to Ipv6 database from {}",
+                    _config.Database().ASToIpv6File());
+            }
           }
           else {
-            MCLOG(LOG_ERR, "Failed to load AS text file from {}",
-                  _config.Database().ASNTxtFile());
+            MCLOG(LOG_ERR, "Failed to load Ipv6 to AS database from {}",
+                  _config.Database().Ipv6ToASFile());
           }
         }
         else {
