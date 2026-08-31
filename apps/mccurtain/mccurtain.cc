@@ -172,7 +172,7 @@ static void UdpGetOrigin(const vector<string> & servers,
   for (const auto & host : servers) {
     McCurtain::OriginServer    server(host);
     McCurtain::OriginResponse  response;
-    if (server.GetOrigin(Ipv4Address(ipAddrStr), response)) {
+    if (server.GetOrigin(IpAddress(ipAddrStr), response)) {
       if (useJson) {
         cout << response.ToJson() << '\n';
       }
