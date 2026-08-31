@@ -542,7 +542,7 @@ namespace Dwm {
       //!  Returns end() if no match is found.
       //----------------------------------------------------------------------
       iterator find_longest(const Ipv6Address & addr)
-      { return find_longest(Ipv6Prefix(addr, 32)); }
+      { return find_longest(Ipv6Prefix(addr, 128)); }
       
       //----------------------------------------------------------------------
       //!  Finds the node with the longest match to the given prefix @c pfx.
@@ -575,7 +575,7 @@ namespace Dwm {
       //!  Returns end() if no match is found.
       //----------------------------------------------------------------------
       const_iterator find_longest(const Ipv6Address & addr) const
-      { return find_longest(Ipv6Prefix(addr, 32)); }
+      { return find_longest(Ipv6Prefix(addr, 128)); }
     
       //----------------------------------------------------------------------
       //!  Finds all nodes that match prefix @c pfx, placing them in @c
@@ -641,7 +641,7 @@ namespace Dwm {
       //----------------------------------------------------------------------
       bool find_matches(const Ipv6Address & addr,
                         std::vector<value_type> & matches) const
-      { return find_matches(Ipv6Prefix(addr, 32), matches); }
+      { return find_matches(Ipv6Prefix(addr, 128), matches); }
     
       //----------------------------------------------------------------------
       //!  Returns the total number of nodes in the trie.
