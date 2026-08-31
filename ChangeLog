@@ -1,5 +1,14 @@
 2026-08-30  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* apps/mccurtaind/DwmMcCurtainServer.cc
+	* apps/mccurtaind/DwmMcCurtainServer.hh
+	Add support for Ipv6 origin queries.
+
+	* apps/mccurtaind/DwmMcCurtainUdpServer.hh
+	* apps/mccurtaind/DwmMcCurtainUdpServer.cc
+	Added Ipv6Net2AS member to support queries for the origins of IPv6
+	addresses.
+
 	* classes/include/DwmMcCurtainIpv6Net2AS.hh
 	Removed debugging output code.
 
