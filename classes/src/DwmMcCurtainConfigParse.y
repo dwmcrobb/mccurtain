@@ -70,14 +70,16 @@
   YY_DECL;
 }
 
-%token ADDRESS ADDRESSES ALLOWEDCLIENTS ASNTXT ASTOIPV4 DATABASES FACILITY
-%token IPV4TOAS KEYDIRECTORY LEVEL LOGLOCATIONS PORT SERVICE SYSLOG
+%token ADDRESS ADDRESSES ALLOWEDCLIENTS ASNTXT ASTOIPV4 ASTOIPV6 DATABASES
+%token FACILITY IPV4TOAS IPV6TOAS KEYDIRECTORY LEVEL LOGLOCATIONS PORT
+%token SERVICE SYSLOG
 
 %token<stringVal>  STRING
 %token<intVal>     INTEGER
 
 %type<intVal>                  TCP4Port
 %type<stringVal>               KeyDirectory Ipv4ToASDB ASToIpv4DB ASNTxt
+%type<stringVal>               Ipv6ToASDB ASToIpv6DB
 %type<stringVecVal>            VectorOfString
 %type<serviceConfigVal>        ServiceSettings
 %type<serviceAddrSetVal>       ServiceAddresses ServiceAddressSet
@@ -345,6 +347,18 @@ DatabaseSettings: Ipv4ToASDB
   $$->ASToIpv4File(*$1);
   delete $1;
 }
+| Ipv6ToASDB 
+{
+  $$ = new Dwm::McCurtain::DatabaseConfig();
+  $$->Ipv6ToASFile(*$1);
+  delete $1;
+}
+| ASToIpv6DB
+{
+  $$ = new Dwm::McCurtain::DatabaseConfig();
+  $$->ASToIpv6File(*$1);
+  delete $1;
+}
 | ASNTxt
 {
   $$ = new Dwm::McCurtain::DatabaseConfig();
@@ -361,6 +375,16 @@ DatabaseSettings: Ipv4ToASDB
   $$->ASToIpv4File(*$2);
   delete $2;
 }
+| DatabaseSettings Ipv6ToASDB
+{
+  $$->Ipv6ToASFile(*$2);
+  delete $2;
+}
+| DatabaseSettings ASToIpv6DB
+{
+  $$->ASToIpv6File(*$2);
+  delete $2;
+}
 | DatabaseSettings ASNTxt
 {
   $$->ASNTxtFile(*$2);
@@ -373,6 +397,16 @@ Ipv4ToASDB: IPV4TOAS '=' STRING ';'
 };
 
 ASToIpv4DB: ASTOIPV4 '=' STRING ';'
+{
+  $$ = $3;
+};
+
+Ipv6ToASDB: IPV6TOAS '=' STRING ';'
+{
+  $$ = $3;
+};
+
+ASToIpv6DB: ASTOIPV6 '=' STRING ';'
 {
   $$ = $3;
 };

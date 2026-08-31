@@ -36,6 +36,8 @@
     { "databases",          DATABASES      },
     { "ipv4toas",           IPV4TOAS       },
     { "astoipv4",           ASTOIPV4       },
+    { "ipv6toas",           IPV6TOAS       },
+    { "astoipv6",           ASTOIPV6       },
     { "asntxt",             ASNTXT         },
     { "facility",           FACILITY       },
     { "keyDirectory",       KEYDIRECTORY   },
