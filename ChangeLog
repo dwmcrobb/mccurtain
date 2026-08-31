@@ -1,5 +1,8 @@
 2026-08-31  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
+	* classes/src/DwmMcCurtainDatabaseConfig.cc
+	Set default values of _ipv6ToASFile and _asToIpv6File
+
 	* classes/include/DwmMcCurtainIpv6Net2AS.hh
 	Correct mask length when converting an Ipv6 address to a Ipv6 prefix.
 
