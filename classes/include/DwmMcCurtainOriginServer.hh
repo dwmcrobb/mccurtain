@@ -75,7 +75,7 @@ namespace Dwm {
       //!  Requests origin information for @c addr, storing it in  @c orig.
       //!  Returns true on success, false on failure.
       //----------------------------------------------------------------------
-      bool GetOrigin(const Ipv4Address & addr, OriginResponse & orig) const;
+      bool GetOrigin(const IpAddress & addr, OriginResponse & orig) const;
       
     private:
       IpAddress                               _address;

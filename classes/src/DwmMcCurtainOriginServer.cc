@@ -86,7 +86,7 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    bool OriginServer::GetOrigin(const Ipv4Address & addr,
+    bool OriginServer::GetOrigin(const IpAddress & addr,
                                  OriginResponse & orig) const
     {
       if (0 <= _fd) {
@@ -102,7 +102,7 @@ namespace Dwm {
       }
       return false;
     }
-
+    
     //------------------------------------------------------------------------
     void OriginServer::SetUdpSockAddr()
     {
