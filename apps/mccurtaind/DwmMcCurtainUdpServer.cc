@@ -49,9 +49,11 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    UdpServer::UdpServer(const Ipv4Net2AS & ipv42as, const RipeAsnTxt & asntxt)
-        : _ipv42as(ipv42as), _asntxt(asntxt), _binfd(-1), _jsonfd(-1),
-          _bin6fd(-1), _json6fd(-1), _stopfds{-1,-1}, _thread(),
+    UdpServer::UdpServer(const Ipv4Net2AS & ipv42as,
+                         const Ipv6Net2AS & ipv62as,
+                         const RipeAsnTxt & asntxt)
+        : _ipv42as(ipv42as), _ipv62as(ipv62as), _asntxt(asntxt), _binfd(-1),
+          _jsonfd(-1), _bin6fd(-1), _json6fd(-1), _stopfds{-1,-1}, _thread(),
           _shouldRun(false)
     {}
 

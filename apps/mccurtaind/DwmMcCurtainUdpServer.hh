@@ -41,6 +41,7 @@
 #define _DWMMCCURTAINUDPSERVER_HH_
 
 #include "DwmMcCurtainAS2Ipv4Net.hh"
+#include "DwmMcCurtainAS2Ipv6Net.hh"
 #include "DwmMcCurtainRipeAsnTxt.hh"
 #include "DwmMcCurtainMessage.hh"
 
@@ -55,7 +56,8 @@ namespace Dwm {
     {
     public:
       UdpServer() = delete;
-      UdpServer(const Ipv4Net2AS & ipv42as, const RipeAsnTxt & asntxt);
+      UdpServer(const Ipv4Net2AS & ipv42as, const Ipv6Net2AS & ipv62as,
+                const RipeAsnTxt & asntxt);
       ~UdpServer();
       bool Start();
       bool Stop();
@@ -63,6 +65,7 @@ namespace Dwm {
       
     private:
       const Ipv4Net2AS  & _ipv42as;
+      const Ipv6Net2AS  & _ipv62as;
       const RipeAsnTxt  & _asntxt;
       int                 _binfd;
       int                 _jsonfd;
