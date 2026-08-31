@@ -63,17 +63,6 @@
 #include "DwmGZIO.hh"
 #include "DwmMcCurtainCaidaV6Routeviews.hh"
 
-static inline std::ostream &
-operator << (std::ostream & os, const std::set<uint32_t> & ases)
-{
-  std::string  sep("");
-  for (const auto & as : ases) {
-    os << sep << as;
-    sep = ',';
-  }
-  return os;
-}
-
 namespace Dwm {
 
   namespace McCurtain {
@@ -305,11 +294,6 @@ namespace Dwm {
             auto nit = it; ++nit;
             combining = false;
             while (nit != end()) {
-#if 0
-              std::cerr << "it: " << it->first << ' ' << it->second
-                        << " nit: " << nit->first << ' ' << nit->second
-                        << '\n';
-#endif
               if (CombinableAdjacents(it, nit)) {
                 Ipv6Prefix  aggpfx(it->first.Network(),
                                    it->first.MaskLength() - 1);
@@ -320,12 +304,6 @@ namespace Dwm {
                     insit->second.insert(as);
                   }
                 }
-#if 0
-                std::cerr << "aggregated " << it->first << ' ' << it->second
-                          << " and " << nit->first << ' ' << nit->second
-                          << " into " << insit->first << ' ' << insit->second
-                          << '\n';
-#endif
                 assert(std::ranges::includes(insit->second, it->second));
                 erase(it);
                 it = insit;
