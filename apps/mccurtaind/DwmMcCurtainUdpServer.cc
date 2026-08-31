@@ -41,6 +41,7 @@ extern "C" {
   #include <sys/select.h>
 }
 
+#include "DwmMclogLogger.hh"
 #include "DwmMcCurtainMessage.hh"
 #include "DwmMcCurtainUdpServer.hh"
 
@@ -213,6 +214,8 @@ namespace Dwm {
       std::vector<Ipv6Net2AS::value_type>  matches;
       if (_ipv62as.find_matches(*(req.Address().Addr<Ipv6Address>()),
                                 matches)) {
+        MCLOG(LOG_INFO, "Found {} matches for {}",
+              matches.size(), *(req.Address().Addr<Ipv6Address>()));
         std::vector<OriginPrefix>  prefixes;
         for (const auto & match : matches) {
           OriginPrefix  prefix;
@@ -232,6 +235,11 @@ namespace Dwm {
         resp.Request(req);
         rc = true;
       }
+      else {
+        MCLOG(LOG_ERR, "No matches for {}",
+              *(req.Address().Addr<Ipv6Address>()));
+      }
+      
       return rc;
     }
 
