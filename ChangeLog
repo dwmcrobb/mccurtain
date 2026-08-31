@@ -1,5 +1,9 @@
 2026-08-30  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* classes/include/DwmMcCurtainOriginServer.hh
+	* classes/src/DwmMcCurtainOriginServer.cc
+	Support queries for Ipv6 address origins.
+
 	* apps/mccurtaind/DwmMcCurtainUdpServer.cc
 	* apps/mccurtaind/DwmMcCurtainUdpServer.hh
 	Add support for responses to Ipv6 adddress origin queries.
