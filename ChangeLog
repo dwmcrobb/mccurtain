@@ -1,5 +1,7 @@
 2026-08-31  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
+	* tagged as mccurtain-0.0.28
+
 	* apps/mccurtaind/DwmMcCurtainServer.cc
 	* apps/mccurtaindbcat/mccurtaindbcat.cc
 	* apps/mkcurtaindb/mkcurtaindb.cc
