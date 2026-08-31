@@ -1,5 +1,8 @@
 2026-08-30  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* scripts/updatecurtaindata.sh
+	Create Ipv6 databases.
+
 	* apps/mkcurtaindb/mkcurtaindb.cc
 	Add IPv6 database file creation.  Requires CAIDA routeviews-rv6
 	file (IPv6_prefix -> AS(es))
