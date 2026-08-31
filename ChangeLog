@@ -1,5 +1,8 @@
 2026-08-30  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* classes/include/DwmMcCurtainIpv6Net2AS.hh
+	Removed debugging output code.
+
 	* classes/tests/inputs/cfg1
 	Added paths for Ipv6 files.
 
