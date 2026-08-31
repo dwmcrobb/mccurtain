@@ -1,5 +1,9 @@
 2026-08-30  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* apps/mkcurtaindb/mkcurtaindb.cc
+	Add IPv6 database file creation.  Requires CAIDA routeviews-rv6
+	file (IPv6_prefix -> AS(es))
+
 	* apps/mccurtaind/DwmMcCurtainServer.cc
 	* apps/mccurtaind/DwmMcCurtainServer.hh
 	Add support for Ipv6 origin queries.
