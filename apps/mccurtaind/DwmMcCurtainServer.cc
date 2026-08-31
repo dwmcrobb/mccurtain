@@ -178,6 +178,31 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
+    bool Server::InitDatabases()
+    {
+      bool  rc = false;
+      ifstream  is(_config.Database().DBFile());
+      if (is) {
+        if (_ipv42as.Read(is)) {
+          if (_as2ipv4.Read(is)) {
+            if (_ipv62as.Read(is)) {
+              if (_as2ipv6.Read(is)) {
+                if (_asntxt.Load(_config.Database().ASNTxtFile())) {
+                  rc = true;
+                }
+              }
+            }
+          }
+        }
+        is.close();
+      }
+      else {
+        MCLOG(LOG_ERR, "Failed to open '{}'", _config.Database().DBFile());
+      }
+    }
+
+#if 0
+    //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
     bool Server::InitDatabases()
@@ -216,7 +241,7 @@ namespace Dwm {
       }
       return rc;
     }
-    
+#endif
     
   }  // namespace McCurtain
 

@@ -70,16 +70,14 @@
   YY_DECL;
 }
 
-%token ADDRESS ADDRESSES ALLOWEDCLIENTS ASNTXT ASTOIPV4 ASTOIPV6 DATABASES
-%token FACILITY IPV4TOAS IPV6TOAS KEYDIRECTORY LEVEL LOGLOCATIONS PORT
-%token SERVICE SYSLOG
+%token ADDRESS ADDRESSES ALLOWEDCLIENTS ASNTXT DATABASES DBFILE FACILITY
+%token KEYDIRECTORY LEVEL LOGLOCATIONS PORT SERVICE SYSLOG
 
 %token<stringVal>  STRING
 %token<intVal>     INTEGER
 
 %type<intVal>                  TCP4Port
-%type<stringVal>               KeyDirectory Ipv4ToASDB ASToIpv4DB ASNTxt
-%type<stringVal>               Ipv6ToASDB ASToIpv6DB
+%type<stringVal>               KeyDirectory DBFile ASNTxt
 %type<stringVecVal>            VectorOfString
 %type<serviceConfigVal>        ServiceSettings
 %type<serviceAddrSetVal>       ServiceAddresses ServiceAddressSet
@@ -335,28 +333,10 @@ Databases: DATABASES '{' DatabaseSettings '}' ';'
   delete $3;
 };
 
-DatabaseSettings: Ipv4ToASDB 
+DatabaseSettings: DBFile 
 {
   $$ = new Dwm::McCurtain::DatabaseConfig();
-  $$->Ipv4ToASFile(*$1);
-  delete $1;
-}
-| ASToIpv4DB
-{
-  $$ = new Dwm::McCurtain::DatabaseConfig();
-  $$->ASToIpv4File(*$1);
-  delete $1;
-}
-| Ipv6ToASDB 
-{
-  $$ = new Dwm::McCurtain::DatabaseConfig();
-  $$->Ipv6ToASFile(*$1);
-  delete $1;
-}
-| ASToIpv6DB
-{
-  $$ = new Dwm::McCurtain::DatabaseConfig();
-  $$->ASToIpv6File(*$1);
+  $$->DBFile(*$1);
   delete $1;
 }
 | ASNTxt
@@ -365,24 +345,9 @@ DatabaseSettings: Ipv4ToASDB
   $$->ASNTxtFile(*$1);
   delete $1;
 }
-| DatabaseSettings Ipv4ToASDB
+| DatabaseSettings DBFile
 {
-  $$->Ipv4ToASFile(*$2);
-  delete $2;
-}
-| DatabaseSettings ASToIpv4DB
-{
-  $$->ASToIpv4File(*$2);
-  delete $2;
-}
-| DatabaseSettings Ipv6ToASDB
-{
-  $$->Ipv6ToASFile(*$2);
-  delete $2;
-}
-| DatabaseSettings ASToIpv6DB
-{
-  $$->ASToIpv6File(*$2);
+  $$->DBFile(*$2);
   delete $2;
 }
 | DatabaseSettings ASNTxt
@@ -391,22 +356,7 @@ DatabaseSettings: Ipv4ToASDB
   delete $2;
 };
 
-Ipv4ToASDB: IPV4TOAS '=' STRING ';'
-{
-  $$ = $3;
-};
-
-ASToIpv4DB: ASTOIPV4 '=' STRING ';'
-{
-  $$ = $3;
-};
-
-Ipv6ToASDB: IPV6TOAS '=' STRING ';'
-{
-  $$ = $3;
-};
-
-ASToIpv6DB: ASTOIPV6 '=' STRING ';'
+DBFile: DBFILE '=' STRING ';'
 {
   $$ = $3;
 };

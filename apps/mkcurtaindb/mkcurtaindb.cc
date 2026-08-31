@@ -34,9 +34,10 @@
 //---------------------------------------------------------------------------
 //!  \file mkcurtain.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief utility to create binary data file from routeviews data
 //---------------------------------------------------------------------------
 
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -54,42 +55,77 @@ using namespace std;
 static void Usage(const char *argv0)
 {
   cerr << "Usage: " << argv0
-       << " [-i ipv4ToASdb] [-a asToIpv4db] [-I ipv6ToASdb] [-A asToIpv6db] routeViewsIPv4File"
-       << " routeViewsIPv6File\n";
+       << " [-o outfile] routeViewsIPv4File routeViewsIPv6File\n";
   return;
 }
 
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void CreateV6Dbs(const std::string & caidarvfile,
-                        const std::string & ipv62asdbfile,
-                        const std::string & as2ipv6dbfile)
+static bool PopulateV6Data(const string & caidarvfile,
+                           Dwm::McCurtain::Ipv6Net2AS & ip2as,
+                           Dwm::McCurtain::AS2Ipv6Net & as2ip)
 {
   Dwm::McCurtain::CaidaV6Routeviews  rv;
   if (rv.Load(caidarvfile)) {
     rv.Aggregate();
-    Dwm::McCurtain::Ipv6Net2AS  net2as(rv);
-    Dwm::McCurtain::AS2Ipv6Net  as2net(rv);
-    if (net2as.Save(ipv62asdbfile)) {
-      if (as2net.Save(as2ipv6dbfile)) {
-        return;
-      }
-      else {
-        cerr << "Failed to save AS to ipv6 net database to '"
-             << as2ipv6dbfile << "'\n";
-      }
-    }
-    else {
-      cerr << "Failed to save ipv6 net to AS database to '"                
-           << ipv62asdbfile << "'\n";
-    }
+    ip2as.Load(rv);
+    as2ip.Load(rv);
+    return true;
   }
   else {
-    cerr << "Failed to load routeviews file '" << caidarvfile << "'\n";
+    cerr << "Failed to load data from '" << caidarvfile << "'\n";
   }
-  
-  return;
+  return false;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool PopulateV4Data(const string & caidarvfile,
+                           Dwm::McCurtain::Ipv4Net2AS & ip2as,
+                           Dwm::McCurtain::AS2Ipv4Net & as2ip)
+{
+  Dwm::McCurtain::CaidaV4Routeviews  rv;
+  if (rv.Load(caidarvfile)) {
+    rv.Aggregate();
+    ip2as.Load(rv);
+    as2ip.Load(rv);
+    return true;
+  }
+  else {
+    cerr << "Failed to load data from '" << caidarvfile << "'\n";
+  }
+  return false;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool SaveIp2ASData(const string & outfile,
+                          Dwm::McCurtain::Ipv4Net2AS & ip4as,
+                          Dwm::McCurtain::AS2Ipv4Net & asip4,
+                          Dwm::McCurtain::Ipv6Net2AS & ip6as,
+                          Dwm::McCurtain::AS2Ipv6Net & asip6)
+{
+  bool  rc = false;
+  ofstream  os(outfile);
+  if (os) {
+    if (ip4as.Write(os)) {
+      if (asip4.Write(os)) {
+        if (ip6as.Write(os)) {
+          if (asip6.Write(os)) {
+            rc = true;
+          }
+        }
+      }
+    }
+    os.close();
+  }
+  else {
+    cerr << "Failed to open '" << outfile << "'\n";
+  }
+  return rc;
 }
 
 //----------------------------------------------------------------------------
@@ -99,26 +135,14 @@ int main(int argc, char *argv[])
 {
   Dwm::SysLogger::Open("mkcurtaindb", LOG_PERROR|LOG_PID, "user");
 
-  string  as2Ipv4DbFile = "as2ipv4.db";
-  string  ipv42AsDbFile = "ipv42as.db";
-  string  as2Ipv6DbFile = "as2ipv6.db";
-  string  ipv62AsDbFile = "ipv62as.db";
-  
+  string  mccDbFile = "/usr/local/etc/mccip2as.db";
+
   extern int  optind;
   int         optChar;
-  while ((optChar = getopt(argc, argv, "A:a:I:i:")) != -1) {
+  while ((optChar = getopt(argc, argv, "o:")) != -1) {
     switch (optChar) {
-      case 'A':
-        as2Ipv6DbFile = optarg;
-        break;
-      case 'I':
-        ipv62AsDbFile = optarg;
-        break;
-      case 'a':
-        as2Ipv4DbFile = optarg;
-        break;
-      case 'i':
-        ipv42AsDbFile = optarg;
+      case 'o':
+        mccDbFile = optarg;
         break;
       default:
         Usage(argv[0]);
@@ -132,29 +156,26 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  CreateV6Dbs(argv[optind + 1], ipv62AsDbFile, as2Ipv6DbFile);
+  Dwm::McCurtain::Ipv4Net2AS  ip2as4;
+  Dwm::McCurtain::AS2Ipv4Net  as2ip4;
+  Dwm::McCurtain::Ipv6Net2AS  ip2as6;
+  Dwm::McCurtain::AS2Ipv6Net  as2ip6;
   
-  Dwm::McCurtain::CaidaV4Routeviews  rv;
-  if (rv.Load(argv[optind])) {
-    rv.Aggregate();
-    Dwm::McCurtain::Ipv4Net2AS  net2as(rv);
-    Dwm::McCurtain::AS2Ipv4Net  as2net(rv);
-    if (net2as.Save(ipv42AsDbFile)) {
-      if (as2net.Save(as2Ipv4DbFile)) {
+  if (PopulateV4Data(argv[optind], ip2as4, as2ip4)) {
+    if (PopulateV6Data(argv[optind+1], ip2as6, as2ip6)) {
+      if (SaveIp2ASData(mccDbFile, ip2as4, as2ip4, ip2as6, as2ip6)) {
         return 0;
       }
       else {
-        cerr << "Failed to save AS to ipv4 net database to '"
-             << as2Ipv4DbFile << "'\n";
+        cerr << "Failed to save data to '" << mccDbFile << "'\n";
       }
     }
     else {
-      cerr << "Failed to save ipv4 net to AS database to '"                
-           << ipv42AsDbFile << "'\n";
+      cerr << "Failed to populate IPv6 data\n";
     }
   }
   else {
-    cerr << "Failed to load routeviews file '" << argv[optind] << "'\n";
+    cerr << "Failed to populate IPv4 data\n";
   }
 
   return 1;

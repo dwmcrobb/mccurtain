@@ -73,7 +73,15 @@ namespace Dwm {
 
       AS2Ipv6Net() = default;
 
+      //----------------------------------------------------------------------
+      //!  Construct from the contents of the given CaidaV6Routeviews @c rv.
+      //----------------------------------------------------------------------
       AS2Ipv6Net(const CaidaV6Routeviews & rv);
+
+      //----------------------------------------------------------------------
+      //!  Load from the given CaidaV6Routeviews @c rv.
+      //----------------------------------------------------------------------
+      void Load(const CaidaV6Routeviews & rv);
       
       //----------------------------------------------------------------------
       //!  Load from the given Ipv6Net2ASDb @c net2asdb.  Returns true on

@@ -107,7 +107,7 @@ static void TestSendRecv()
     sockaddr_in  recvAddr;
     memset(&recvAddr, 0, sizeof(recvAddr));
     recvAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    recvAddr.sin_port = htons(8647);
+    recvAddr.sin_port = htons(8649);
     recvAddr.sin_family = PF_INET;
 #ifndef __linux__
     recvAddr.sin_len = sizeof(recvAddr);

@@ -53,10 +53,8 @@ static void TestDefaults(const Dwm::McCurtain::Config & cfg)
 {
   UnitAssert(cfg.SyslogFacility() == "daemon");
   UnitAssert(cfg.SyslogLevel() == "info");
-  UnitAssert(cfg.Database().Ipv4ToASFile()
-             == "/usr/local/etc/ipv42as.db");
-  UnitAssert(cfg.Database().ASToIpv4File()
-             == "/usr/local/etc/as2ipv4.db");
+  UnitAssert(cfg.Database().DBFile()
+             == "/usr/local/etc/mccip2as.db");
   UnitAssert(cfg.Database().ASNTxtFile()
              == "/usr/local/etc/asn.txt");
   return;
@@ -91,8 +89,7 @@ static void TestCfg1()
                != cfg.Service().AllowedClients().end());
     UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("::1"))
                != cfg.Service().AllowedClients().end());
-    UnitAssert(cfg.Database().Ipv4ToASFile() == "/usr/local/etc/ipv42as.db");
-    UnitAssert(cfg.Database().ASToIpv4File() == "/usr/local/etc/as2ipv4.db");
+    UnitAssert(cfg.Database().DBFile() == "/usr/local/etc/mccip2as.db");
     UnitAssert(cfg.Database().ASNTxtFile() == "/usr/local/etc/asn.txt");
   }
   return;
@@ -127,8 +124,7 @@ static void TestCfg2()
                != cfg.Service().AllowedClients().end());
     UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("::1"))
                != cfg.Service().AllowedClients().end());
-    UnitAssert(cfg.Database().Ipv4ToASFile() == "/etc/ipv42as.db");
-    UnitAssert(cfg.Database().ASToIpv4File() == "/etc/as2ipv4.db");
+    UnitAssert(cfg.Database().DBFile() == "/etc/ip2as.db");
     UnitAssert(cfg.Database().ASNTxtFile() == "/etc/asn.txt");
   }
   return;

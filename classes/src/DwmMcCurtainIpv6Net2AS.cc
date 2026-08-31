@@ -67,11 +67,11 @@ namespace Dwm {
     Ipv6Net2AS::Ipv6Net2AS(const CaidaV6Routeviews & rv)
         : _root(nullptr), _size(0)
     {
-      LoadCAIDAV6Routeviews(rv);
+      Load(rv);
     }
 
     //------------------------------------------------------------------------
-    bool Ipv6Net2AS::LoadCAIDAV6Routeviews(const CaidaV6Routeviews & rv)
+    bool Ipv6Net2AS::Load(const CaidaV6Routeviews & rv)
     {
       clear();
       for (const auto & asSet : rv.ASSets()) {
@@ -95,7 +95,7 @@ namespace Dwm {
       clear();
       CaidaV6Routeviews  rv;
       if (rv.Load(filePath)) {
-        return LoadCAIDAV6Routeviews(rv);
+        return Load(rv);
       }
       return false;
     }

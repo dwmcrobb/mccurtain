@@ -4,10 +4,7 @@
 #  routeviews-prefix2as file from CAIDA, then update databases for
 #  mccurtaind and restart mccurtaind.
 
-ipv42asdb=/usr/local/etc/ipv42as.db
-as2ipv4db=/usr/local/etc/as2ipv4.db
-ipv62asdb=/usr/local/etc/ipv62as.db
-as2ipv6db=/usr/local/etc/as2ipv6.db
+dbfile=/usr/local/etc/mccip2as.db
 asntxt=/usr/local/etc/asn.txt
 
 fetch -o /tmp/asn.txt https://ftp.ripe.net/ripe/asnames/asn.txt
@@ -26,7 +23,7 @@ if [ -n "${rvfile}" -a -n "${rv6file}" ]; then
     if [ $? -eq 0 ]; then
 	fetch -o /tmp/${rv6file} ${rv6dir}/${rvsubdir}/${rv6file}
 	if [ $? -eq 0 ]; then
-	    mkcurtaindb -i ${ipv42asdb} -I ${ipv62asdb} -a ${as2ipv4db} -A ${as2ipv6db} /tmp/${rvfile} /tmp/${rv6file}
+	    mkcurtaindb -o ${dbfile} /tmp/${rvfile} /tmp/${rv6file}
 	    /usr/local/etc/rc.d/mccurtaind restart
 	    rm /tmp/${rv6file}
 	fi

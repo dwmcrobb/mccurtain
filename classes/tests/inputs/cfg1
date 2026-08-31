@@ -48,28 +48,10 @@ syslog {
 #============================================================================
 databases {
     #------------------------------------------------------------------------
-    #  IPv4 to AS database.  If not configured, /usr/local/etc/ipv42as.db
-    #  will be assumed.
+    #  IP_prefix <-> AS database file.  If not configured,
+    #  /usr/local/etc/ipv42as.db will be assumed.
     #------------------------------------------------------------------------
-    ipv4toas = "/usr/local/etc/ipv42as.db";
-
-    #------------------------------------------------------------------------
-    #  IPv6 to AS database.  If not configured, /usr/local/etc/ipv62as.db
-    #  will be assumed.
-    #------------------------------------------------------------------------
-    ipv6toas = "/usr/local/etc/ipv62as.db";
-
-    #------------------------------------------------------------------------
-    #  AS to IPv4 prefixes database.  If not configured,
-    #  /usr/local/etc/as2ipv4.db will be assumed.
-    #------------------------------------------------------------------------
-    astoipv4 = "/usr/local/etc/as2ipv4.db";
-
-    #------------------------------------------------------------------------
-    #  AS to IPv6 prefixes database.  If not configured,
-    #  /usr/local/etc/as2ipv6.db will be assumed.
-    #------------------------------------------------------------------------
-    astoipv6 = "/usr/local/etc/as2ipv6.db";
+    dbfile = "/usr/local/etc/mccip2as.db";
 
     #------------------------------------------------------------------------
     #  RIPE asn.txt file location.  If not configured,

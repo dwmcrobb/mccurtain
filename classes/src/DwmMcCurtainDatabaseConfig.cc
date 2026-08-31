@@ -64,15 +64,10 @@ namespace Dwm {
          << "#============================================================================\n"
          << "databases {\n"
          << "#------------------------------------------------------------------------\n"
-         << "#  IPv4 to AS database.  If not configured, /usr/local/etc/ipv42as.db\n"
+         << "#  Database file.  If not configured, /usr/local/etc/mccip2as.db\n"
          << "#  will be assumed.\n"
          << "#------------------------------------------------------------------------\n"
-         << "ipv4toas = \"" << cfg._ipv4ToASFile << "\";\n\n"
-         << "#------------------------------------------------------------------------\n"
-         << "#  AS to IPv4 prefixes database.  If not configured,\n"
-         << "#  /usr/local/etc/as2ipv4.db will be assumed.\n"
-         << "#------------------------------------------------------------------------\n"
-         << "astoipv4 = \"" << cfg._asToIpv4File << "\";\n\n"
+         << "dbfile = \"" << cfg._dbFile << "\";\n\n"
          << "#------------------------------------------------------------------------\n"
          << "#  RIPE asn.txt file location.  If not configured,\n"
          << "#  /usr/local/etc/asn.txt will be assumed.\n"
@@ -87,11 +82,9 @@ namespace Dwm {
     //------------------------------------------------------------------------
     void DatabaseConfig::Clear()
     {
-      _ipv4ToASFile = "/usr/local/etc/ipv42as.db";
-      _ipv6ToASFile = "/usr/local/etc/ipv62as.db";
-      _asToIpv4File = "/usr/local/etc/as2ipv4.db";
-      _asToIpv6File = "/usr/local/etc/as2ipv6.db";
+      _dbFile = "/usr/local/etc/mccip2as.db";
       _asnTxtFile = "/usr/local/etc/asn.txt";
+      
       return;
     }
       

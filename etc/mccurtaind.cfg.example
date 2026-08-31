@@ -48,18 +48,11 @@ syslog {
 #============================================================================
 databases {
     #------------------------------------------------------------------------
-    #  IPv4 prefix to ASes database file.  If not configured,
-    #  /usr/local/etc/ipv42as.db will be assumed.  This file can be created
-    #  from a CAIDA pfx2as file with mkcurtaindb(1)
+    #  IP_prefix <-> AS database file.  If not configured,
+    #  /usr/local/etc/mccip2as.db will be assumed.  This file can be created
+    #  from CAIDA pfx2as files with mkcurtaindb(1)
     #------------------------------------------------------------------------
-    ipv4toas = "/usr/local/etc/ipv42as.db";
-
-    #------------------------------------------------------------------------
-    #  AS to IPv4 prefixes database file.  If not configured,
-    #  /usr/local/etc/as2ipv4.db will be assumed.  This file can be created
-    #  from a CAIDA pfx2as file with mkcurtaindb(1)
-    #------------------------------------------------------------------------
-    astoipv4 = "/usr/local/etc/as2ipv4.db";
+    dbfile = "/usr/local/etc/mccip2as.db";
 
     #------------------------------------------------------------------------
     #  RIPE asn.txt file location.  If not configured,

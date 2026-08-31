@@ -45,6 +45,8 @@ extern "C" {
 
 #include "DwmMcCurtainAS2Ipv4Net.hh"
 #include "DwmMcCurtainIpv4Net2AS.hh"
+#include "DwmMcCurtainAS2Ipv6Net.hh"
+#include "DwmMcCurtainIpv6Net2AS.hh"
 
 //----------------------------------------------------------------------------
 static void Usage(const char *argv0)
@@ -58,6 +60,8 @@ int main(int argc, char *argv[])
 {
   std::string  ip2asFile("/usr/local/etc/ipv42as.db");
   std::string  as2ipFile("/usr/local/etc/as2ipv4.db");
+  std::string  ip62asFile("/usr/local/etc/ipv62as.db");
+  std::string  as2ip6File("/usr/local/etc/as2ipv6.db");
 
   int  optchar;
   
@@ -74,6 +78,20 @@ int main(int argc, char *argv[])
         exit(1);
         break;
     }
+  }
+
+  Dwm::McCurtain::Ipv6Net2AS  ipv62as;
+  if (ipv62as.Load(ip62asFile)) {
+    for (const auto & entry : ipv62as) {
+      std::cout << entry.first << ' ';
+      std::string  sep("");
+      for (const auto & as : entry.second) {
+        std::cout << sep << as;
+        sep = ',';
+      }
+      std::cout << '\n';
+    }
+    return 0;
   }
   
   Dwm::McCurtain::AS2Ipv4Net  as2ipv4;

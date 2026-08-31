@@ -79,49 +79,16 @@ namespace Dwm {
       DatabaseConfig & operator = (DatabaseConfig &&) = default;
 
       //----------------------------------------------------------------------
-      //!  Returns the path to the IPv4 to AS database file.
+      //!  Returns the path to the database file.
       //----------------------------------------------------------------------
-      const std::string & Ipv4ToASFile() const  { return _ipv4ToASFile; }
+      const std::string & DBFile() const  { return _dbFile; }
 
       //----------------------------------------------------------------------
-      //!  Returns the path to the IPv6 to AS database file.
+      //!  Sets and returns the path to the database file.
       //----------------------------------------------------------------------
-      const std::string & Ipv6ToASFile() const  { return _ipv6ToASFile; }
-      
-      //----------------------------------------------------------------------
-      //!  Sets and returns the path to the IPv4 prefix to AS database file.
-      //----------------------------------------------------------------------
-      const std::string & Ipv4ToASFile(const std::string & f)
-      { return _ipv4ToASFile = f; }
+      const std::string & DBFile(const std::string & f)
+      { return _dbFile = f; }
 
-      //----------------------------------------------------------------------
-      //!  Sets and returns the path to the IPv6 prefix to AS database file.
-      //----------------------------------------------------------------------
-      const std::string & Ipv6ToASFile(const std::string & f)
-      { return _ipv6ToASFile = f; }
-      
-      //----------------------------------------------------------------------
-      //!  Returns the path to the AS to IPv4 prefix database file.
-      //----------------------------------------------------------------------
-      const std::string & ASToIpv4File() const  { return _asToIpv4File; }
-
-      //----------------------------------------------------------------------
-      //!  Returns the path to the AS to IPv6 prefix database file.
-      //----------------------------------------------------------------------
-      const std::string & ASToIpv6File() const  { return _asToIpv6File; }
-      
-      //----------------------------------------------------------------------
-      //!  Sets and returns the path to the AS to IPv4 prefix database file.
-      //----------------------------------------------------------------------
-      const std::string & ASToIpv4File(const std::string & f)
-      { return _asToIpv4File = f; }
-
-      //----------------------------------------------------------------------
-      //!  Sets and returns the path to the AS to IPv6 prefix database file.
-      //----------------------------------------------------------------------
-      const std::string & ASToIpv6File(const std::string & f)
-      { return _asToIpv6File = f; }
-      
       //----------------------------------------------------------------------
       //!  Returns the path to the RIPE asn.txt file.
       //----------------------------------------------------------------------
@@ -146,10 +113,7 @@ namespace Dwm {
       void Clear();
       
     private:
-      std::string  _ipv4ToASFile;
-      std::string  _asToIpv4File;
-      std::string  _ipv6ToASFile;
-      std::string  _asToIpv6File;
+      std::string  _dbFile;
       std::string  _asnTxtFile;
     };
     

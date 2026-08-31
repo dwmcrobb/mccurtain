@@ -165,6 +165,9 @@ namespace Dwm {
           : _root(nullptr), _size(0)
       {}
 
+      //----------------------------------------------------------------------
+      //!  Construct from a CaidaV6Routeviews object.
+      //----------------------------------------------------------------------
       Ipv6Net2AS(const CaidaV6Routeviews & rv);
       
       //----------------------------------------------------------------------
@@ -1002,7 +1005,7 @@ namespace Dwm {
       //!  Loads the contents from a CaidaV6Routeviews object.  Returns true
       //!  on success, false on failure.
       //----------------------------------------------------------------------
-      bool LoadCAIDAV6Routeviews(const CaidaV6Routeviews & rv);
+      bool Load(const CaidaV6Routeviews & rv);
       
       //----------------------------------------------------------------------
       //!   Loads the contents from a gzip'ed routeviews file from CAIDA.
