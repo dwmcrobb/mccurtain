@@ -88,7 +88,9 @@ namespace Dwm {
     void DatabaseConfig::Clear()
     {
       _ipv4ToASFile = "/usr/local/etc/ipv42as.db";
+      _ipv6ToASFile = "/usr/local/etc/ipv62as.db";
       _asToIpv4File = "/usr/local/etc/as2ipv4.db";
+      _asToIpv6File = "/usr/local/etc/as2ipv6.db";
       _asnTxtFile = "/usr/local/etc/asn.txt";
       return;
     }
