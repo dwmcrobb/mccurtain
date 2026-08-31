@@ -1,3 +1,8 @@
+2026-08-30  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* classes/include/DwmMcCurtainDatabaseConfig.hh
+	Added IPv6 file paths.
+
 2026-08-29  dwm  <dwm@nomnom.mcplex.net>
 
 	* tagged as mccurtain-0.0.27
