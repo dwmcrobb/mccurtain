@@ -1,6 +1,4 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
 //  Copyright (c) Daniel W. McRobb 2024, 2025, 2026
 //  All rights reserved.
 //
@@ -45,6 +43,7 @@
 #include "DwmSysLogger.hh"
 #include "DwmMcCurtainASes.hh"
 #include "DwmMcCurtainAS2Ipv4Net.hh"
+#include "DwmMcCurtainAS2Ipv6Net.hh"
 #include "DwmMcCurtainVersion.hh"
 
 using namespace std;
@@ -55,7 +54,41 @@ using namespace std;
 static void Usage(const char *argv0)
 {
   cerr << "Usage: " << argv0
-       << " [-i ipv4ToASdb] [-a asToIpv4db] routeViewsFile\n";
+       << " [-i ipv4ToASdb] [-a asToIpv4db] [-I ipv6ToASdb] [-A asToIpv6db] routeViewsIPv4File"
+       << " routeViewsIPv6File\n";
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void CreateV6Dbs(const std::string & caidarvfile,
+                        const std::string & ipv62asdbfile,
+                        const std::string & as2ipv6dbfile)
+{
+  Dwm::McCurtain::CaidaV6Routeviews  rv;
+  if (rv.Load(caidarvfile)) {
+    rv.Aggregate();
+    Dwm::McCurtain::Ipv6Net2AS  net2as(rv);
+    Dwm::McCurtain::AS2Ipv6Net  as2net(rv);
+    if (net2as.Save(ipv62asdbfile)) {
+      if (as2net.Save(as2ipv6dbfile)) {
+        return;
+      }
+      else {
+        cerr << "Failed to save AS to ipv6 net database to '"
+             << as2ipv6dbfile << "'\n";
+      }
+    }
+    else {
+      cerr << "Failed to save ipv6 net to AS database to '"                
+           << ipv62asdbfile << "'\n";
+    }
+  }
+  else {
+    cerr << "Failed to load routeviews file '" << caidarvfile << "'\n";
+  }
+  
   return;
 }
 
@@ -68,11 +101,19 @@ int main(int argc, char *argv[])
 
   string  as2Ipv4DbFile = "as2ipv4.db";
   string  ipv42AsDbFile = "ipv42as.db";
-
+  string  as2Ipv6DbFile = "as2ipv6.db";
+  string  ipv62AsDbFile = "ipv62as.db";
+  
   extern int  optind;
   int         optChar;
-  while ((optChar = getopt(argc, argv, "a:i:")) != -1) {
+  while ((optChar = getopt(argc, argv, "A:a:I:i:")) != -1) {
     switch (optChar) {
+      case 'A':
+        as2Ipv6DbFile = optarg;
+        break;
+      case 'I':
+        ipv62AsDbFile = optarg;
+        break;
       case 'a':
         as2Ipv4DbFile = optarg;
         break;
@@ -86,11 +127,13 @@ int main(int argc, char *argv[])
     }
   }
 
-  if (optind >= argc) {
+  if ((optind + 1) >= argc) {
     Usage(argv[0]);
     exit(1);
   }
 
+  CreateV6Dbs(argv[optind + 1], ipv62AsDbFile, as2Ipv6DbFile);
+  
   Dwm::McCurtain::CaidaV4Routeviews  rv;
   if (rv.Load(argv[optind])) {
     rv.Aggregate();
