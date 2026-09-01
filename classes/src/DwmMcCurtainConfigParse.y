@@ -76,7 +76,7 @@
 %token<stringVal>  STRING
 %token<intVal>     INTEGER
 
-%type<intVal>                  TCP4Port
+%type<intVal>                  PortValue
 %type<stringVal>               KeyDirectory DBFile ASNTxt
 %type<stringVecVal>            VectorOfString
 %type<serviceConfigVal>        ServiceSettings
@@ -207,7 +207,7 @@ ServiceAddress: '{' ADDRESS '=' STRING ';' '}'
   }
   delete $4;
 }
-| '{' ADDRESS '=' STRING ';' TCPPORT '=' TCP4Port ';' '}'
+| '{' ADDRESS '=' STRING ';' TCPPORT '=' PortValue ';' '}'
 {
   namespace baip = boost::asio::ip;
   using batcp =	boost::asio::ip::tcp;
@@ -236,7 +236,7 @@ ServiceAddress: '{' ADDRESS '=' STRING ';' '}'
   }
   delete $4;
 }
-| '{' TCPPORT '=' TCP4Port ';' ADDRESS '=' STRING ';' '}'
+| '{' TCPPORT '=' PortValue ';' ADDRESS '=' STRING ';' '}'
 {
   namespace baip = boost::asio::ip;
   using batcp = boost::asio::ip::tcp;
@@ -292,7 +292,7 @@ AllowedClients: ALLOWEDCLIENTS '=' '[' VectorOfString ']' ';'
   delete $4;
 };
 
-TCP4Port: INTEGER
+PortValue: INTEGER
 {
   if (($1 > 0) && ($1 < 65536)) {
     $$ = $1;
