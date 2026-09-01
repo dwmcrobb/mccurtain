@@ -6,8 +6,8 @@ service {
     #  A line like the following can be used to bind to a specific IP
     #  address instead of the wildcard.
     #------------------------------------------------------------------------
-    addresses = [ { address = "inaddr_any"; port = 2126; },
-                  { address = "in6addr_any"; port = 2126; } ];
+    addresses = [ { address = "inaddr_any"; tcpPort = 2126; },
+                  { address = "in6addr_any"; tcpPort = 2126; } ];
 
     #------------------------------------------------------------------------
     #  Location of credence public key file (id_ed25519.pub), private key
