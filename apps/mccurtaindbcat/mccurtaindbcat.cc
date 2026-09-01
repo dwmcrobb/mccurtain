@@ -34,7 +34,8 @@
 //---------------------------------------------------------------------------
 //!  \file mccurtaindbcat.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief trivial utility to dump the contents of the mccurtain db file in
+//!    human-readable form
 //---------------------------------------------------------------------------
 
 extern "C" {
@@ -42,6 +43,7 @@ extern "C" {
 }
 
 #include <cstdlib>
+#include <fstream>
 
 #include "DwmMcCurtainAS2Ipv4Net.hh"
 #include "DwmMcCurtainIpv4Net2AS.hh"
@@ -51,27 +53,20 @@ extern "C" {
 //----------------------------------------------------------------------------
 static void Usage(const char *argv0)
 {
-  std::cerr << "Usage: " << argv0 << " [-i ipv42as_db] [-a as2ipv4_db]\n";
+  std::cerr << "Usage: " << argv0 << " [-f dbfile]\n";
   return;
 }
 
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  std::string  ip2asFile("/usr/local/etc/ipv42as.db");
-  std::string  as2ipFile("/usr/local/etc/as2ipv4.db");
-  std::string  ip62asFile("/usr/local/etc/ipv62as.db");
-  std::string  as2ip6File("/usr/local/etc/as2ipv6.db");
-
+  std::string  dbFile("/usr/local/etc/mccip2as.db");
   int  optchar;
   
-  while ((optchar = getopt(argc, argv, "a:i:")) != -1) {
+  while ((optchar = getopt(argc, argv, "f:")) != -1) {
     switch (optchar) {
-      case 'a':
-        as2ipFile = optarg;
-        break;
-      case 'i':
-        ip2asFile = optarg;
+      case 'f':
+        dbFile = optarg;
         break;
       default:
         Usage(argv[0]);
@@ -80,41 +75,55 @@ int main(int argc, char *argv[])
     }
   }
 
-  Dwm::McCurtain::Ipv6Net2AS  ipv62as;
-  if (ipv62as.Load(ip62asFile)) {
-    for (const auto & entry : ipv62as) {
-      std::cout << entry.first << ' ';
-      std::string  sep("");
-      for (const auto & as : entry.second) {
-        std::cout << sep << as;
-        sep = ',';
-      }
-      std::cout << '\n';
-    }
-    return 0;
-  }
-  
-  Dwm::McCurtain::AS2Ipv4Net  as2ipv4;
-  if (as2ipv4.Load(as2ipFile)) {
-    for (const auto & entry : as2ipv4.Nets()) {
-      std::cout << entry.first << '\n';
-      for (const auto & pfx : entry.second) {
-        std::cout << "  " << pfx.first << '\n';
+  std::ifstream  is(dbFile);
+  if (is) {
+    Dwm::McCurtain::Ipv4Net2AS  ipv42as;
+    if (ipv42as.Read(is)) {
+      for (const auto & entry : ipv42as) {
+        std::cout << entry.first << ' ';
+        std::string  sep("");
+        for (const auto & as : entry.second) {
+          std::cout << sep << as;
+          sep = ',';
+        }
+        std::cout << '\n';
       }
     }
-  }
-  
-  Dwm::McCurtain::Ipv4Net2AS  ipv42as;
-  if (ipv42as.Load(ip2asFile)) {
-    for (const auto & entry : ipv42as) {
-      std::cout << entry.first << ' ';
-      std::string  sep("");
-      for (const auto & as : entry.second) {
-        std::cout << sep << as;
-        sep = ',';
+    Dwm::McCurtain::AS2Ipv4Net  as2ipv4;
+    if (as2ipv4.Read(is)) {
+      for (const auto & entry : as2ipv4.Nets()) {
+        std::cout << entry.first << '\n';
+        for (const auto & pfx : entry.second) {
+          std::cout << "  " << pfx.first << '\n';
+        }
       }
-      std::cout << '\n';
     }
-    return 0;
+    Dwm::McCurtain::Ipv6Net2AS  ipv62as;
+    if (ipv62as.Read(is)) {
+      for (const auto & entry : ipv62as) {
+        std::cout << entry.first << ' ';
+        std::string  sep("");
+        for (const auto & as : entry.second) {
+          std::cout << sep << as;
+          sep = ',';
+        }
+        std::cout << '\n';
+      }
+    }
+    Dwm::McCurtain::AS2Ipv6Net  as2ipv6;
+    if (as2ipv6.Read(is)) {
+      for (const auto & entry : as2ipv6.Nets()) {
+        std::cout << entry.first << '\n';
+        for (const auto & pfx : entry.second) {
+          std::cout << "  " << pfx.first << '\n';
+        }
+      }
+    }
   }
+  else {
+    std::cerr << "Failed to open db file '" << dbFile << "'\n";
+    return 1;
+  }
+
+  return 0;
 }
