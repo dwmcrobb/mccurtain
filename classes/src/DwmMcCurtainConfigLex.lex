@@ -40,7 +40,7 @@
     { "keyDirectory",       KEYDIRECTORY   },
     { "level",              LEVEL          },
     { "logLocations",       LOGLOCATIONS   },
-    { "port",               PORT           },
+    { "tcpPort",            TCPPORT        },
     { "service",            SERVICE        },
     { "syslog",             SYSLOG         }
   };

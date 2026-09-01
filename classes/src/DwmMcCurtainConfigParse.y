@@ -71,7 +71,7 @@
 }
 
 %token ADDRESS ADDRESSES ALLOWEDCLIENTS ASNTXT DATABASES DBFILE FACILITY
-%token KEYDIRECTORY LEVEL LOGLOCATIONS PORT SERVICE SYSLOG
+%token KEYDIRECTORY LEVEL LOGLOCATIONS TCPPORT SERVICE SYSLOG
 
 %token<stringVal>  STRING
 %token<intVal>     INTEGER
@@ -207,7 +207,7 @@ ServiceAddress: '{' ADDRESS '=' STRING ';' '}'
   }
   delete $4;
 }
-| '{' ADDRESS '=' STRING ';' PORT '=' TCP4Port ';' '}'
+| '{' ADDRESS '=' STRING ';' TCPPORT '=' TCP4Port ';' '}'
 {
   namespace baip = boost::asio::ip;
   using batcp =	boost::asio::ip::tcp;
@@ -236,7 +236,7 @@ ServiceAddress: '{' ADDRESS '=' STRING ';' '}'
   }
   delete $4;
 }
-| '{' PORT '=' TCP4Port ';' ADDRESS '=' STRING ';' '}'
+| '{' TCPPORT '=' TCP4Port ';' ADDRESS '=' STRING ';' '}'
 {
   namespace baip = boost::asio::ip;
   using batcp = boost::asio::ip::tcp;
