@@ -1,3 +1,10 @@
+2026-09-01  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* classes/src/DwmMcCurtainConfigLex.lex
+	* classes/src/DwmMcCurtainConfigParse.y
+	Change 'port' keyword to 'tcpPort', in anticipation of adding UDP
+	port settings.
+
 2026-08-31  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
 	* tagged as mccurtain-0.0.28
