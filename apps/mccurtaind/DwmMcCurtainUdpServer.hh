@@ -44,11 +44,14 @@
 #include "DwmMcCurtainAS2Ipv6Net.hh"
 #include "DwmMcCurtainRipeAsnTxt.hh"
 #include "DwmMcCurtainMessage.hh"
+#include "DwmMcCurtainBindAddr.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
+    class Server;
+    
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
@@ -56,21 +59,26 @@ namespace Dwm {
     {
     public:
       UdpServer() = delete;
-      UdpServer(const Ipv4Net2AS & ipv42as, const Ipv6Net2AS & ipv62as,
-                const RipeAsnTxt & asntxt);
+      UdpServer(Server & server);
       ~UdpServer();
       bool Start();
       bool Stop();
       void Run();
       
     private:
+      Server            & _server;
+#if 0
       const Ipv4Net2AS  & _ipv42as;
       const Ipv6Net2AS  & _ipv62as;
       const RipeAsnTxt  & _asntxt;
+#endif
+      std::map<BindAddr,int>  _binfds;
+#if 0
       int                 _binfd;
       int                 _jsonfd;
       int                 _bin6fd;
       int                 _json6fd;
+#endif
       int                 _stopfds[2];
       std::thread         _thread;
       std::atomic<bool>   _shouldRun;

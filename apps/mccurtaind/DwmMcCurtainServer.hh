@@ -70,7 +70,7 @@ namespace Dwm {
       Server(Ex executor, const Config & config)
           : _config(config), _ipv42as(), _as2ipv4(), _ipv62as(), _as2ipv6(),
             _dnsServer(_ipv42as, _asntxt),
-            _udpServer(_ipv42as, _ipv62as, _asntxt),
+            _udpServer(*this),
             _keyStash(config.Service().KeyDirectory()),
             _knownKeys(config.Service().KeyDirectory()),
             _allowedClients(config.Service().AllowedClients()),
@@ -101,6 +101,10 @@ namespace Dwm {
         }
       }
 
+      const Ipv4Net2AS & Ip4ToAS() const  { return _ipv42as; }
+      const Ipv6Net2AS & Ip6ToAS() const  { return _ipv62as; }
+      const RipeAsnTxt & AsnTxt() const  { return _asntxt; }
+      
       void GetIpv4AddrResponse(const Ipv4Address & addr,
                                Ipv4AddrResponse & resp);
       void GetASPrefixesResponse(uint32_t asNum, ASPrefixesResponse & resp);

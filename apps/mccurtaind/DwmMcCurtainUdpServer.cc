@@ -43,18 +43,15 @@ extern "C" {
 
 #include "DwmMclogLogger.hh"
 #include "DwmMcCurtainMessage.hh"
-#include "DwmMcCurtainUdpServer.hh"
+#include "DwmMcCurtainServer.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    UdpServer::UdpServer(const Ipv4Net2AS & ipv42as,
-                         const Ipv6Net2AS & ipv62as,
-                         const RipeAsnTxt & asntxt)
-        : _ipv42as(ipv42as), _ipv62as(ipv62as), _asntxt(asntxt), _binfd(-1),
-          _jsonfd(-1), _bin6fd(-1), _json6fd(-1), _stopfds{-1,-1}, _thread(),
+    UdpServer::UdpServer(Server & server)
+        : _server(server), _binfds(), _stopfds{-1,-1}, _thread(),
           _shouldRun(false)
     {}
 
@@ -104,23 +101,33 @@ namespace Dwm {
       auto reset_fds = [&] () -> void
       {
         FD_ZERO(&fds);
-        maxfd = 0;
-        if (0 <= _binfd)       { FD_SET(_binfd, &fds); }
-        if (0 <= _jsonfd)      { FD_SET(_jsonfd, &fds); }
-        if (0 <= _bin6fd)      { FD_SET(_bin6fd, &fds); }
-        if (0 <= _json6fd)     { FD_SET(_json6fd, &fds); }
+        for (auto & binfd : _binfds) {
+          if (0 <= binfd.second) {
+            FD_SET(binfd.second, &fds);
+          }
+        }
+        auto maxit = std::max_element(_binfds.begin(), _binfds.end(),
+                                      [] (const auto & a, const auto & b)
+                                      { return a.second < b.second; });
+        maxfd = maxit->second;
         if (0 <= _stopfds[0])  { FD_SET(_stopfds[0], &fds); }
-        maxfd = std::max({_binfd,_jsonfd,_bin6fd,_json6fd,_stopfds[0]});
+        maxfd = std::max({maxfd, _stopfds[0]});
       };
       
       while (_shouldRun) {
         reset_fds();
         int  selectrc = select(maxfd+1, &fds, nullptr, nullptr, nullptr);
         if (FD_ISSET(_stopfds[0], &fds))  { break; }
-        if (FD_ISSET(_binfd, &fds))       { RespondBinary(_binfd); }
-        if (FD_ISSET(_bin6fd, &fds))      { RespondBinary6(_bin6fd); }
-        if (FD_ISSET(_jsonfd, &fds))      { RespondJson(_jsonfd); }
-        if (FD_ISSET(_json6fd, &fds))     { RespondJson6(_json6fd); }
+        for (auto & binfd : _binfds) {
+          if (FD_ISSET(binfd.second, &fds)) {
+            if (binfd.first.addr.IsV4()) {
+              RespondBinary(binfd.second);
+            }
+            else if (binfd.first.addr.IsV6()) {
+              RespondBinary6(binfd.second);
+            }
+          }
+        }
       }
       
       return;
@@ -129,41 +136,49 @@ namespace Dwm {
     //------------------------------------------------------------------------
     bool UdpServer::BindSockets()
     {
-      if ((0 <= _binfd)
-          && (0 <= _jsonfd)
-          && (0 <= _bin6fd)
-          && (0 <= _json6fd)) {
-        sockaddr_in  sockAddr;
-        memset(&sockAddr, 0, sizeof(sockAddr));
-        sockAddr.sin_family = PF_INET;
-        sockAddr.sin_addr.s_addr = INADDR_ANY;
-        sockAddr.sin_port = htons(8645);
+      size_t  numbound = 0;
+      for (auto & binfd : _binfds) {
+        if (0 <= binfd.second) {
+          if (binfd.first.addr.IsV4()) {
+            sockaddr_in  sockAddr;
+            memset(&sockAddr, 0, sizeof(sockAddr));
+            sockAddr.sin_family = PF_INET;
+            sockAddr.sin_addr.s_addr = binfd.first.addr.Addr<Ipv4Address>()->Raw();
+            sockAddr.sin_port = htons(binfd.first.port);
 #ifndef __linux__
-        sockAddr.sin_len = sizeof(sockAddr);
+            sockAddr.sin_len = sizeof(sockAddr);
 #endif
-        if (0 == ::bind(_binfd, (sockaddr *)&sockAddr, sizeof(sockAddr))) {
-          sockAddr.sin_port = htons(8647);
-          if (0 == ::bind(_jsonfd, (sockaddr *)&sockAddr, sizeof(sockAddr))) {
+            if (0 == ::bind(binfd.second, (sockaddr *)&sockAddr, sizeof(sockAddr))) {
+              ++numbound;
+            }
+            else {
+              MCLOG(LOG_ERR, "Failed to bind fd {} to {}: {}",
+                    binfd.second, binfd.first.addr, strerror(errno));
+            }
+          }
+          else if (binfd.first.addr.IsV6()) {
             sockaddr_in6  sockAddr6;
             memset(&sockAddr6, 0, sizeof(sockAddr6));
             sockAddr6.sin6_family = PF_INET6;
-            memset(&sockAddr6.sin6_addr, 0, sizeof(sockAddr6.sin6_addr));
-            sockAddr6.sin6_port = htons(8645);
+            sockAddr6.sin6_addr = *(binfd.first.addr.Addr<Ipv6Address>());
+            sockAddr6.sin6_port = htons(binfd.first.port);
 #ifndef __linux__
             sockAddr6.sin6_len = sizeof(sockAddr6);
 #endif
-            if (0 == ::bind(_bin6fd, (sockaddr *)&sockAddr6,
-                            sizeof(sockAddr6))) {
-              sockAddr6.sin6_port = htons(8647);
-              if (0 == ::bind(_json6fd, (sockaddr *)&sockAddr6,
-                            sizeof(sockAddr6))) {
-                return true;
-              }
+            if (0 == ::bind(binfd.second, (sockaddr *)&sockAddr6, sizeof(sockAddr6))) {
+              ++numbound;
+            }
+            else {
+              MCLOG(LOG_ERR, "Failed to bind fd {} to {}: {}",
+                    binfd.second, binfd.first.addr, strerror(errno));
             }
           }
         }
-        CloseSockets();
       }
+      if (_binfds.size() == numbound) {
+        return true;
+      }
+      CloseSockets();
       return false;
     }
     
@@ -171,30 +186,32 @@ namespace Dwm {
     bool UdpServer::OpenSockets()
     {
       CloseSockets();
-      _binfd = socket(PF_INET, SOCK_DGRAM, 0);
-      if (0 <= _binfd) {
-        _jsonfd = socket(PF_INET, SOCK_DGRAM, 0);
-        if (0 <= _jsonfd) {
-          _bin6fd = socket(PF_INET6, SOCK_DGRAM, 0);
-          if (0 <= _bin6fd) {
-            _json6fd = socket(PF_INET6, SOCK_DGRAM, 0);
-            if (0 <= _json6fd) {
-              return true;
-            }
-          }
+      const auto & addrs = _server.GetConfig().Service().UdpAddresses();
+      for (const auto & ba : addrs) {
+        int  fd = -1;
+        if (ba.addr.IsV4()) { fd = socket(PF_INET, SOCK_DGRAM, 0); }
+        else if (ba.addr.IsV6()) { fd = socket(PF_INET6, SOCK_DGRAM, 0); }
+        if (0 <= fd) {
+          _binfds[ba] = fd;
+        }
+        else {
+          CloseSockets();
+          return false;
         }
       }
-      CloseSockets();
-      return false;
+      return (_binfds.size() == addrs.size());
+      return true;
     }
     
     //------------------------------------------------------------------------
     void UdpServer::CloseSockets()
     {
-      if (0 <= _binfd)        { ::close(_binfd);   _binfd   = -1; }
-      if (0 <= _jsonfd)       { ::close(_jsonfd);  _jsonfd  = -1; }
-      if (0 <= _bin6fd)       { ::close(_bin6fd);  _bin6fd  = -1; }
-      if (0 <= _json6fd)      { ::close(_json6fd); _json6fd = -1; }
+      for (auto & binfd : _binfds) {
+        if (0 <= binfd.second) {
+          ::close(binfd.second);
+        }
+      }
+      _binfds.clear();
       return;
     }
       
@@ -212,8 +229,8 @@ namespace Dwm {
     {
       bool  rc = false;
       std::vector<Ipv6Net2AS::value_type>  matches;
-      if (_ipv62as.find_matches(*(req.Address().Addr<Ipv6Address>()),
-                                matches)) {
+      if (_server.Ip6ToAS().find_matches(*(req.Address().Addr<Ipv6Address>()),
+                                         matches)) {
         MCLOG(LOG_INFO, "Found {} matches for {}",
               matches.size(), *(req.Address().Addr<Ipv6Address>()));
         std::vector<OriginPrefix>  prefixes;
@@ -222,8 +239,8 @@ namespace Dwm {
           prefix.Prefix(match.first);
           for (const auto & as : match.second) {
             OriginAS  origas(as,"--","");
-            auto  asnit = _asntxt.Entries().find(as);
-            if (asnit != _asntxt.Entries().end()) {
+            auto  asnit = _server.AsnTxt().Entries().find(as);
+            if (asnit != _server.AsnTxt().Entries().end()) {
               origas.CountryCode(asnit->second.CountryCode());
               origas.Name(asnit->second.Name());
             }
@@ -249,16 +266,16 @@ namespace Dwm {
     {
       bool  rc = false;
       std::vector<Ipv4Net2AS::value_type>  matches;
-      if (_ipv42as.find_matches(*(req.Address().Addr<Ipv4Address>()),
-                                matches)) {
+      if (_server.Ip4ToAS().find_matches(*(req.Address().Addr<Ipv4Address>()),
+                                         matches)) {
         std::vector<OriginPrefix>  prefixes;
         for (const auto & match : matches) {
           OriginPrefix  prefix;
           prefix.Prefix(match.first);
           for (const auto & as : match.second) {
             OriginAS  origas(as,"--","");
-            auto  asnit = _asntxt.Entries().find(as);
-            if (asnit != _asntxt.Entries().end()) {
+            auto  asnit = _server.AsnTxt().Entries().find(as);
+            if (asnit != _server.AsnTxt().Entries().end()) {
               origas.CountryCode(asnit->second.CountryCode());
               origas.Name(asnit->second.Name());
             }
