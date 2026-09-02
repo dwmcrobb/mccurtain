@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2023
+//  Copyright (c) Daniel W. McRobb 2023, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -75,6 +73,22 @@ namespace Dwm {
       //!  for client connections.
       //----------------------------------------------------------------------
       void AddAddress(const boost::asio::ip::tcp::endpoint & addr);
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      const std::set<boost::asio::ip::udp::endpoint> & UdpAddresses() const;
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      const std::set<boost::asio::ip::udp::endpoint> &
+      UdpAddresses(const std::set<boost::asio::ip::udp::endpoint> & addrs);
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      void AddAddress(const boost::asio::ip::udp::endpoint & addr);
       
       //----------------------------------------------------------------------
       //!  Returns the directory where our private key, public key and known
@@ -114,6 +128,7 @@ namespace Dwm {
       
     private:
       std::set<boost::asio::ip::tcp::endpoint>  _serviceAddresses;
+      std::set<boost::asio::ip::udp::endpoint>  _udpAddresses;
       std::string                               _keyDirectory;
       std::set<IpPrefix>                        _allowedClients;
     };

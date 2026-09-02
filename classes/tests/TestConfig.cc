@@ -67,6 +67,8 @@ static void TestCfg1()
 {
   using  batcp = boost::asio::ip::tcp;
   using  batcpep = boost::asio::ip::tcp::endpoint;
+  using  baudp = boost::asio::ip::udp;
+  using  baudpep = boost::asio::ip::udp::endpoint;
   
   Dwm::McCurtain::Config  cfg;
   TestDefaults(cfg);
@@ -75,11 +77,19 @@ static void TestCfg1()
     UnitAssert(cfg.SyslogLevel() == "info");
     UnitAssert(cfg.SyslogLocations() == false);
     UnitAssert(cfg.Service().KeyDirectory() == "/usr/local/etc/mccurtaind");
+
     UnitAssert(cfg.Service().Addresses().size() == 2);
     UnitAssert(cfg.Service().Addresses().find(batcpep(batcp::v4(), 2126))
                != cfg.Service().Addresses().end());
     UnitAssert(cfg.Service().Addresses().find(batcpep(batcp::v6(), 2126))
                != cfg.Service().Addresses().end());
+
+    UnitAssert(cfg.Service().UdpAddresses().size() == 2);
+    UnitAssert(cfg.Service().UdpAddresses().find(baudpep(baudp::v4(), 2126))
+               != cfg.Service().UdpAddresses().end());
+    UnitAssert(cfg.Service().UdpAddresses().find(baudpep(baudp::v6(), 2126))
+               != cfg.Service().UdpAddresses().end());
+    
     UnitAssert(cfg.Service().AllowedClients().size() == 4);
     UnitAssert(cfg.Service().AllowedClients().find(Dwm::IpPrefix("192.168.168/24"))
                != cfg.Service().AllowedClients().end());

@@ -31,6 +31,7 @@
   //--------------------------------------------------------------------------
   static const std::map<std::string,int>  g_configKeywords = {
     { "addresses",          ADDRESSES      },
+    { "udpAddresses",       UDPADDRESSES   },
     { "address",            ADDRESS        },
     { "allowedClients",     ALLOWEDCLIENTS },
     { "databases",          DATABASES      },
@@ -41,6 +42,7 @@
     { "level",              LEVEL          },
     { "logLocations",       LOGLOCATIONS   },
     { "tcpPort",            TCPPORT        },
+    { "udpPort",            UDPPORT        },
     { "service",            SERVICE        },
     { "syslog",             SYSLOG         }
   };

@@ -56,6 +56,8 @@
   Dwm::McCurtain::ServiceConfig                 *serviceConfigVal;
   boost::asio::ip::tcp::endpoint                *serviceAddrVal;
   std::set<boost::asio::ip::tcp::endpoint>      *serviceAddrSetVal;
+  boost::asio::ip::udp::endpoint                *udpAddrVal;
+  std::set<boost::asio::ip::udp::endpoint>      *udpAddrSetVal;
   pair<string,string>                           *stringStringPairVal;
   std::map<string,string>                       *stringStringMapVal;
 }
@@ -70,8 +72,9 @@
   YY_DECL;
 }
 
-%token ADDRESS ADDRESSES ALLOWEDCLIENTS ASNTXT DATABASES DBFILE FACILITY
-%token KEYDIRECTORY LEVEL LOGLOCATIONS TCPPORT SERVICE SYSLOG
+%token ADDRESS ADDRESSES UDPADDRESSES ALLOWEDCLIENTS ASNTXT DATABASES
+%token DBFILE FACILITY KEYDIRECTORY LEVEL LOGLOCATIONS TCPPORT UDPPORT
+%token SERVICE SYSLOG
 
 %token<stringVal>  STRING
 %token<intVal>     INTEGER
@@ -81,8 +84,10 @@
 %type<stringVecVal>            VectorOfString
 %type<serviceConfigVal>        ServiceSettings
 %type<serviceAddrSetVal>       ServiceAddresses ServiceAddressSet
+%type<udpAddrSetVal>           UdpAddresses UdpAddressSet
 %type<ipPrefixSetVal>          AllowedClients
 %type<serviceAddrVal>          ServiceAddress
+%type<udpAddrVal>              UdpAddress
 %type<dbConfigVal>             Databases DatabaseSettings
 
 %%
@@ -139,6 +144,12 @@ ServiceSettings: ServiceAddresses
   $$->Addresses(*$1);
   delete $1;
 }
+| UdpAddresses
+{
+  $$ = new Dwm::McCurtain::ServiceConfig();
+  $$->UdpAddresses(*$1);
+  delete $1;
+}
 | KeyDirectory
 {
   $$ = new Dwm::McCurtain::ServiceConfig();
@@ -154,6 +165,11 @@ ServiceSettings: ServiceAddresses
 | ServiceSettings ServiceAddresses
 {
   $$->Addresses(*$2);
+  delete $2;
+}
+| ServiceSettings UdpAddresses
+{
+  $$->UdpAddresses(*$2);
   delete $2;
 }
 | ServiceSettings KeyDirectory
@@ -179,6 +195,23 @@ ServiceAddressSet: ServiceAddress
   delete $1;
 }
 | ServiceAddressSet ',' ServiceAddress
+{
+  $$->insert(*$3);
+  delete $3;
+};
+
+UdpAddresses: UDPADDRESSES '=' '[' UdpAddressSet ']' ';'
+{
+    $$ = $4;
+};
+
+UdpAddressSet: UdpAddress
+{
+  $$ = new std::set<boost::asio::ip::udp::endpoint>();
+  $$->insert(*$1);
+  delete $1;
+}
+| UdpAddressSet ',' UdpAddress
 {
   $$->insert(*$3);
   delete $3;
@@ -262,6 +295,88 @@ ServiceAddress: '{' ADDRESS '=' STRING ';' '}'
       return 1;
     }
     $$ = new batcp::endpoint(addr, $4);
+  }
+  delete $8;
+};
+
+UdpAddress: '{' ADDRESS '=' STRING ';' '}'
+{
+  using baudp = boost::asio::ip::udp;
+    
+  if (*$4 == "in6addr_any") {
+      $$ = new baudp::endpoint(baudp::v6(), 2124);
+  }
+  else if (*$4 == "inaddr_any") {
+      $$ = new baudp::endpoint(baudp::v4(), 2124);
+  }
+  else {
+    boost::system::error_code  ec;
+    boost::asio::ip::address  addr =
+      boost::asio::ip::make_address(*$4, ec);
+    if (ec) {
+      mccurtaincfgerror("invalid IP address");
+      delete $4;
+      return 1;
+    }
+    $$ = new boost::asio::ip::udp::endpoint(addr, 2124);
+  }
+  delete $4;
+}
+| '{' ADDRESS '=' STRING ';' UDPPORT '=' PortValue ';' '}'
+{
+  namespace baip = boost::asio::ip;
+  using baudp =	boost::asio::ip::udp;
+  
+  if (($8 <= 0) || ($8 > 65535)) {
+    mccurtaincfgerror("invalid port");
+    delete $4;
+    return 1;
+  }
+
+  if (*$4 == "in6addr_any") {
+      $$ = new baudp::endpoint(baudp::v6(), $8);
+  }
+  else if (*$4 == "inaddr_any") {
+      $$ = new baudp::endpoint(baudp::v4(), $8);
+  }
+  else {
+    boost::system::error_code  ec;
+    baip::address  addr = baip::make_address(*$4, ec);
+    if (ec) {
+      mccurtaincfgerror("invalid IP address");
+      delete $4;
+      return 1;
+    }
+    $$ = new baudp::endpoint(addr, $8);
+  }
+  delete $4;
+}
+| '{' UDPPORT '=' PortValue ';' ADDRESS '=' STRING ';' '}'
+{
+  namespace baip = boost::asio::ip;
+  using baudp = boost::asio::ip::udp;
+
+  if (($4 <= 0) || ($4 > 65535)) {
+    mccurtaincfgerror("invalid port");
+    delete $8;
+    return 1;
+  }
+  baip::address  addr;
+  if (*$8 == "in6addr_any") {
+    $$ = new baudp::endpoint(baudp::v6(), $4);
+  }
+  else if (*$8 == "inaddr_any") {
+    $$ = new baudp::endpoint(baudp::v4(), $4);
+  }
+  else {
+    boost::system::error_code  ec;
+    baip::address addr = baip::make_address(*$8, ec);
+    if (ec) {
+      mccurtaincfgerror("invalid IP address");
+      delete $8;
+      return 1;
+    }
+    $$ = new baudp::endpoint(addr, $4);
   }
   delete $8;
 };

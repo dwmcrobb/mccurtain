@@ -9,6 +9,9 @@ service {
     addresses = [ { address = "inaddr_any"; tcpPort = 2126; },
                   { address = "in6addr_any"; tcpPort = 2126; } ];
 
+    udpAddresses = [ { address = "inaddr_any"; udpPort = 2126; },
+                     { address = "in6addr_any"; udpPort = 2126; } ];
+
     #------------------------------------------------------------------------
     #  Location of credence public key file (id_ed25519.pub), private key
     #  file (id_ed25519) and allowed client public keys file (known_keys).
