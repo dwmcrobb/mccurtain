@@ -85,9 +85,9 @@ static void TestCfg1()
                != cfg.Service().Addresses().end());
 
     UnitAssert(cfg.Service().UdpAddresses().size() == 2);
-    UnitAssert(cfg.Service().UdpAddresses().find(baudpep(baudp::v4(), 2126))
+    UnitAssert(cfg.Service().UdpAddresses().find(McCurtain::BindAddr(Ipv4Address(INADDR_ANY), 2126))
                != cfg.Service().UdpAddresses().end());
-    UnitAssert(cfg.Service().UdpAddresses().find(baudpep(baudp::v6(), 2126))
+    UnitAssert(cfg.Service().UdpAddresses().find(McCurtain::BindAddr(Ipv6Address("::"), 2126))
                != cfg.Service().UdpAddresses().end());
     
     UnitAssert(cfg.Service().AllowedClients().size() == 4);

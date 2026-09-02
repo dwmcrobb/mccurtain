@@ -76,22 +76,21 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    const std::set<boost::asio::ip::udp::endpoint> &
-    ServiceConfig::UdpAddresses() const
+    const std::set<BindAddr> & ServiceConfig::UdpAddresses() const
     {
       return _udpAddresses;
     }
 
     //------------------------------------------------------------------------
-    const std::set<boost::asio::ip::udp::endpoint> &
-    ServiceConfig::UdpAddresses(const std::set<boost::asio::ip::udp::endpoint> & addrs)
+    const std::set<BindAddr> &
+    ServiceConfig::UdpAddresses(const std::set<BindAddr> & addrs)
     {
       _udpAddresses = addrs;
       return _udpAddresses;
     }
 
     //------------------------------------------------------------------------
-    void ServiceConfig::AddAddress(const boost::asio::ip::udp::endpoint & addr)
+    void ServiceConfig::AddUdpAddress(const BindAddr & addr)
     {
       _udpAddresses.insert(addr);
     }
@@ -166,12 +165,12 @@ namespace Dwm {
         if (! cfg._udpAddresses.empty()) {
           os << "    udpAddresses = [\n";
           auto  iter = cfg._udpAddresses.begin();
-          os << "        { address = \"" << iter->address()
-             << "\"; udpPort = " << iter->port() << "; }";
+          os << "        { address = \"" << iter->addr
+             << "\"; udpPort = " << iter->port << "; }";
           ++iter;
           for ( ; iter != cfg._udpAddresses.end(); ++iter) {
-            os << ",\n        { address = \"" << iter->address()
-               << "\"; udpPort = " << iter->port() << "; }";
+            os << ",\n        { address = \"" << iter->addr
+               << "\"; udpPort = " << iter->port << "; }";
           }
           os << "\n    ];\n\n";
         }

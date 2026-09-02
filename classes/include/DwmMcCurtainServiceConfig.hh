@@ -44,6 +44,7 @@
 #include <boost/asio.hpp>
 
 #include "DwmIpPrefix.hh"
+#include "DwmMcCurtainBindAddr.hh"
 
 namespace Dwm {
 
@@ -77,18 +78,17 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      const std::set<boost::asio::ip::udp::endpoint> & UdpAddresses() const;
+      const std::set<BindAddr> & UdpAddresses() const;
 
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      const std::set<boost::asio::ip::udp::endpoint> &
-      UdpAddresses(const std::set<boost::asio::ip::udp::endpoint> & addrs);
+      const std::set<BindAddr> & UdpAddresses(const std::set<BindAddr> & addrs);
 
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void AddAddress(const boost::asio::ip::udp::endpoint & addr);
+      void AddUdpAddress(const BindAddr & addr);
       
       //----------------------------------------------------------------------
       //!  Returns the directory where our private key, public key and known
@@ -128,7 +128,7 @@ namespace Dwm {
       
     private:
       std::set<boost::asio::ip::tcp::endpoint>  _serviceAddresses;
-      std::set<boost::asio::ip::udp::endpoint>  _udpAddresses;
+      std::set<BindAddr>                        _udpAddresses;
       std::string                               _keyDirectory;
       std::set<IpPrefix>                        _allowedClients;
     };

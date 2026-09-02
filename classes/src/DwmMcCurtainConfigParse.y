@@ -56,8 +56,8 @@
   Dwm::McCurtain::ServiceConfig                 *serviceConfigVal;
   boost::asio::ip::tcp::endpoint                *serviceAddrVal;
   std::set<boost::asio::ip::tcp::endpoint>      *serviceAddrSetVal;
-  boost::asio::ip::udp::endpoint                *udpAddrVal;
-  std::set<boost::asio::ip::udp::endpoint>      *udpAddrSetVal;
+  Dwm::McCurtain::BindAddr                      *udpAddrVal;
+  std::set<Dwm::McCurtain::BindAddr>            *udpAddrSetVal;
   pair<string,string>                           *stringStringPairVal;
   std::map<string,string>                       *stringStringMapVal;
 }
@@ -207,7 +207,7 @@ UdpAddresses: UDPADDRESSES '=' '[' UdpAddressSet ']' ';'
 
 UdpAddressSet: UdpAddress
 {
-  $$ = new std::set<boost::asio::ip::udp::endpoint>();
+  $$ = new std::set<Dwm::McCurtain::BindAddr>();
   $$->insert(*$1);
   delete $1;
 }
@@ -301,32 +301,25 @@ ServiceAddress: '{' ADDRESS '=' STRING ';' '}'
 
 UdpAddress: '{' ADDRESS '=' STRING ';' '}'
 {
-  using baudp = boost::asio::ip::udp;
-    
   if (*$4 == "in6addr_any") {
-      $$ = new baudp::endpoint(baudp::v6(), 2124);
+      $$ = new Dwm::McCurtain::BindAddr(Ipv6Address(in6addr_any), 2124);
   }
   else if (*$4 == "inaddr_any") {
-      $$ = new baudp::endpoint(baudp::v4(), 2124);
+      $$ = new Dwm::McCurtain::BindAddr(Ipv4Address(INADDR_ANY), 2124);
   }
   else {
-    boost::system::error_code  ec;
-    boost::asio::ip::address  addr =
-      boost::asio::ip::make_address(*$4, ec);
-    if (ec) {
+    Dwm::McCurtain::BindAddr  ba(*$4, 2124);
+    if (ba.addr.IsV4() && (ba.addr.Addr<Ipv4Address>()->Raw() == INADDR_NONE)) {
       mccurtaincfgerror("invalid IP address");
       delete $4;
       return 1;
     }
-    $$ = new boost::asio::ip::udp::endpoint(addr, 2124);
+    $$ = new Dwm::McCurtain::BindAddr(ba);
   }
   delete $4;
 }
 | '{' ADDRESS '=' STRING ';' UDPPORT '=' PortValue ';' '}'
 {
-  namespace baip = boost::asio::ip;
-  using baudp =	boost::asio::ip::udp;
-  
   if (($8 <= 0) || ($8 > 65535)) {
     mccurtaincfgerror("invalid port");
     delete $4;
@@ -334,49 +327,44 @@ UdpAddress: '{' ADDRESS '=' STRING ';' '}'
   }
 
   if (*$4 == "in6addr_any") {
-      $$ = new baudp::endpoint(baudp::v6(), $8);
+    $$ = new Dwm::McCurtain::BindAddr(Ipv6Address(in6addr_any), $8);
   }
   else if (*$4 == "inaddr_any") {
-      $$ = new baudp::endpoint(baudp::v4(), $8);
+    $$ = new Dwm::McCurtain::BindAddr(Ipv4Address(INADDR_ANY), $8);
   }
   else {
-    boost::system::error_code  ec;
-    baip::address  addr = baip::make_address(*$4, ec);
-    if (ec) {
+    Dwm::McCurtain::BindAddr  ba(*$4, $8);
+    if (ba.addr.IsV4() && (ba.addr.Addr<Ipv4Address>()->Raw() == INADDR_NONE)) {
       mccurtaincfgerror("invalid IP address");
       delete $4;
       return 1;
     }
-    $$ = new baudp::endpoint(addr, $8);
+    $$ = new Dwm::McCurtain::BindAddr(ba);
   }
   delete $4;
 }
 | '{' UDPPORT '=' PortValue ';' ADDRESS '=' STRING ';' '}'
 {
-  namespace baip = boost::asio::ip;
-  using baudp = boost::asio::ip::udp;
-
   if (($4 <= 0) || ($4 > 65535)) {
     mccurtaincfgerror("invalid port");
     delete $8;
     return 1;
   }
-  baip::address  addr;
+  
   if (*$8 == "in6addr_any") {
-    $$ = new baudp::endpoint(baudp::v6(), $4);
+    $$ = new Dwm::McCurtain::BindAddr(Ipv6Address(in6addr_any), $4);
   }
   else if (*$8 == "inaddr_any") {
-    $$ = new baudp::endpoint(baudp::v4(), $4);
+    $$ = new Dwm::McCurtain::BindAddr(Ipv4Address(INADDR_ANY), $4);
   }
   else {
-    boost::system::error_code  ec;
-    baip::address addr = baip::make_address(*$8, ec);
-    if (ec) {
+    Dwm::McCurtain::BindAddr  ba(*$8, $4);
+    if (ba.addr.IsV4() && (ba.addr.Addr<Ipv4Address>()->Raw() == INADDR_NONE)) {
       mccurtaincfgerror("invalid IP address");
       delete $8;
       return 1;
     }
-    $$ = new baudp::endpoint(addr, $4);
+    $$ = new Dwm::McCurtain::BindAddr(ba);
   }
   delete $8;
 };
@@ -520,6 +508,10 @@ namespace Dwm {
         if (_service.Addresses().empty()) {
           _service.AddAddress(batcp::endpoint(batcp::v6(), 2124));
           _service.AddAddress(batcp::endpoint(batcp::v4(), 2124));
+        }
+        if (_service.UdpAddresses().empty()) {
+          _service.AddUdpAddress(BindAddr(Ipv4Address(INADDR_ANY), 2124));
+          _service.AddUdpAddress(BindAddr(Ipv6Address("::"), 2124));
         }
       }
       return rc;
