@@ -1,5 +1,16 @@
 2026-09-01  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* ../include/DwmMcCurtainServiceConfig.hh
+	* ../src/DwmMcCurtainConfigLex.lex
+	* ../src/DwmMcCurtainConfigParse.y
+	* ../src/DwmMcCurtainServiceConfig.cc
+	* TestConfig.cc
+	* inputs/cfg1
+	First pass at adding UDP port configuration.
+
+	* apps/Makefile
+	Added mccdbcat target.
+
 	* classes/src/DwmMcCurtainConfigLex.lex
 	* classes/src/DwmMcCurtainConfigParse.y
 	Change 'port' keyword to 'tcpPort', in anticipation of adding UDP
