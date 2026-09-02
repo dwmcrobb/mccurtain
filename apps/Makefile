@@ -1,4 +1,4 @@
-APPS      = mccurtain mccurtaind mkcurtaindb
+APPS      = mccurtain mccurtaind mkcurtaindb mccdbcat
 APPSCLEAN = $(APPS:%=%-clean)
 DISTCLEAN = $(APPS:%=%-distclean)
 TARPREP   = $(APPS:%=%-tarprep)
