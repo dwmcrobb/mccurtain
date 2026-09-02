@@ -1,5 +1,10 @@
 2026-09-02  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* DwmMcCurtainServer.hh
+	* DwmMcCurtainUdpServer.cc
+	* DwmMcCurtainUdpServer.hh
+	Migrating to BindAddr class.
+
 	* classes/include/DwmMcCurtainBindAddr.hh
 	* classes/include/DwmMcCurtainServiceConfig.hh
 	* classes/src/DwmMcCurtainConfigParse.y
