@@ -64,7 +64,7 @@ namespace Dwm {
       //!  and cannot be resolved as a host name.  Throws a std::system_error
       //!  if a UDP socket can not be opened.
       //----------------------------------------------------------------------
-      OriginServer(const std::string & host, uint16_t port = 8645);
+      OriginServer(const std::string & host, uint16_t port = 2126);
       
       //----------------------------------------------------------------------
       //!  Destrudtor.  Closes the encapsulated socket.

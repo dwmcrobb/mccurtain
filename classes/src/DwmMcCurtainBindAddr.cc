@@ -1,4 +1,6 @@
 //===========================================================================
+// @(#) $DwmPath$
+//===========================================================================
 //  Copyright (c) Daniel W. McRobb 2026
 //  All rights reserved.
 //
@@ -32,63 +34,60 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  @file DwmMcCurtainBindAddr.hh
-//!  @author Daniel W. McRobb
-//!  @brief Dwm::McCurtain::BindAddr class definition
+//!  \file DwmMcCurtainBindAddr.cc
+//!  \author Daniel W. McRobb
+//!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCCURTAINBINDADDR_HH_
-#define _DWMMCCURTAINBINDADDR_HH_
-
-#include "DwmIpAddress.hh"
+#include "DwmMclogLogger.hh"
+#include "DwmMcCurtainBindAddr.hh"
 
 namespace Dwm {
 
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  Encapsulate an IP address and port number, used for binding a UDP
-    //!  socket.
-    //------------------------------------------------------------------------
-    struct BindAddr
+    bool BindAddr::Bind(int fd) const
     {
-      IpAddress  addr;
-      uint16_t   port;
-
-      BindAddr() = default;
-      BindAddr(const BindAddr &) = default;
-      BindAddr(BindAddr &&) = default;
-      BindAddr & operator = (const BindAddr &) = default;
-      BindAddr & operator = (BindAddr &&) = default;
-      ~BindAddr() = default;
-      
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      BindAddr(const IpAddress & a, uint16_t p)
-          : addr(a), port(p)
-      {}
-      
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool operator < (const BindAddr & ba) const
-      {
-        if (addr < ba.addr) {
-          return true;
+      if (0 <= fd) {
+        if (addr.IsV4()) {
+          struct sockaddr_in  inAddr;
+          memset(&inAddr, 0, sizeof(inAddr));
+          inAddr.sin_family = PF_INET;
+          inAddr.sin_addr.s_addr = addr.Addr<Ipv4Address>()->Raw();
+          inAddr.sin_port = htons(port);
+#ifndef __linux__
+          inAddr.sin_len = sizeof(inAddr);
+#endif
+          if (0 == bind(fd, (sockaddr *)&inAddr, sizeof(inAddr))) {
+            return true;
+          }
+          else {
+            MCLOG(LOG_ERR, "bind({}, {}:{}) failed: {}",
+                  fd, addr, port, strerror(errno));
+          }
         }
-        else if (addr == ba.addr) {
-          return port < ba.port;
+        else if (addr.IsV6()) {
+          struct sockaddr_in6  inAddr;
+          memset(&inAddr, 0, sizeof(inAddr));
+          inAddr.sin6_family = PF_INET6;
+          inAddr.sin6_addr = *(addr.Addr<Ipv6Address>());
+          inAddr.sin6_port = htons(port);
+#ifndef __linux__
+          inAddr.sin6_len = sizeof(inAddr);
+#endif
+          if (0 == bind(fd, (sockaddr *)&inAddr, sizeof(inAddr))) {
+            return true;
+          }
+          else {
+            MCLOG(LOG_ERR, "bind({}, {}:{}) failed: {}",
+                  fd, addr, port, strerror(errno));
+          }
         }
-        return false;
       }
-
-      bool Bind(int fd) const;
-      
-    };
-    
+      return false;
+    }
+  
   }  // namespace McCurtain
 
 }  // namespace Dwm
-
-#endif  // _DWMMCCURTAINBINDADDR_HH_

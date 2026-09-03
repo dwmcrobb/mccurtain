@@ -139,39 +139,8 @@ namespace Dwm {
       size_t  numbound = 0;
       for (auto & binfd : _binfds) {
         if (0 <= binfd.second) {
-          if (binfd.first.addr.IsV4()) {
-            sockaddr_in  sockAddr;
-            memset(&sockAddr, 0, sizeof(sockAddr));
-            sockAddr.sin_family = PF_INET;
-            sockAddr.sin_addr.s_addr = binfd.first.addr.Addr<Ipv4Address>()->Raw();
-            sockAddr.sin_port = htons(binfd.first.port);
-#ifndef __linux__
-            sockAddr.sin_len = sizeof(sockAddr);
-#endif
-            if (0 == ::bind(binfd.second, (sockaddr *)&sockAddr, sizeof(sockAddr))) {
-              ++numbound;
-            }
-            else {
-              MCLOG(LOG_ERR, "Failed to bind fd {} to {}: {}",
-                    binfd.second, binfd.first.addr, strerror(errno));
-            }
-          }
-          else if (binfd.first.addr.IsV6()) {
-            sockaddr_in6  sockAddr6;
-            memset(&sockAddr6, 0, sizeof(sockAddr6));
-            sockAddr6.sin6_family = PF_INET6;
-            sockAddr6.sin6_addr = *(binfd.first.addr.Addr<Ipv6Address>());
-            sockAddr6.sin6_port = htons(binfd.first.port);
-#ifndef __linux__
-            sockAddr6.sin6_len = sizeof(sockAddr6);
-#endif
-            if (0 == ::bind(binfd.second, (sockaddr *)&sockAddr6, sizeof(sockAddr6))) {
-              ++numbound;
-            }
-            else {
-              MCLOG(LOG_ERR, "Failed to bind fd {} to {}: {}",
-                    binfd.second, binfd.first.addr, strerror(errno));
-            }
+          if (binfd.first.Bind(binfd.second)) {
+            ++numbound;
           }
         }
       }
