@@ -1,6 +1,4 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
 //  Copyright (c) Daniel W. McRobb 2026
 //  All rights reserved.
 //
@@ -51,43 +49,57 @@ namespace Dwm {
     {
       if (0 <= fd) {
         if (addr.IsV4()) {
-          struct sockaddr_in  inAddr;
-          memset(&inAddr, 0, sizeof(inAddr));
-          inAddr.sin_family = PF_INET;
-          inAddr.sin_addr.s_addr = addr.Addr<Ipv4Address>()->Raw();
-          inAddr.sin_port = htons(port);
-#ifndef __linux__
-          inAddr.sin_len = sizeof(inAddr);
-#endif
-          if (0 == bind(fd, (sockaddr *)&inAddr, sizeof(inAddr))) {
-            return true;
-          }
-          else {
-            MCLOG(LOG_ERR, "bind({}, {}:{}) failed: {}",
-                  fd, addr, port, strerror(errno));
-          }
+          return BindV4(fd);
         }
         else if (addr.IsV6()) {
-          struct sockaddr_in6  inAddr;
-          memset(&inAddr, 0, sizeof(inAddr));
-          inAddr.sin6_family = PF_INET6;
-          inAddr.sin6_addr = *(addr.Addr<Ipv6Address>());
-          inAddr.sin6_port = htons(port);
-#ifndef __linux__
-          inAddr.sin6_len = sizeof(inAddr);
-#endif
-          if (0 == bind(fd, (sockaddr *)&inAddr, sizeof(inAddr))) {
-            return true;
-          }
-          else {
-            MCLOG(LOG_ERR, "bind({}, {}:{}) failed: {}",
-                  fd, addr, port, strerror(errno));
-          }
+          return BindV6(fd);
         }
       }
       return false;
     }
-  
+
+    //------------------------------------------------------------------------
+    bool BindAddr::BindV4(int fd) const
+    {
+      struct sockaddr_in  inAddr;
+      memset(&inAddr, 0, sizeof(inAddr));
+      inAddr.sin_family = PF_INET;
+      inAddr.sin_addr.s_addr = addr.Addr<Ipv4Address>()->Raw();
+      inAddr.sin_port = htons(port);
+#ifndef __linux__
+      inAddr.sin_len = sizeof(inAddr);
+#endif
+      if (0 == bind(fd, (sockaddr *)&inAddr, sizeof(inAddr))) {
+        return true;
+      }
+      else {
+        MCLOG(LOG_ERR, "bind({}, {}:{}) failed: {}",
+              fd, addr, port, strerror(errno));
+      }
+      return false;
+    }
+
+    //------------------------------------------------------------------------
+    bool BindAddr::BindV6(int fd) const
+    {
+      struct sockaddr_in6  inAddr;
+      memset(&inAddr, 0, sizeof(inAddr));
+      inAddr.sin6_family = PF_INET6;
+      inAddr.sin6_addr = *(addr.Addr<Ipv6Address>());
+      inAddr.sin6_port = htons(port);
+#ifndef __linux__
+      inAddr.sin6_len = sizeof(inAddr);
+#endif
+      if (0 == bind(fd, (sockaddr *)&inAddr, sizeof(inAddr))) {
+        return true;
+      }
+      else {
+        MCLOG(LOG_ERR, "bind({}, {}:{}) failed: {}",
+              fd, addr, port, strerror(errno));
+      }
+      return false;
+    }
+    
   }  // namespace McCurtain
 
 }  // namespace Dwm

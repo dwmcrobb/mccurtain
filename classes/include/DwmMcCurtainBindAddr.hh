@@ -50,8 +50,9 @@ namespace Dwm {
     //!  Encapsulate an IP address and port number, used for binding a UDP
     //!  socket.
     //------------------------------------------------------------------------
-    struct BindAddr
+    class BindAddr
     {
+    public:
       IpAddress  addr;
       uint16_t   port;
 
@@ -84,7 +85,10 @@ namespace Dwm {
       }
 
       bool Bind(int fd) const;
-      
+
+    private:
+      bool BindV4(int fd) const;
+      bool BindV6(int fd) const;
     };
     
   }  // namespace McCurtain
