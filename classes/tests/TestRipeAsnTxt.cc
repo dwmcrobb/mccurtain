@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -76,6 +74,9 @@ int main(int argc, char *argv[])
   Dwm::McCurtain::RipeAsnTxt  asntxt;
 
   TestLoad(asntxt, "inputs/asn.txt");
+  vector<uint32_t>  asesInUS;
+  UnitAssert(asntxt.InCountry("US", asesInUS));
+  UnitAssert(asesInUS.size() == 30616);
   
   if (Assertions::Total().Failed())
     Assertions::Print(cerr, true);

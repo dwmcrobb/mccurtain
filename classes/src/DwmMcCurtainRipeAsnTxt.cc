@@ -1,6 +1,4 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
 //  Copyright (c) Daniel W. McRobb 2024
 //  All rights reserved.
 //
@@ -111,6 +109,20 @@ namespace Dwm {
       return false;
     }
     
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool RipeAsnTxt::InCountry(const std::string & countryCode,
+                               std::vector<uint32_t> & ases) const
+    {
+      ases.clear();
+      for (const auto & e : _entries) {
+        if (countryCode == e.second.CountryCode()) {
+          ases.push_back(e.first);
+        }
+      }
+      return (! ases.empty());
+    }
     
   }  // namespace McCurtain
 

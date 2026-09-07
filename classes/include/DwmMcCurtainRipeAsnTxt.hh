@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -45,6 +43,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "DwmStreamIOCapable.hh"
 
@@ -128,6 +127,12 @@ namespace Dwm {
       //----------------------------------------------------------------------
       const std::unordered_map<uint32_t,Entry> & Entries() const
       { return _entries; }
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      bool InCountry(const std::string & countryCode,
+                     std::vector<uint32_t> & ases) const;
       
     private:
       std::unordered_map<uint32_t,Entry>  _entries;
