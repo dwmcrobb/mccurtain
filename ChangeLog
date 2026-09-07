@@ -1,3 +1,10 @@
+2026-09-07  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* classes/include/DwmMcCurtainRipeAsnTxt.hh
+	* classes/src/DwmMcCurtainRipeAsnTxt.cc
+	* classes/tests/TestRipeAsnTxt.cc
+	Added InCountry(const string &, vector<uint32_t> & ases)
+
 2026-09-02  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
 	* apps/mccurtaind/DwmMcCurtainUdpServer.cc
