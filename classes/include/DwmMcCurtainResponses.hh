@@ -73,6 +73,8 @@ namespace Dwm {
     using ASPrefixesResponse = std::tuple<uint32_t,RipeAsnTxt::Entry,
                                           std::vector<Ipv4Prefix>>;
 
+    using CountryPrefixesResponse = std::vector<ASPrefixesResponse>;
+    
   }  // namespace McCurtain
 
 }  // namespace Dwm

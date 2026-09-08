@@ -108,6 +108,8 @@ namespace Dwm {
       void GetIpv4AddrResponse(const Ipv4Address & addr,
                                Ipv4AddrResponse & resp);
       void GetASPrefixesResponse(uint32_t asNum, ASPrefixesResponse & resp);
+      void GetCountryPrefixesResponse(const std::string & countryCode,
+                                      CountryPrefixesResponse & resp);
 
       const Credence::KeyStash & GetKeyStash() const  { return _keyStash; }
       const Credence::KnownKeys & GetKnownKeys() const  { return _knownKeys; }

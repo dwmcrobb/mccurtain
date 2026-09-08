@@ -96,6 +96,8 @@ namespace Dwm {
       bool HandleRequest(Request request);
       bool SendIpv4AddrResponse(const Ipv4Address & addr);
       bool SendASPrefixesResponse(uint32_t asNum);
+      bool SendCountryPrefixesResponse(const std::string & countryCode);
+      
       void Run();
     };
     

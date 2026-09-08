@@ -79,6 +79,13 @@ namespace Dwm {
       Request(uint32_t asnum)
           : _data(asnum)
       {}
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      Request(const std::string & countryCode)
+          : _data(countryCode)
+      {}
       
       //----------------------------------------------------------------------
       //!  Read the request from an istream.  Return the istream.
@@ -96,7 +103,7 @@ namespace Dwm {
       //!  We only have two types of requests, which we can hold in a
       //!  std::variant.
       //----------------------------------------------------------------------
-      using DataType = std::variant<Ipv4Address,uint32_t>;
+      using DataType = std::variant<Ipv4Address,uint32_t,std::string>;
 
       //----------------------------------------------------------------------
       //!  Returns the encapsulated data.

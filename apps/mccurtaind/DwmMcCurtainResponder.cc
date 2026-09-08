@@ -143,6 +143,23 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
+    bool
+    Responder::SendCountryPrefixesResponse(const std::string & countryCode)
+    {
+      bool  rc = false;
+      CountryPrefixesResponse  response;
+      _server.GetCountryPrefixesResponse(countryCode, response);
+      if (_peer.Send(response)) {
+        rc = true;
+      }
+      else {
+        MCLOG(LOG_ERR, "Failed to send CountryPrefixesResponse to client {}",
+              _peer.Id());
+      }
+      return rc;
+    }
+    
+    //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
     bool Responder::HandleRequest(Request req)
@@ -155,6 +172,9 @@ namespace Dwm {
           break;
         case 1:
           rc = SendASPrefixesResponse(std::get<uint32_t>(req.Data()));
+          break;
+        case 2:
+          rc = SendCountryPrefixesResponse(std::get<std::string>(req.Data()));
           break;
         default:
           MCLOG(LOG_ERR, "Invalid request from {}", _peer.Id());

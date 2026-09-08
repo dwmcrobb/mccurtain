@@ -179,6 +179,22 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
+    void Server::GetCountryPrefixesResponse(const std::string & countryCode,
+                                            CountryPrefixesResponse & resp)
+    {
+      for (const auto & as : _asntxt.Entries()) {
+        if (as.second.CountryCode() == countryCode) {
+          ASPrefixesResponse  oneAS;
+          GetASPrefixesResponse(as.first, oneAS);
+          if (! std::get<2>(oneAS).empty()) {
+            resp.emplace_back(oneAS);
+          }
+        }
+      }
+      return;
+    }
+    
+    //------------------------------------------------------------------------
     bool Server::InitDatabases()
     {
       bool  rc = false;

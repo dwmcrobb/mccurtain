@@ -142,6 +142,19 @@ PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp,
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static void
+PrintCountryPrefixesResponse(const Dwm::McCurtain::CountryPrefixesResponse & resp,
+                             bool verbose)
+{
+  for (const auto & aspr : resp) {
+    PrintASPrefixesResponse(aspr, verbose);
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 static vector<string> SplitArg(const string & arg)
 {
   vector<string>  rc;
@@ -290,18 +303,31 @@ int main(int argc, char *argv[])
       }
     }
     else {
-      try {
-        uint32_t  asNum = stoul(arg);
-        Dwm::McCurtain::Request  req{asNum};
+      if ((arg.size() == 2)
+          && std::isalpha(arg[0]) && std::isalpha(arg[1])) {
+        Dwm::McCurtain::Request  req(arg);
         if (peer.Send(req)) {
-          Dwm::McCurtain::ASPrefixesResponse  resp;
+          Dwm::McCurtain::CountryPrefixesResponse  resp;
           if (peer.Receive(resp)) {
-            PrintASPrefixesResponse(resp, verbose);
+            PrintCountryPrefixesResponse(resp, verbose);
             return 0;
           }
         }
       }
-      catch (...) {
+      else {
+        try {
+          uint32_t  asNum = stoul(arg);
+          Dwm::McCurtain::Request  req{asNum};
+          if (peer.Send(req)) {
+            Dwm::McCurtain::ASPrefixesResponse  resp;
+            if (peer.Receive(resp)) {
+              PrintASPrefixesResponse(resp, verbose);
+              return 0;
+            }
+          }
+        }
+        catch (...) {
+        }
       }
     }
   }
