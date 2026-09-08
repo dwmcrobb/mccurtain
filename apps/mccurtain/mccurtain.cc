@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024-2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -50,6 +48,7 @@ extern "C" {
 #include <regex>
 #include <thread>
 
+#include "DwmIpv4PrefixPatricia.hh"
 #include "DwmMclogLogger.hh"
 #include "DwmCredencePeer.hh"
 #include "DwmMcCurtainMessage.hh"
@@ -146,8 +145,22 @@ static void
 PrintCountryPrefixesResponse(const Dwm::McCurtain::CountryPrefixesResponse & resp,
                              bool verbose)
 {
+  if (verbose) {
+    for (const auto & aspr : resp) {
+      PrintASPrefixesResponse(aspr, verbose);
+    }
+    return;
+  }
+  
+  Dwm::Ipv4PrefixPatricia<bool>  pfxs;
   for (const auto & aspr : resp) {
-    PrintASPrefixesResponse(aspr, verbose);
+    for (const auto & pfx : std::get<2>(aspr)) {
+      pfxs[pfx] = true;
+    }
+  }
+  pfxs.Aggregate();
+  for (const auto & pfx : pfxs) {
+    cout << pfx.first.ToShortString() << '\n';
   }
   return;
 }
