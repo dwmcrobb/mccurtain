@@ -55,6 +55,7 @@ static bool TestMakeIpv4ToAS(Dwm::McCurtain::AS2Ipv4Net & db,
 {
   McCurtain::CaidaV4Routeviews  rv;
   if (UnitAssert(rv.Load(routeViewsPath))) {
+    rv.Aggregate();
     db.Load(rv);
     return true;
   }
@@ -207,6 +208,14 @@ int main(int argc, char *argv[])
       TestFileIO(asdb);
       TestBZ2IO(asdb);
       TestGZIO(asdb);
+      if (UnitAssert(TestSave(asdb, "as2ipv4.bz2"))) {
+        UnitAssert(TestLoad(asdb, "as2ipv4.bz2"));
+        std::remove("as2ipv4.bz2");
+      }
+      if (UnitAssert(TestSave(asdb, "as2ipv4.gz"))) {
+        UnitAssert(TestLoad(asdb, "as2ipv4.gz"));
+        std::remove("as2ipv4.gz");
+      }
     }
     std::remove("as2ipv4.db");
   }

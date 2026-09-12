@@ -94,12 +94,18 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  Load from a file at the given @c path.  Returns true on       
       //!  success, false on failure.
+      //!  If path has extension ".bz2", we will load from BZ2 compressed form.
+      //!  Else if path has extension ".gz", we will load from gzip compressed
+      //!  form.  Else we will load from uncompressed form.
       //----------------------------------------------------------------------
       bool Load(const std::string & path);
 
       //----------------------------------------------------------------------
       //!  Saves to a file at the given @c path.  Returns true on success,
       //!  false on failure.
+      //!  If path has extension ".bz2", we will save in BZ2 compressed form.
+      //!  Else if path has extension ".gz", we will save in gzip compressed
+      //!  form.  Else we will save in uncompressed form.
       //----------------------------------------------------------------------
       bool Save(const std::string & path) const;
 
