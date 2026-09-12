@@ -43,7 +43,7 @@
 #include <boost/iostreams/filter/gzip.hpp>
 
 #include "DwmUnitAssert.hh"
-#include "DwmMcCurtainAS2Ipv6Net.hh"
+#include "DwmMcCurtainIpv6Net2AS.hh"
 
 using namespace std;
 

@@ -32,9 +32,9 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file TestAS2Ipv6Net.cc
+//!  \file TestAS2Ipv4Net.cc
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::McCurtain::AS2Ipv6Net unit tests
+//!  \brief Dwm::McCurtain::AS2Ipv4Net unit tests
 //---------------------------------------------------------------------------
 
 #include <iostream>
@@ -42,7 +42,7 @@
 
 #include "DwmSysLogger.hh"
 #include "DwmUnitAssert.hh"
-#include "DwmMcCurtainIpv6Net2AS.hh"
+#include "DwmMcCurtainIpv4Net2AS.hh"
 
 using namespace std;
 using namespace Dwm;
@@ -50,10 +50,10 @@ using namespace Dwm;
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static bool TestMakeIpv6ToAS(Dwm::McCurtain::AS2Ipv6Net & db,
+static bool TestMakeIpv4ToAS(Dwm::McCurtain::AS2Ipv4Net & db,
                                const std::string & routeViewsPath)
 {
-  McCurtain::CaidaV6Routeviews  rv;
+  McCurtain::CaidaV4Routeviews  rv;
   if (UnitAssert(rv.Load(routeViewsPath))) {
     db.Load(rv);
     return true;
@@ -64,20 +64,35 @@ static bool TestMakeIpv6ToAS(Dwm::McCurtain::AS2Ipv6Net & db,
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static bool TestSave(Dwm::McCurtain::AS2Ipv6Net & asdb,
+static bool TestSave(Dwm::McCurtain::AS2Ipv4Net & asdb,
                      const std::string & outPath)
 {
   return UnitAssert(asdb.Save(outPath));
 }
 
+#if 0
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static bool TestLoad(const Dwm::McCurtain::AS2Ipv6Net & asdb,
+static bool TestLoad(const Dwm::McCurtain::Ipv4Net2AS & netdb,
+                     Dwm::McCurtain::AS2Ipv4Net & asdb)
+{
+  bool  rc = false;
+  if (UnitAssert(asdb.Load(netdb))) {
+    rc = UnitAssert(asdb.Size() >= netdb.size());
+  }
+  return rc;
+}
+#endif
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool TestLoad(const Dwm::McCurtain::AS2Ipv4Net & asdb,
                      const string & path)
 {
   bool  rc = false;
-  Dwm::McCurtain::AS2Ipv6Net  asdb2;
+  Dwm::McCurtain::AS2Ipv4Net  asdb2;
   if (UnitAssert(asdb2.Load(path))) {
     rc = UnitAssert(asdb2.Size() == asdb.Size());
   }
@@ -87,22 +102,22 @@ static bool TestLoad(const Dwm::McCurtain::AS2Ipv6Net & asdb,
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void TestDescriptorIO(const Dwm::McCurtain::AS2Ipv6Net & asdb)
+static void TestDescriptorIO(const Dwm::McCurtain::AS2Ipv4Net & asdb)
 {
-  int  fd = ::open("TestAS2Ipv6Net.fd", O_WRONLY|O_CREAT|O_TRUNC, 0644);
+  int  fd = ::open("TestIpv4Net2AS.fd", O_WRONLY|O_CREAT|O_TRUNC, 0644);
   if (UnitAssert(0 <= fd)) {
     UnitAssert(asdb.Write(fd) > 0);
     ::close(fd);
-    fd = ::open("TestAS2Ipv6Net.fd", O_RDONLY);
+    fd = ::open("TestIpv4Net2AS.fd", O_RDONLY);
     if (UnitAssert(0 <= fd)) {
-      Dwm::McCurtain::AS2Ipv6Net  asdb2;
+      Dwm::McCurtain::AS2Ipv4Net  asdb2;
       if (UnitAssert(asdb2.Read(fd) > 0)) {
         UnitAssert(asdb2.Size() > 0);
         UnitAssert(asdb2.Size() == asdb.Size());
       }
       ::close(fd);
     }
-    std::remove("TestAS2Ipv6Net.fd");
+    std::remove("TestIpv4Net2AS.fd");
   }
   return;
 }
@@ -110,22 +125,22 @@ static void TestDescriptorIO(const Dwm::McCurtain::AS2Ipv6Net & asdb)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void TestFileIO(const Dwm::McCurtain::AS2Ipv6Net & asdb)
+static void TestFileIO(const Dwm::McCurtain::AS2Ipv4Net & asdb)
 {
-  FILE  *f = fopen("TestAS2Ipv6Net.file", "wb");
+  FILE  *f = fopen("TestAS2Ipv4Net.file", "wb");
   if (UnitAssert(f)) {
     UnitAssert(asdb.Write(f));
     fclose(f);
-    f = fopen("TestAS2Ipv6Net.file", "rb");
+    f = fopen("TestAS2Ipv4Net.file", "rb");
     if (UnitAssert(f)) {
-      Dwm::McCurtain::AS2Ipv6Net  asdb2;
+      Dwm::McCurtain::AS2Ipv4Net  asdb2;
       if (UnitAssert(asdb2.Read(f))) {
         UnitAssert(asdb2.Size() > 0);
         UnitAssert(asdb2.Size() == asdb.Size());
       }
       fclose(f);
     }
-    std::remove("TestAS2Ipv6Net.file");
+    std::remove("TestAS2Ipv4Net.file");
   }
   return;
 }
@@ -133,22 +148,22 @@ static void TestFileIO(const Dwm::McCurtain::AS2Ipv6Net & asdb)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void TestBZ2IO(const Dwm::McCurtain::AS2Ipv6Net & asdb)
+static void TestBZ2IO(const Dwm::McCurtain::AS2Ipv4Net & asdb)
 {
-  BZFILE  *bzf = BZ2_bzopen("TestAS2Ipv6Net.bz2", "wb");
+  BZFILE  *bzf = BZ2_bzopen("TestAS2Ipv4Net.bz2", "wb");
   if (UnitAssert(bzf)) {
     UnitAssert(asdb.BZWrite(bzf));
     BZ2_bzclose(bzf);
-    bzf = BZ2_bzopen("TestAS2Ipv6Net.bz2", "rb");
+    bzf = BZ2_bzopen("TestAS2Ipv4Net.bz2", "rb");
     if (UnitAssert(bzf)) {
-      Dwm::McCurtain::AS2Ipv6Net  asdb2;
+      Dwm::McCurtain::AS2Ipv4Net  asdb2;
       if (UnitAssert(asdb2.BZRead(bzf))) {
         BZ2_bzclose(bzf);
         UnitAssert(asdb2.Size() > 0);
         UnitAssert(asdb2.Size() == asdb.Size());
       }
     }
-    std::remove("TestAS2Ipv6Net.bz2");
+    std::remove("TestAS2Ipv4Net.bz2");
   }
   return;
 }
@@ -156,22 +171,22 @@ static void TestBZ2IO(const Dwm::McCurtain::AS2Ipv6Net & asdb)
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void TestGZIO(const Dwm::McCurtain::AS2Ipv6Net & asdb)
+static void TestGZIO(const Dwm::McCurtain::AS2Ipv4Net & asdb)
 {
-  gzFile  gzf = gzopen("TestAS2Ipv6Net.gz", "wb");
+  gzFile  gzf = gzopen("TestAS2Ipv4Net.gz", "wb");
   if (UnitAssert(gzf)) {
     UnitAssert(asdb.Write(gzf));
     gzclose(gzf);
-    gzf = gzopen("TestAS2Ipv6Net.gz", "rb");
+    gzf = gzopen("TestAS2Ipv4Net.gz", "rb");
     if (UnitAssert(gzf)) {
-      Dwm::McCurtain::AS2Ipv6Net  asdb2;
+      Dwm::McCurtain::AS2Ipv4Net  asdb2;
       if (UnitAssert(asdb2.Read(gzf))) {
         gzclose(gzf);
         UnitAssert(asdb2.Size() > 0);
         UnitAssert(asdb2.Size() == asdb.Size());
       }
     }
-    std::remove("TestAS2Ipv6Net.gz");
+    std::remove("TestAS2Ipv4Net.gz");
   }
   return;
 }
@@ -181,19 +196,19 @@ static void TestGZIO(const Dwm::McCurtain::AS2Ipv6Net & asdb)
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  Dwm::SysLogger::Open("TestIpv6Net2AS", LOG_PERROR|LOG_PID, "user");
+  Dwm::SysLogger::Open("TestIpv4Net2AS", LOG_PERROR|LOG_PID, "user");
 
-  Dwm::McCurtain::AS2Ipv6Net  asdb;
+  Dwm::McCurtain::AS2Ipv4Net  asdb;
 
-  if (TestMakeIpv6ToAS(asdb, "inputs/routeviews-rv6-20260828.pfx2as.gz")) {
-    if (UnitAssert(TestSave(asdb, "as2ipv6.db"))) {
-      TestLoad(asdb, "as2ipv6.db");
+  if (TestMakeIpv4ToAS(asdb, "inputs/routeviews-rv2-20240406.pfx2as.gz")) {
+    if (UnitAssert(TestSave(asdb, "as2ipv4.db"))) {
+      TestLoad(asdb, "as2ipv4.db");
       TestDescriptorIO(asdb);
       TestFileIO(asdb);
       TestBZ2IO(asdb);
       TestGZIO(asdb);
     }
-    std::remove("as2ipv6.db");
+    std::remove("as2ipv4.db");
   }
   
   if (Assertions::Total().Failed())

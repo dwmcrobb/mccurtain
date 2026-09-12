@@ -57,6 +57,7 @@
 #include "DwmFileIO.hh"
 #include "DwmGZIO.hh"
 #include "DwmMcCurtainCaidaV4Routeviews.hh"
+#include "DwmMcCurtainAS2Ipv4Net.hh"
 
 static inline std::ostream &
 operator << (std::ostream & os, const std::set<uint32_t> & ases)
@@ -156,9 +157,9 @@ namespace Dwm {
       using size_type       = std::size_t;
       using difference_type = std::ptrdiff_t;
 
-      //------------------------------------------------------------------------
+      //----------------------------------------------------------------------
       //!  Forward declarations for iterator types.
-      //------------------------------------------------------------------------
+      //----------------------------------------------------------------------
       class iterator;
       class const_iterator;
       using reverse_iterator = std::reverse_iterator<iterator>;
@@ -172,9 +173,14 @@ namespace Dwm {
       {}
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Construct from a CaidaV4Routeviews object.
       //----------------------------------------------------------------------
       Ipv4Net2AS(const CaidaV4Routeviews & rv);
+
+      //----------------------------------------------------------------------
+      //!  Construct from an AS2Ipv4Net object.
+      //----------------------------------------------------------------------
+      Ipv4Net2AS(const AS2Ipv4Net & as2ip4);
       
       //----------------------------------------------------------------------
       //!  Destructor.  Deletes all nodes.
@@ -294,56 +300,6 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void CombineAdjacents()
-      {
-        if (_size > 1) {
-          bool  combining = true;
-          while (combining) {
-            auto it = begin();
-            auto nit = it; ++nit;
-            combining = false;
-            while (nit != end()) {
-#if 0
-              std::cerr << "it: " << it->first << ' ' << it->second
-                        << " nit: " << nit->first << ' ' << nit->second
-                        << '\n';
-#endif
-              if (CombinableAdjacents(it, nit)) {
-                Ipv4Prefix  aggpfx(it->first.Network(),
-                                   it->first.MaskLength() - 1);
-                auto [insit, inserted] = insert({aggpfx, it->second});
-                assert(insit->first == aggpfx);
-                if (! inserted) {
-                  for (const auto & as : it->second) {
-                    insit->second.insert(as);
-                  }
-                }
-#if 0
-                std::cerr << "aggregated " << it->first << ' ' << it->second
-                          << " and " << nit->first << ' ' << nit->second
-                          << " into " << insit->first << ' ' << insit->second
-                          << '\n';
-#endif
-                assert(std::ranges::includes(insit->second, it->second));
-                erase(it);
-                it = insit;
-                erase(nit);
-                nit = it; ++nit;
-                combining = true;
-              }
-              else {
-                ++nit;
-                ++it;
-              }
-            }
-          }
-        }
-        return;
-      }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
       const_iterator find_combinable_adjacent(const_iterator it) 
       {
         if (! it->first.Bit(it->first.MaskLength() - 1)) {
@@ -364,7 +320,7 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void CombineAdjacents2()
+      void CombineAdjacents()
       {
         if (_size > 1) {
           bool  combining = true;
@@ -415,7 +371,7 @@ namespace Dwm {
             ++it;
           }
         }
-        CombineAdjacents2();
+        CombineAdjacents();
         return;
       }
           
@@ -1023,6 +979,8 @@ namespace Dwm {
       //!  on success, false on failure.
       //----------------------------------------------------------------------
       bool Load(const CaidaV4Routeviews & rv);
+
+      bool Load(const AS2Ipv4Net & as2ip4);
       
       //----------------------------------------------------------------------
       //!   Loads the contents from a gzip'ed routeviews file from CAIDA.
@@ -1676,107 +1634,6 @@ namespace Dwm {
         int  ipBit = std::countl_zero(x);
         return (ipBit < maxBits) ? ipBit : -1;
       }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      void CombineAdjacents(std::list<Ipv4Prefix> & prefixes)
-      {
-        bool notDone = false;
-        do {
-          notDone = false;
-          for (auto it = prefixes.begin(); it != prefixes.end(); ++it) {
-            auto nit = it;  ++nit;
-            if (nit != prefixes.end()) {
-              Ipv4Prefix  pfx(*it);
-              if (! pfx.Bit(pfx.MaskLength() - 1)) {
-                //  Last bit is not set, so changing it to zero will yield the
-                //  same network.
-                if (pfx.MaskLength() == nit->MaskLength()) {
-                  pfx.MaskLength(pfx.MaskLength() - 1);
-                  if (pfx.Contains(*nit)) {
-                    auto  existing = find(pfx);
-                    if (existing == end()) {
-                      *it = pfx;
-                      prefixes.erase(nit);
-                      notDone = true;
-                    }
-                    else {
-                      // ???
-                    }
-                  }
-                }
-              }
-            }
-          }
-        } while (notDone);
-        return;
-      }
-    
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      void CombinePrefixes(std::list<Ipv4Prefix> & prefixes,
-                           const mapped_type & mt)
-      {
-        prefixes.sort();
-        CombineAdjacents(prefixes);
-#if 1
-        for (auto it = prefixes.begin(); it != prefixes.end(); ++it) {
-          auto nit = it; ++nit;
-          while (nit != prefixes.end()) {
-            if (it->Contains(*nit)) {
-              std::vector<value_type>  matches;
-              find_wider(*nit, matches);
-              auto  widerit = std::find_if(matches.begin(), matches.end(),
-                                           [&] (const auto & match)
-                                           { return (match.second != mt); });
-              if (widerit == matches.end()) {
-                nit = prefixes.erase(nit);
-              }
-              else {
-                ++nit;
-              }
-            }
-            else {
-              ++nit;
-            }
-          }
-        }
-#endif
-        return;
-      }
-
-#if 0
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool have_wider_covering(const_iterator it) const
-      {
-        auto  *node = _root;
-        auto   pfx = it->first;
-        while (node) {
-          if (node->_pair.first.Contains(pfx)) {
-            if (node->_pair.first.MaskLength() < pfx.MaskLength()) {
-              if (node->_hasValue) {
-                if (std::ranges::includes(node->_pair.second, it->second)) {
-                  return true;
-                }
-              }
-            }
-            else {
-              break;
-            }
-            uint8_t  b = pfx.Bit(node->_pair.first.MaskLength());
-            node = node->_children[b];
-          }
-          else {
-            break;
-          }
-        }
-        return false;
-      }
-#endif
 
       //----------------------------------------------------------------------
       //!  

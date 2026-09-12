@@ -62,6 +62,7 @@
 #include "DwmFileIO.hh"
 #include "DwmGZIO.hh"
 #include "DwmMcCurtainCaidaV6Routeviews.hh"
+#include "DwmMcCurtainAS2Ipv6Net.hh"
 
 namespace Dwm {
 
@@ -150,9 +151,9 @@ namespace Dwm {
       using size_type       = std::size_t;
       using difference_type = std::ptrdiff_t;
 
-      //------------------------------------------------------------------------
+      //----------------------------------------------------------------------
       //!  Forward declarations for iterator types.
-      //------------------------------------------------------------------------
+      //----------------------------------------------------------------------
       class iterator;
       class const_iterator;
       using reverse_iterator = std::reverse_iterator<iterator>;
@@ -242,8 +243,8 @@ namespace Dwm {
       }
 
       //----------------------------------------------------------------------
-      //!  Access the value associated with @c key.  If the key does not exist,
-      //!  it is inserted with a default-constructed value.
+      //!  Access the value associated with @c key.  If the key does not
+      //!  exist, it is inserted with a default-constructed value.
       //!
       //!  @param key  The Ipv6Prefix to look up.
       //!  @return  A reference to the value associated with the key.
@@ -288,45 +289,6 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void CombineAdjacents()
-      {
-        if (_size > 1) {
-          bool  combining = true;
-          while (combining) {
-            auto it = begin();
-            auto nit = it; ++nit;
-            combining = false;
-            while (nit != end()) {
-              if (CombinableAdjacents(it, nit)) {
-                Ipv6Prefix  aggpfx(it->first.Network(),
-                                   it->first.MaskLength() - 1);
-                auto [insit, inserted] = insert({aggpfx, it->second});
-                assert(insit->first == aggpfx);
-                if (! inserted) {
-                  for (const auto & as : it->second) {
-                    insit->second.insert(as);
-                  }
-                }
-                assert(std::ranges::includes(insit->second, it->second));
-                erase(it);
-                it = insit;
-                erase(nit);
-                nit = it; ++nit;
-                combining = true;
-              }
-              else {
-                ++nit;
-                ++it;
-              }
-            }
-          }
-        }
-        return;
-      }
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
       const_iterator find_combinable_adjacent(const_iterator it) 
       {
         if (! it->first.Bit(it->first.MaskLength() - 1)) {
@@ -347,7 +309,7 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void CombineAdjacents2()
+      void CombineAdjacents()
       {
         if (_size > 1) {
           bool  combining = true;
@@ -398,10 +360,10 @@ namespace Dwm {
             ++it;
           }
         }
-        CombineAdjacents2();
+        CombineAdjacents();
         return;
       }
-          
+      
       //----------------------------------------------------------------------
       //!  Remove a prefix from the trie.
       //!
@@ -459,7 +421,7 @@ namespace Dwm {
       {
         return (Remove(pfx) ? 1 : 0);
       }
-    
+      
       //----------------------------------------------------------------------
       //!  Find the node whose key exactly matches @c key.
       //!  Returns an iterator to the matching node, or end() if not found.
@@ -579,7 +541,7 @@ namespace Dwm {
       //----------------------------------------------------------------------
       const_iterator find_longest(const Ipv6Address & addr) const
       { return find_longest(Ipv6Prefix(addr, 128)); }
-    
+      
       //----------------------------------------------------------------------
       //!  Finds all nodes that match prefix @c pfx, placing them in @c
       //!  matches.  Returns true if matches were found, else returns false.
@@ -636,7 +598,7 @@ namespace Dwm {
         }
         return (! matches.empty());
       }
-    
+      
       //----------------------------------------------------------------------
       //!  Finds all nodes that match address @c addr, placing them in
       //!  @c matches.  Returns true if matches were found, else returns
@@ -645,7 +607,7 @@ namespace Dwm {
       bool find_matches(const Ipv6Address & addr,
                         std::vector<value_type> & matches) const
       { return find_matches(Ipv6Prefix(addr, 128), matches); }
-    
+      
       //----------------------------------------------------------------------
       //!  Returns the total number of nodes in the trie.
       //----------------------------------------------------------------------
@@ -706,21 +668,21 @@ namespace Dwm {
       //----------------------------------------------------------------------
       const_reverse_iterator rbegin() const
       { return const_reverse_iterator(end()); }
-    
+      
       //----------------------------------------------------------------------
       //!  Returns a const_reverse_iterator to the element following the last
       //!  value-holding element of the reversed trie.
       //----------------------------------------------------------------------
       const_reverse_iterator rend() const
       { return const_reverse_iterator(begin()); }
-    
+      
       //----------------------------------------------------------------------
       //!  Returns a const_reverse_iterator to the first value-holding element
       //!  of the reversed trie.
       //----------------------------------------------------------------------
       const_reverse_iterator crbegin() const
       { return const_reverse_iterator(cend()); }
-    
+      
       //----------------------------------------------------------------------
       //!  Returns a const_reverse_iterator to the element following the last
       //!  value-holding element of the reversed trie.
@@ -757,7 +719,7 @@ namespace Dwm {
         }
         return os;
       }
-    
+      
       //----------------------------------------------------------------------
       //!  Reads the trie from the given istream @c is.  Returns @c is.
       //----------------------------------------------------------------------
@@ -1012,6 +974,12 @@ namespace Dwm {
       //!  Returns true on success, false on failure.
       //----------------------------------------------------------------------
       bool LoadCAIDARouteViews(const std::string & path);
+
+      //----------------------------------------------------------------------
+      //!  Loads the contents from an AS2Ipv6Net object.  Returns true if
+      //!  data was loaded, else returns false (e.g. @c as2ip6 was empty).
+      //----------------------------------------------------------------------
+      bool Load(const AS2Ipv6Net & as2ip6);
       
       //----------------------------------------------------------------------
       //!  Loads the contents from the native binary file located at @c path.
@@ -1697,107 +1665,6 @@ namespace Dwm {
       }
       return -1;
     }
-#endif
-
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      void CombineAdjacents(std::list<Ipv6Prefix> & prefixes)
-      {
-        bool notDone = false;
-        do {
-          notDone = false;
-          for (auto it = prefixes.begin(); it != prefixes.end(); ++it) {
-            auto nit = it;  ++nit;
-            if (nit != prefixes.end()) {
-              Ipv6Prefix  pfx(*it);
-              if (! pfx.Bit(pfx.MaskLength() - 1)) {
-                //  Last bit is not set, so changing it to zero will yield the
-                //  same network.
-                if (pfx.MaskLength() == nit->MaskLength()) {
-                  pfx.MaskLength(pfx.MaskLength() - 1);
-                  if (pfx.Contains(*nit)) {
-                    auto  existing = find(pfx);
-                    if (existing == end()) {
-                      *it = pfx;
-                      prefixes.erase(nit);
-                      notDone = true;
-                    }
-                    else {
-                      // ???
-                    }
-                  }
-                }
-              }
-            }
-          }
-        } while (notDone);
-        return;
-      }
-    
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      void CombinePrefixes(std::list<Ipv6Prefix> & prefixes,
-                           const mapped_type & mt)
-      {
-        prefixes.sort();
-        CombineAdjacents(prefixes);
-#if 1
-        for (auto it = prefixes.begin(); it != prefixes.end(); ++it) {
-          auto nit = it; ++nit;
-          while (nit != prefixes.end()) {
-            if (it->Contains(*nit)) {
-              std::vector<value_type>  matches;
-              find_wider(*nit, matches);
-              auto  widerit = std::find_if(matches.begin(), matches.end(),
-                                           [&] (const auto & match)
-                                           { return (match.second != mt); });
-              if (widerit == matches.end()) {
-                nit = prefixes.erase(nit);
-              }
-              else {
-                ++nit;
-              }
-            }
-            else {
-              ++nit;
-            }
-          }
-        }
-#endif
-        return;
-      }
-
-#if 0
-      //----------------------------------------------------------------------
-      //!  
-      //----------------------------------------------------------------------
-      bool have_wider_covering(const_iterator it) const
-      {
-        auto  *node = _root;
-        auto   pfx = it->first;
-        while (node) {
-          if (node->_pair.first.Contains(pfx)) {
-            if (node->_pair.first.MaskLength() < pfx.MaskLength()) {
-              if (node->_hasValue) {
-                if (std::ranges::includes(node->_pair.second, it->second)) {
-                  return true;
-                }
-              }
-            }
-            else {
-              break;
-            }
-            uint8_t  b = pfx.Bit(node->_pair.first.MaskLength());
-            node = node->_children[b];
-          }
-          else {
-            break;
-          }
-        }
-        return false;
-      }
 #endif
 
       //----------------------------------------------------------------------

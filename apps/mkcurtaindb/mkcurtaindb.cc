@@ -42,7 +42,6 @@
 #include <string>
 
 #include "DwmSysLogger.hh"
-#include "DwmMcCurtainASes.hh"
 #include "DwmMcCurtainAS2Ipv4Net.hh"
 #include "DwmMcCurtainAS2Ipv6Net.hh"
 #include "DwmMcCurtainVersion.hh"
@@ -63,13 +62,11 @@ static void Usage(const char *argv0)
 //!  
 //----------------------------------------------------------------------------
 static bool PopulateV6Data(const string & caidarvfile,
-                           Dwm::McCurtain::Ipv6Net2AS & ip2as,
                            Dwm::McCurtain::AS2Ipv6Net & as2ip)
 {
   Dwm::McCurtain::CaidaV6Routeviews  rv;
   if (rv.Load(caidarvfile)) {
     rv.Aggregate();
-    ip2as.Load(rv);
     as2ip.Load(rv);
     return true;
   }
@@ -83,13 +80,11 @@ static bool PopulateV6Data(const string & caidarvfile,
 //!  
 //----------------------------------------------------------------------------
 static bool PopulateV4Data(const string & caidarvfile,
-                           Dwm::McCurtain::Ipv4Net2AS & ip2as,
                            Dwm::McCurtain::AS2Ipv4Net & as2ip)
 {
   Dwm::McCurtain::CaidaV4Routeviews  rv;
   if (rv.Load(caidarvfile)) {
     rv.Aggregate();
-    ip2as.Load(rv);
     as2ip.Load(rv);
     return true;
   }
@@ -102,22 +97,16 @@ static bool PopulateV4Data(const string & caidarvfile,
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static bool SaveIp2ASData(const string & outfile,
-                          Dwm::McCurtain::Ipv4Net2AS & ip4as,
+static bool SaveAS2IpData(const string & outfile,
                           Dwm::McCurtain::AS2Ipv4Net & asip4,
-                          Dwm::McCurtain::Ipv6Net2AS & ip6as,
                           Dwm::McCurtain::AS2Ipv6Net & asip6)
 {
   bool  rc = false;
   ofstream  os(outfile);
   if (os) {
-    if (ip4as.Write(os)) {
-      if (asip4.Write(os)) {
-        if (ip6as.Write(os)) {
-          if (asip6.Write(os)) {
-            rc = true;
-          }
-        }
+    if (asip4.Write(os)) {
+      if (asip6.Write(os)) {
+        rc = true;
       }
     }
     os.close();
@@ -156,14 +145,12 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  Dwm::McCurtain::Ipv4Net2AS  ip2as4;
   Dwm::McCurtain::AS2Ipv4Net  as2ip4;
-  Dwm::McCurtain::Ipv6Net2AS  ip2as6;
   Dwm::McCurtain::AS2Ipv6Net  as2ip6;
   
-  if (PopulateV4Data(argv[optind], ip2as4, as2ip4)) {
-    if (PopulateV6Data(argv[optind+1], ip2as6, as2ip6)) {
-      if (SaveIp2ASData(mccDbFile, ip2as4, as2ip4, ip2as6, as2ip6)) {
+  if (PopulateV4Data(argv[optind], as2ip4)) {
+    if (PopulateV6Data(argv[optind+1], as2ip6)) {
+      if (SaveAS2IpData(mccDbFile, as2ip4, as2ip6)) {
         return 0;
       }
       else {

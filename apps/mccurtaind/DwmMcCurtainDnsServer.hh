@@ -44,7 +44,7 @@
 #include <thread>
 
 #include "DwmDnsMessage.hh"
-#include "DwmMcCurtainAS2Ipv4Net.hh"
+#include "DwmMcCurtainIpv4Net2AS.hh"
 #include "DwmMcCurtainRipeAsnTxt.hh"
 
 namespace Dwm {

@@ -71,6 +71,12 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
+    Ipv4Net2AS::Ipv4Net2AS(const AS2Ipv4Net & as2ip4)
+    {
+      Load(as2ip4);
+    }
+    
+    //------------------------------------------------------------------------
     bool Ipv4Net2AS::Load(const CaidaV4Routeviews & rv)
     {
       clear();
@@ -81,6 +87,18 @@ namespace Dwm {
               (*this)[pfx].insert(as);
             }
           }
+        }
+      }
+      return (! empty());
+    }
+
+    //------------------------------------------------------------------------
+    bool Ipv4Net2AS::Load(const AS2Ipv4Net & as2ip4)
+    {
+      clear();
+      for (const auto & as : as2ip4.Nets()) {
+        for (const auto & pfx : as.second) {
+          (*this)[pfx.first].insert(as.first);
         }
       }
       return (! empty());

@@ -40,8 +40,12 @@
 #ifndef _DWMMCCURTAINAS2IPV4NET_HH_
 #define _DWMMCCURTAINAS2IPV4NET_HH_
 
+#include "DwmBZ2IO.hh"
+#include "DwmDescriptorIO.hh"
+#include "DwmFileIO.hh"
+#include "DwmGZIO.hh"
 #include "DwmIpv4PrefixPatricia.hh"
-#include "DwmMcCurtainIpv4Net2AS.hh"
+#include "DwmMcCurtainCaidaV4Routeviews.hh"
 
 namespace Dwm {
 
@@ -57,30 +61,36 @@ namespace Dwm {
     //!  prefixes.
     //!
     //!  The contents of an instance of this class can be loaded in 2 ways:
-    //!   - from an existing Ipv4Net2ASDb
+    //!   - from a CaidaV4Routeviews object
     //!   - from a file that was previously created via the Save() member
     //!     (this is the 'native' binary form and is portable).
     //!
     //!  I typically get a routeviews file from CAIDA and use it to create
-    //!  an Ipv4Net2ASDb, then create an AS2Ipv4NetDb from the Ipv4Net2ASDb.
-    //!  I then Save() both, so I can use the native binary form in various
-    //!  utilities.
+    //!  an AS2Ipv4Net.
+    //!  I then Save() it, so I can use the native binary form in mccurtaind
+    //!  and other utilities.
     //------------------------------------------------------------------------
     class AS2Ipv4Net
     {
     public:
       using  ASNets = Ipv4PrefixPatricia<uint8_t>;
 
+      //----------------------------------------------------------------------
+      //!  Default constructor.
+      //----------------------------------------------------------------------
       AS2Ipv4Net() = default;
 
+      //----------------------------------------------------------------------
+      //!  Construct from a CaidaV4Routeviews object.
+      //----------------------------------------------------------------------
       AS2Ipv4Net(const CaidaV4Routeviews & rv);
-      
-      //----------------------------------------------------------------------
-      //!  Load from the given Ipv4Net2ASDb @c net2asdb.  Returns true on
-      //!  success, false on failure.
-      //----------------------------------------------------------------------
-      bool Load(const Ipv4Net2AS & net2asdb);
 
+      //----------------------------------------------------------------------
+      //!  Loads from the contents of a CaidaV4Routeviews object.  Returns
+      //!  true if data was loaded, else returns false (e.g. @c rv was empty).
+      //----------------------------------------------------------------------
+      bool Load(const CaidaV4Routeviews & rv);
+      
       //----------------------------------------------------------------------
       //!  Load from a file at the given @c path.  Returns true on       
       //!  success, false on failure.
@@ -104,6 +114,52 @@ namespace Dwm {
       std::ostream & Write(std::ostream & os) const;
 
       //----------------------------------------------------------------------
+      //!  Reads the contents from descriptor @c fd.  Returns the number of
+      //!  bytes read on success, -1 on failure.
+      //----------------------------------------------------------------------
+      ssize_t Read(int fd);
+      
+      //----------------------------------------------------------------------
+      //!  Writes the contents to descriptor @c fd.  Returns the number of
+      //!  bytes read on success, -1 on failure.
+      //----------------------------------------------------------------------
+      ssize_t Write(int fd) const;
+
+      //----------------------------------------------------------------------
+      //!  Reads the contents from @c f.  Returns 1 on success, 0 on failure.
+      //----------------------------------------------------------------------
+      size_t Read(FILE *f);
+
+      //----------------------------------------------------------------------
+      //!  Writes the contents to @c f.  Returns 1 on success, 0 on failure.
+      //----------------------------------------------------------------------
+      size_t Write(FILE *f) const;
+      
+      //----------------------------------------------------------------------
+      //!  Reads the contents from the given BZFILE @c bzf.  Returns the
+      //!  number of bytes read on success, -1 on failure.
+      //----------------------------------------------------------------------
+      int BZRead(BZFILE *bzf);
+
+      //----------------------------------------------------------------------
+      //!  Writes the contents to the given BZFILE @c bzf.  Returns the
+      //!  number of bytes written on success, -1 on failure.
+      //----------------------------------------------------------------------
+      int BZWrite(BZFILE *bzf) const;
+
+      //----------------------------------------------------------------------
+      //!  Reads the contents from the given gzFile @c gzf.  Returns the
+      //!  number of bytes read on success, -1 on failure.
+      //----------------------------------------------------------------------
+      int Read(gzFile gzf);
+      
+      //----------------------------------------------------------------------
+      //!  Writes the contents to the given gzFile @c gzf.  Returns the
+      //!  number of bytes written on success, -1 on failure.
+      //----------------------------------------------------------------------
+      int Write(gzFile gzf) const;
+      
+      //----------------------------------------------------------------------
       //!  Returns the total number of contained prefixes, across all ASes.
       //!  Note that a prefix may be announced by more than one AS, hence
       //!  the returned value does not represent the number of unique
@@ -123,9 +179,7 @@ namespace Dwm {
       //!  keyed by AS number.
       //----------------------------------------------------------------------
       const std::unordered_map<uint32_t,ASNets> & Nets() const
-      {
-        return _asNets;
-      }
+      { return _asNets; }
       
     private:
       std::unordered_map<uint32_t,ASNets>  _asNets;

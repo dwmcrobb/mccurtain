@@ -99,6 +99,18 @@ namespace Dwm {
       }
       return false;
     }
+
+    //------------------------------------------------------------------------
+    bool Ipv6Net2AS::Load(const AS2Ipv6Net & as2ip6)
+    {
+      clear();
+      for (const auto & as : as2ip6.Nets()) {
+        for (const auto & pfx : as.second) {
+          (*this)[pfx.first].insert(as.first);
+        }
+      }
+      return (! empty());
+    }
     
     //------------------------------------------------------------------------
     //!  Loads the contents from the native binary file located at @c path.

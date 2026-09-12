@@ -52,6 +52,13 @@ namespace Dwm {
     AS2Ipv4Net::AS2Ipv4Net(const CaidaV4Routeviews & rv)
         : _asNets()
     {
+      Load(rv);
+    }
+
+    //------------------------------------------------------------------------
+    bool AS2Ipv4Net::Load(const CaidaV4Routeviews & rv)
+    {
+      _asNets.clear();
       for (const auto & asSet : rv.ASSets()) {
         for (auto as : asSet.first) {
           for (const auto & pfxSet : asSet.second.PrefixSets()) {
@@ -61,21 +68,9 @@ namespace Dwm {
           }
         }
       }
-    }
-    
-    //------------------------------------------------------------------------
-    bool AS2Ipv4Net::Load(const Ipv4Net2AS & net2as)
-    {
-      _asNets.clear();
-      // const auto & entries = net2asdb.Entries();
-      for (const auto & entry : net2as) {
-        for (const auto & as : entry.second) {
-          _asNets[as][entry.first] = 1;
-        }
-      }
       return (! _asNets.empty());
     }
-
+    
     //------------------------------------------------------------------------
     bool AS2Ipv4Net::Load(const std::string & path)
     {
@@ -112,6 +107,54 @@ namespace Dwm {
     std::ostream & AS2Ipv4Net::Write(std::ostream & os) const
     {
       return StreamIO::Write(os, _asNets);
+    }
+
+    //------------------------------------------------------------------------
+    ssize_t AS2Ipv4Net::Read(int fd)
+    {
+      return DescriptorIO::Read(fd, _asNets);
+    }
+      
+    //------------------------------------------------------------------------
+    ssize_t AS2Ipv4Net::Write(int fd) const
+    {
+      return DescriptorIO::Write(fd, _asNets);
+    }
+
+    //------------------------------------------------------------------------
+    size_t AS2Ipv4Net::Read(FILE *f)
+    {
+      return FileIO::Read(f, _asNets);
+    }
+    
+    //------------------------------------------------------------------------
+    size_t AS2Ipv4Net::Write(FILE *f) const
+    {
+      return FileIO::Write(f, _asNets);
+    }
+    
+    //------------------------------------------------------------------------
+    int AS2Ipv4Net::BZRead(BZFILE *bzf)
+    {
+      return BZ2IO::BZRead(bzf, _asNets);
+    }
+
+    //------------------------------------------------------------------------
+    int AS2Ipv4Net::BZWrite(BZFILE *bzf) const
+    {
+      return BZ2IO::BZWrite(bzf, _asNets);
+    }
+
+    //------------------------------------------------------------------------
+    int AS2Ipv4Net::Read(gzFile gzf)
+    {
+      return GZIO::Read(gzf, _asNets);
+    }
+      
+    //------------------------------------------------------------------------
+    int AS2Ipv4Net::Write(gzFile gzf) const
+    {
+      return GZIO::Write(gzf, _asNets);
     }
     
   }  // namespace McCurtain

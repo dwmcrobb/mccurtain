@@ -200,10 +200,10 @@ namespace Dwm {
       bool  rc = false;
       std::ifstream  is(_config.Database().DBFile());
       if (is) {
-        if (_ipv42as.Read(is)) {
-          if (_as2ipv4.Read(is)) {
-            if (_ipv62as.Read(is)) {
-              if (_as2ipv6.Read(is)) {
+        if (_as2ipv4.Read(is)) {
+          if (_ipv42as.Load(_as2ipv4)) {
+            if (_as2ipv6.Read(is)) {
+              if (_ipv62as.Load(_as2ipv6)) {
                 if (_asntxt.Load(_config.Database().ASNTxtFile())) {
                   rc = true;
                 }
@@ -213,22 +213,20 @@ namespace Dwm {
                 }
               }
               else {
-                MCLOG(LOG_ERR, "Failed to read _as2ipv6 from '{}'",
-                      _config.Database().DBFile());
+                MCLOG(LOG_ERR, "Failed to load _ipv62as");
               }
             }
             else {
-              MCLOG(LOG_ERR, "Failed to read _ipv62as from '{}'",
+              MCLOG(LOG_ERR, "Failed to read __as2ipv6 from '{}'",
                     _config.Database().DBFile());
             }
           }
           else {
-            MCLOG(LOG_ERR, "Failed to read _as2ipv4 from '{}'",
-                  _config.Database().DBFile());
+            MCLOG(LOG_ERR, "Failed to load _ipv42as");
           }
         }
         else {
-          MCLOG(LOG_ERR, "Failed to read _ipv42as from '{}'",
+          MCLOG(LOG_ERR, "Failed to read _as2ipv4 from '{}'",
                 _config.Database().DBFile());
         }
         is.close();

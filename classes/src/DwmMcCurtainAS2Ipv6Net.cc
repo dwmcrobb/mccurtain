@@ -71,6 +71,7 @@ namespace Dwm {
       return;
     }
 
+#if 0
     //------------------------------------------------------------------------
     bool AS2Ipv6Net::Load(const Ipv6Net2AS & net2as)
     {
@@ -83,7 +84,8 @@ namespace Dwm {
       }
       return (! _asNets.empty());
     }
-
+#endif
+    
     //------------------------------------------------------------------------
     bool AS2Ipv6Net::Load(const std::string & path)
     {
@@ -120,6 +122,54 @@ namespace Dwm {
     std::ostream & AS2Ipv6Net::Write(std::ostream & os) const
     {
       return StreamIO::Write(os, _asNets);
+    }
+
+    //------------------------------------------------------------------------
+    ssize_t AS2Ipv6Net::Read(int fd)
+    {
+      return DescriptorIO::Read(fd, _asNets);
+    }
+    
+    //------------------------------------------------------------------------
+    ssize_t AS2Ipv6Net::Write(int fd) const
+    {
+      return DescriptorIO::Write(fd, _asNets);
+    }
+    
+    //------------------------------------------------------------------------
+    size_t AS2Ipv6Net::Read(FILE *f)
+    {
+      return FileIO::Read(f, _asNets);
+    }
+    
+    //------------------------------------------------------------------------
+    size_t AS2Ipv6Net::Write(FILE *f) const
+    {
+      return FileIO::Write(f, _asNets);
+    }
+    
+    //------------------------------------------------------------------------
+    int AS2Ipv6Net::BZRead(BZFILE *bzf)
+    {
+      return BZ2IO::BZRead(bzf, _asNets);
+    }
+    
+    //------------------------------------------------------------------------
+    int AS2Ipv6Net::BZWrite(BZFILE *bzf) const
+    {
+      return BZ2IO::BZWrite(bzf, _asNets);
+    }
+    
+    //------------------------------------------------------------------------
+    int AS2Ipv6Net::Read(gzFile gzf)
+    {
+      return GZIO::Read(gzf, _asNets);
+    }
+    
+    //------------------------------------------------------------------------
+    int AS2Ipv6Net::Write(gzFile gzf) const
+    {
+      return GZIO::Write(gzf, _asNets);
     }
     
   }  // namespace McCurtain
