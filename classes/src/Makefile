@@ -2,9 +2,7 @@ include ../../Makefile.vars
 
 ALLINC       = -I../include ${DWMINCS}
 OBJS         = DwmMcCurtainASInfo.o \
-               DwmMcCurtainASes.o \
                DwmMcCurtainAS2Ipv4Net.o \
-               DwmMcCurtainAS2Ipv4NetDb.o \
                DwmMcCurtainAS2Ipv6Net.o \
                DwmMcCurtainBindAddr.o \
                DwmMcCurtainCaidaV4Routeviews.o \
@@ -13,7 +11,6 @@ OBJS         = DwmMcCurtainASInfo.o \
                DwmMcCurtainConfigParse.o \
                DwmMcCurtainDatabaseConfig.o \
                DwmMcCurtainIpv4Net2AS.o \
-               DwmMcCurtainIpv4Net2ASDb.o \
                DwmMcCurtainIpv6Net2AS.o \
                DwmMcCurtainMessage.o \
                DwmMcCurtainMessageHeader.o \
