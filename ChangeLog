@@ -3,6 +3,9 @@
 	* classes/include/DwmMcCurtainAS2Ipv4Net.hh
 	* classes/src/DwmMcCurtainAS2Ipv4Net.cc
 	* classes/tests/TestAS2Ipv4Net.cc
+	* classes/include/DwmMcCurtainAS2Ipv6Net.hh
+	* classes/src/DwmMcCurtainAS2Ipv6Net.cc
+	* classes/tests/TestAS2Ipv6Net.cc
 	Save() and Load() will now use bzip2 compression if path extension
 	is ".bz2", gzip compression if path extension is ".gz", and no
 	compression in all other cases.
