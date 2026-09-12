@@ -192,6 +192,14 @@ int main(int argc, char *argv[])
       TestFileIO(asdb);
       TestBZ2IO(asdb);
       TestGZIO(asdb);
+      if (UnitAssert(TestSave(asdb, "as2ipv6.bz2"))) {
+        UnitAssert(TestLoad(asdb, "as2ipv6.bz2"));
+        std::remove("as2ipv6.bz2");
+      }
+      if (UnitAssert(TestSave(asdb, "as2ipv6.gz"))) {
+        UnitAssert(TestLoad(asdb, "as2ipv6.gz"));
+        std::remove("as2ipv6.gz");
+      }
     }
     std::remove("as2ipv6.db");
   }
