@@ -1,3 +1,32 @@
+2026-09-12  dwm  <dwm@ria.mcplex.net>
+
+	* apps/mccurtaind/DwmMcCurtainDnsServer.hh
+	* apps/mccurtaind/DwmMcCurtainServer.cc
+	* apps/mkcurtaindb/mkcurtaindb.cc
+	* classes/include/DwmMcCurtainAS2Ipv4Net.hh
+	* classes/include/DwmMcCurtainAS2Ipv6Net.hh
+	* classes/include/DwmMcCurtainIpv4Net2AS.hh
+	* classes/include/DwmMcCurtainIpv6Net2AS.hh
+	* classes/src/DwmMcCurtainAS2Ipv4Net.cc
+	* classes/src/DwmMcCurtainAS2Ipv6Net.cc
+	* classes/src/DwmMcCurtainIpv4Net2AS.cc
+	* classes/src/DwmMcCurtainIpv6Net2AS.cc
+	* classes/tests/.gitignore
+	* classes/tests/Makefile
+	* classes/tests/TestAS2Ipv4Net.cc
+	* classes/tests/TestAS2Ipv6Net.cc
+	* classes/tests/TestCaidaV4Routeviews.cc
+	* classes/tests/TestCaidaV6Routeviews.cc
+	db file now only contains an AS2Ipv4Net and AS2Ipv6Net, since
+	we can construct our Ipv4Net2AS and Ipv6Net2AS from them.  This
+	reduces thr size of the uncompressed binaery bb file to a size
+	less than the gzip'ed CAIDA routeviews files.
+
+	I also added more I/O functionality to AS2Ipv4Net and AS2Ipv6Net
+	so they can be read and written to/from descriptors, FILEs, BZFILEs
+	and gzFiles.
+
+
 2026-09-08  dwm  <dwm@ria.mcplex.net>
 
 	* tagged as mccurtain-0.0.29
