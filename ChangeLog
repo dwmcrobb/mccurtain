@@ -1,3 +1,12 @@
+2026-09-12  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* classes/include/DwmMcCurtainAS2Ipv4Net.hh
+	* classes/src/DwmMcCurtainAS2Ipv4Net.cc
+	* classes/tests/TestAS2Ipv4Net.cc
+	Save() and Load() will now use bzip2 compression if path extension
+	is ".bz2", gzip compression if path extension is ".gz", and no
+	compression in all other cases.
+
 2026-09-12  dwm  <dwm@ria.mcplex.net>
 
 	* apps/mccurtaind/DwmMcCurtainDnsServer.hh
