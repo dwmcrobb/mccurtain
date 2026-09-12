@@ -99,7 +99,7 @@ namespace Dwm {
 
       //----------------------------------------------------------------------
       //!  Saves to a file at the given @c path.  Returns true on success,
-      //!  falue on failure.
+      //!  false on failure.
       //----------------------------------------------------------------------
       bool Save(const std::string & path) const;
 
