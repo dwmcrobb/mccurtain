@@ -2,9 +2,23 @@
 
 	* apps/mccurtaind/DwmMcCurtainServer.cc
 	* apps/mccurtaind/DwmMcCurtainServer.hh
+	* apps/mkcurtaindb/mkcurtaindb.cc
+	* classes/include/DwmMcCurtainAS2IPDb.hh
+	* classes/src/DwmMcCurtainAS2IPDb.cc
+	* classes/include/DwmMcCurtainAS2Ipv6Net.hh
+	* classes/src/DwmMcCurtainAS2Ipv6Net.cc
+	* classes/src/Makefile
+	* classes/tests/Makefile
+	* classes/tests/TestAS2IPDb.cc
+	Added AS2IPDb class with static members to load and save
+	AS2Ipv4Net and AS2Ipv6Net via common interface that automatically
+	uses bz2, gz or no compression based on filename extension.
+
+	* apps/mccurtaind/DwmMcCurtainServer.cc
+	* apps/mccurtaind/DwmMcCurtainServer.hh
 	Allow loading AS to IP data from bzip2 or gzip files based on
 	file extension.
-	
+
 	* apps/mkcurtaindb/mkcurtaindb.cc
 	If output file name extension is ".bz2", use BZ2 compression.
 	If output file name extension is ".gz", use gzip compression.
