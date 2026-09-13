@@ -1,0 +1,36 @@
+.Dd April 16, 2024
+.Dt mccdbcat 1
+.Os mcplex.net
+.Sh NAME
+.Nm mccdbcat
+.Nd dump the contents of a mccurtain AS to IP database file
+.Sh SYNOPSIS
+.Nm
+.Op Fl f Ar dbfile
+.Sh DESCRIPTION
+.Nm
+is a trivial debug utility to dump the contents of a mccurtain AS to IP
+database file to stdout in hiuman-readable form.
+.Pp
+
+The following command line options are available:
+.Pp
+.Bl -tag -width indent
+.It Fl f Ar dbfile
+Specify the input database file to be dumped.  If not given,
+/usr/local/etc/mccas2ip.db is assumed.
+.El
+
+.Sh FILES
+.Bl -tag -width indent
+.It Pa /usr/local/etc/mccas2ip.db
+The default mccurtain AS to IP database file.
+.El
+.Sh SEE ALSO
+.Xr mccurtain 1 ,
+.Xr mccurtaind 8 ,
+.Xr mkcurtaindb 8 ,
+.Xr credence 1
+.Sh AUTHORS
+Copyright \(co 2026
+.An Daniel W. McRobb Aq Mt dwm@mcplex.net

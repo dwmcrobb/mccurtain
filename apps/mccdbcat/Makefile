@@ -3,7 +3,8 @@ include ../../Makefile.vars
 ALLINCS  = -I../../classes/include ${DWMINCS}
 OBJS     = mccdbcat.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
-TARTARGETS   = ${TARDIR}/bin/mccdbcat
+TARTARGETS   = ${TARDIR}/bin/mccdbcat \
+               ${TARDIR}/man/man1/mccdbcat.1
 
 mccdbcat: mccdbcat.o ../../classes/lib/libDwmMcCurtain.a
 	${CXX} ${LDFLAGS} -o $@ $^ ${DWMLIBS}
@@ -33,6 +34,9 @@ tarprep: ${TARTARGETS}
 
 ${TARDIR}/bin/mccdbcat: mccdbcat
 	${LIBTOOL} --mode=install ../../install-sh -s -c -m 555 $< $@
+
+${TARDIR}/man/man1/mccdbcat.1: mccdbcat.1
+	${LIBTOOL} --mode=install ../../install-sh -c -m 644 $< $@
 
 distclean:: clean
 	rm -f ${OBJDEPS}
