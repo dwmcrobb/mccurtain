@@ -58,7 +58,7 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    void AS2Ipv6Net::Load(const CaidaV6Routeviews & rv)
+    bool AS2Ipv6Net::Load(const CaidaV6Routeviews & rv)
     {
       _asNets.clear();
       for (const auto & asSet : rv.ASSets()) {
@@ -70,7 +70,7 @@ namespace Dwm {
           }
         }
       }
-      return;
+      return (! _asNets.empty());
     }
 
     //------------------------------------------------------------------------

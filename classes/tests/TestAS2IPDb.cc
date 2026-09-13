@@ -1,5 +1,5 @@
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024, 2025, 2026
+//  Copyright (c) Daniel W. McRobb 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -32,77 +32,67 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file mkcurtain.cc
-//!  \author Daniel W. McRobb
-//!  \brief utility to create binary data file from routeviews data
+//!  @file TestAS2IPDb.cc
+//!  @author Daniel W. McRobb
+//!  @brief Dwm::McCurtain::AS2IPDb unit tests
 //---------------------------------------------------------------------------
 
-#include <filesystem>
 #include <fstream>
-#include <iostream>
-#include <string>
 
-#include "DwmSysLogger.hh"
+#include "DwmUnitAssert.hh"
 #include "DwmMcCurtainAS2IPDb.hh"
-#include "DwmMcCurtainVersion.hh"
 
 using namespace std;
-namespace fs = std::filesystem;
+using namespace Dwm;
 
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static void Usage(const char *argv0)
+static bool TestMakeASToIpv4(Dwm::McCurtain::AS2Ipv4Net & as2ip4,
+                             const std::string & routeViewsPath)
 {
-  cerr << "Usage: " << argv0
-       << " [-o outfile] routeViewsIPv4File routeViewsIPv6File\n";
+  McCurtain::CaidaV4Routeviews  rv;
+  if (UnitAssert(rv.Load(routeViewsPath))) {
+    rv.Aggregate();
+    return as2ip4.Load(rv);
+  }
+  return false;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool TestMakeASToIpv6(Dwm::McCurtain::AS2Ipv6Net & as2ip6,
+                             const std::string & routeViewsPath)
+{
+  McCurtain::CaidaV6Routeviews  rv;
+  if (UnitAssert(rv.Load(routeViewsPath))) {
+    rv.Aggregate();
+    as2ip6.Load(rv);
+    return true;
+  }
+  return false;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void TestSaveLoad(const Dwm::McCurtain::AS2Ipv4Net & as2ip4,
+                         const Dwm::McCurtain::AS2Ipv6Net & as2ip6,
+                         const string & filename)
+{
+  using  as2ipdb = McCurtain::AS2IPDb;
+  
+  if (UnitAssert(as2ipdb::Save(filename, as2ip4, as2ip6))) {
+    Dwm::McCurtain::AS2Ipv4Net  as2ip4_2;
+    Dwm::McCurtain::AS2Ipv6Net  as2ip6_2;
+    if (UnitAssert(as2ipdb::Load(filename, as2ip4_2, as2ip6_2))) {
+      UnitAssert(as2ip4_2.Size() == as2ip4.Size());
+      UnitAssert(as2ip6_2.Size() == as2ip6.Size());
+    }
+    std::remove(filename.c_str());
+  }
   return;
-}
-
-//----------------------------------------------------------------------------
-//!  
-//----------------------------------------------------------------------------
-static bool PopulateV6Data(const string & caidarvfile,
-                           Dwm::McCurtain::AS2Ipv6Net & as2ip)
-{
-  Dwm::McCurtain::CaidaV6Routeviews  rv;
-  if (rv.Load(caidarvfile)) {
-    rv.Aggregate();
-    as2ip.Load(rv);
-    return true;
-  }
-  else {
-    cerr << "Failed to load data from '" << caidarvfile << "'\n";
-  }
-  return false;
-}
-
-//----------------------------------------------------------------------------
-//!  
-//----------------------------------------------------------------------------
-static bool PopulateV4Data(const string & caidarvfile,
-                           Dwm::McCurtain::AS2Ipv4Net & as2ip)
-{
-  Dwm::McCurtain::CaidaV4Routeviews  rv;
-  if (rv.Load(caidarvfile)) {
-    rv.Aggregate();
-    as2ip.Load(rv);
-    return true;
-  }
-  else {
-    cerr << "Failed to load data from '" << caidarvfile << "'\n";
-  }
-  return false;
-}
-
-//----------------------------------------------------------------------------
-//!  
-//----------------------------------------------------------------------------
-static bool SaveAS2IpData(const string & outfile,
-                          Dwm::McCurtain::AS2Ipv4Net & asip4,
-                          Dwm::McCurtain::AS2Ipv6Net & asip6)
-{
-  return Dwm::McCurtain::AS2IPDb::Save(outfile, asip4, asip6);
 }
 
 //----------------------------------------------------------------------------
@@ -110,48 +100,28 @@ static bool SaveAS2IpData(const string & outfile,
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  Dwm::SysLogger::Open("mkcurtaindb", LOG_PERROR|LOG_PID, "user");
-
-  string  mccDbFile = "/usr/local/etc/mccip2as.db";
-
-  extern int  optind;
-  int         optChar;
-  while ((optChar = getopt(argc, argv, "o:")) != -1) {
-    switch (optChar) {
-      case 'o':
-        mccDbFile = optarg;
-        break;
-      default:
-        Usage(argv[0]);
-        exit(1);
-        break;
-    }
-  }
-
-  if ((optind + 1) >= argc) {
-    Usage(argv[0]);
-    exit(1);
-  }
-
+  const string  rv4file("inputs/routeviews-rv2-20240406.pfx2as.gz");
+  const string  rv6file("inputs/routeviews-rv6-20260828.pfx2as.gz");
   Dwm::McCurtain::AS2Ipv4Net  as2ip4;
   Dwm::McCurtain::AS2Ipv6Net  as2ip6;
   
-  if (PopulateV4Data(argv[optind], as2ip4)) {
-    if (PopulateV6Data(argv[optind+1], as2ip6)) {
-      if (SaveAS2IpData(mccDbFile, as2ip4, as2ip6)) {
-        return 0;
-      }
-      else {
-        cerr << "Failed to save data to '" << mccDbFile << "'\n";
-      }
-    }
-    else {
-      cerr << "Failed to populate IPv6 data\n";
+  if (UnitAssert(TestMakeASToIpv4(as2ip4, rv4file))) {
+    if (UnitAssert(TestMakeASToIpv6(as2ip6, rv6file))) {
+      TestSaveLoad(as2ip4, as2ip6, "TestAS2IPDb.db");
+      TestSaveLoad(as2ip4, as2ip6, "TestAS2IPDb.bz2");
+      TestSaveLoad(as2ip4, as2ip6, "TestAS2IPDb.gz");
     }
   }
-  else {
-    cerr << "Failed to populate IPv4 data\n";
-  }
+  
+  if (Assertions::Total().Failed())
+    Assertions::Print(cerr, true);
+  else
+    cout << Assertions::Total() << " passed" << endl;
 
-  return 1;
+  exit(0);
+  
+testFailed:
+  
+  Assertions::Print(cerr, true);
+  exit(1);
 }

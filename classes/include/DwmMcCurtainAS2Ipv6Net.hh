@@ -86,9 +86,10 @@ namespace Dwm {
       AS2Ipv6Net(const CaidaV6Routeviews & rv);
 
       //----------------------------------------------------------------------
-      //!  Load from the given CaidaV6Routeviews @c rv.
+      //!  Loads from the given CaidaV6Routeviews @c rv.  Returns true if data
+      //!  was loaded, else returns false (e.g. @c rv was empty).
       //----------------------------------------------------------------------
-      void Load(const CaidaV6Routeviews & rv);
+      bool Load(const CaidaV6Routeviews & rv);
 
       //----------------------------------------------------------------------
       //!  Load from a file at the given @c path.  Returns true on       

@@ -45,6 +45,7 @@ extern "C" {
 #include <thread>
 
 #include "DwmMclogLogger.hh"
+#include "DwmMcCurtainAS2IPDb.hh"
 #include "DwmMcCurtainServer.hh"
 
 namespace Dwm {
@@ -196,146 +197,24 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    bool Server::InitDatabasesBZ2(const fs::path & path)
-    {
-      bool  rc = false;
-      BZFILE  *bzf = BZ2_bzopen(path.c_str(), "rb");
-      if (bzf) {
-        if (_as2ipv4.BZRead(bzf)) {
-          if (_ipv42as.Load(_as2ipv4)) {
-            if (_as2ipv6.BZRead(bzf)) {
-              if (_ipv62as.Load(_as2ipv6)) {
-                if (_asntxt.Load(_config.Database().ASNTxtFile())) {
-                  rc = true;
-                }
-                else {
-                  MCLOG(LOG_ERR, "_asntxt.Load({}) failed",
-                        _config.Database().ASNTxtFile());
-                }
-              }
-              else {
-                MCLOG(LOG_ERR, "_ipv62as.Load() failed");
-              }
-            }
-            else {
-              MCLOG(LOG_ERR, "_as2ipv6.BZRead() failed");
-            }
-          }
-          else {
-            MCLOG(LOG_ERR, "_ipv42as.Load() failed");
-          }
-        }
-        else {
-          MCLOG(LOG_ERR, "_as2ipv4.BZRead() failed");
-        }
-        BZ2_bzclose(bzf);
-      }
-      else {
-        MCLOG(LOG_ERR, "BZ2_bzopen({},\"rb\") failed", path.c_str());
-      }
-      return rc;
-    }
-
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    bool Server::InitDatabasesGZ(const fs::path & path)
-    {
-      bool    rc = false;
-      gzFile  gzf = gzopen(path.c_str(), "rb");
-      if (gzf) {
-        if (_as2ipv4.Read(gzf)) {
-          if (_ipv42as.Load(_as2ipv4)) {
-            if (_as2ipv6.Read(gzf)) {
-              if (_ipv62as.Load(_as2ipv6)) {
-                if (_asntxt.Load(_config.Database().ASNTxtFile())) {
-                  rc = true;
-                }
-                else {
-                  MCLOG(LOG_ERR, "_asntxt.Load({}) failed",
-                        _config.Database().ASNTxtFile());
-                }
-              }
-              else {
-                MCLOG(LOG_ERR, "_ipv62as.Load() failed");
-              }
-            }
-            else {
-              MCLOG(LOG_ERR, "_as2ipv6.Read() failed");
-            }
-          }
-          else {
-            MCLOG(LOG_ERR, "_ipv42as.Load() failed");
-          }
-        }
-        else {
-          MCLOG(LOG_ERR, "_as2ipv4.Read() failed");
-        }
-        gzclose(gzf);
-      }
-      else {
-        MCLOG(LOG_ERR, "gzopen({},\"rb\") failed", path.c_str());
-      }
-      
-      return rc;
-    }
-
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    bool Server::InitDatabasesIstream(const fs::path & path)
-    {
-      bool  rc = false;
-      std::ifstream  is(path);
-      if (is) {
-        if (_as2ipv4.Read(is)) {
-          if (_ipv42as.Load(_as2ipv4)) {
-            if (_as2ipv6.Read(is)) {
-              if (_ipv62as.Load(_as2ipv6)) {
-                if (_asntxt.Load(_config.Database().ASNTxtFile())) {
-                  rc = true;
-                }
-                else {
-                  MCLOG(LOG_ERR, "Failed to load _asntxt from '{}'",
-                        _config.Database().ASNTxtFile());
-                }
-              }
-              else {
-                MCLOG(LOG_ERR, "Failed to load _ipv62as");
-              }
-            }
-            else {
-              MCLOG(LOG_ERR, "Failed to read __as2ipv6 from '{}'",
-                    _config.Database().DBFile());
-            }
-          }
-          else {
-            MCLOG(LOG_ERR, "Failed to load _ipv42as");
-          }
-        }
-        else {
-          MCLOG(LOG_ERR, "Failed to read _as2ipv4 from '{}'",
-                _config.Database().DBFile());
-        }
-        is.close();
-      }
-      else {
-        MCLOG(LOG_ERR, "Failed to open '{}'", _config.Database().DBFile());
-      }
-      return rc;
-    }
-    
-    //------------------------------------------------------------------------
     bool Server::InitDatabases()
     {
       bool      rc = false;
-      fs::path  path(_config.Database().DBFile());
-      if (path.extension() == ".bz2")     {  rc = InitDatabasesBZ2(path);    }
-      else if (path.extension() == ".gz") { rc = InitDatabasesGZ(path);      }
-      else                                { rc = InitDatabasesIstream(path); }
-
+      if (AS2IPDb::Load(_config.Database().DBFile(), _as2ipv4, _as2ipv6)) {
+        _ipv42as.Load(_as2ipv4);
+        _ipv62as.Load(_as2ipv6);
+        if (_asntxt.Load(_config.Database().ASNTxtFile())) {
+          rc = true;
+        }
+        else {
+          MCLOG(LOG_ERR, "Failed to load _asntxt from '{}'",            
+                _config.Database().ASNTxtFile());
+        }
+      }
+      else {
+        MCLOG(LOG_ERR, "Failed to load AS to IP data from '{}'",
+              _config.Database().DBFile());
+      }
       return rc;
     }
 

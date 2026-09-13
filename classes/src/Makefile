@@ -1,9 +1,10 @@
 include ../../Makefile.vars
 
 ALLINC       = -I../include ${DWMINCS}
-OBJS         = DwmMcCurtainASInfo.o \
+OBJS         = DwmMcCurtainAS2IPDb.o \
                DwmMcCurtainAS2Ipv4Net.o \
                DwmMcCurtainAS2Ipv6Net.o \
+               DwmMcCurtainASInfo.o \
                DwmMcCurtainBindAddr.o \
                DwmMcCurtainCaidaV4Routeviews.o \
                DwmMcCurtainCaidaV6Routeviews.o \
