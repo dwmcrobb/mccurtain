@@ -1,5 +1,10 @@
 2026-09-13  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* apps/mccurtaind/DwmMcCurtainServer.cc
+	* apps/mccurtaind/DwmMcCurtainServer.hh
+	Allow loading AS to IP data from bzip2 or gzip files based on
+	file extension.
+	
 	* apps/mkcurtaindb/mkcurtaindb.cc
 	If output file name extension is ".bz2", use BZ2 compression.
 	If output file name extension is ".gz", use gzip compression.
