@@ -40,6 +40,8 @@
 #ifndef _DWMMCCURTAINSERVER_HH_
 #define _DWMMCCURTAINSERVER_HH_
 
+#include <filesystem>
+
 #include "DwmCredenceKeyStash.hh"
 #include "DwmCredenceKnownKeys.hh"
 #include "DwmMcCurtainAS2Ipv4Net.hh"
@@ -137,6 +139,9 @@ namespace Dwm {
       std::vector<std::shared_ptr<Responder>>     _responders;
 
       bool InitDatabases();
+      bool InitDatabasesIstream(const std::filesystem::path & path);
+      bool InitDatabasesBZ2(const std::filesystem::path & path);
+      bool InitDatabasesGZ(const std::filesystem::path & path);
       void AcceptLoop(boost::asio::ip::tcp::acceptor & a);
       bool ClientAllowed(const boost::asio::ip::address & epAddr) const;
       void CleanupResponders();

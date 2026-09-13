@@ -52,7 +52,8 @@ namespace Dwm {
   namespace McCurtain {
 
     using namespace std;
-
+    namespace fs = std::filesystem;
+    
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
@@ -193,12 +194,101 @@ namespace Dwm {
       }
       return;
     }
-    
+
     //------------------------------------------------------------------------
-    bool Server::InitDatabases()
+    //!  
+    //------------------------------------------------------------------------
+    bool Server::InitDatabasesBZ2(const fs::path & path)
     {
       bool  rc = false;
-      std::ifstream  is(_config.Database().DBFile());
+      BZFILE  *bzf = BZ2_bzopen(path.c_str(), "rb");
+      if (bzf) {
+        if (_as2ipv4.BZRead(bzf)) {
+          if (_ipv42as.Load(_as2ipv4)) {
+            if (_as2ipv6.BZRead(bzf)) {
+              if (_ipv62as.Load(_as2ipv6)) {
+                if (_asntxt.Load(_config.Database().ASNTxtFile())) {
+                  rc = true;
+                }
+                else {
+                  MCLOG(LOG_ERR, "_asntxt.Load({}) failed",
+                        _config.Database().ASNTxtFile());
+                }
+              }
+              else {
+                MCLOG(LOG_ERR, "_ipv62as.Load() failed");
+              }
+            }
+            else {
+              MCLOG(LOG_ERR, "_as2ipv6.BZRead() failed");
+            }
+          }
+          else {
+            MCLOG(LOG_ERR, "_ipv42as.Load() failed");
+          }
+        }
+        else {
+          MCLOG(LOG_ERR, "_as2ipv4.BZRead() failed");
+        }
+        BZ2_bzclose(bzf);
+      }
+      else {
+        MCLOG(LOG_ERR, "BZ2_bzopen({},\"rb\") failed", path.c_str());
+      }
+      return rc;
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Server::InitDatabasesGZ(const fs::path & path)
+    {
+      bool    rc = false;
+      gzFile  gzf = gzopen(path.c_str(), "rb");
+      if (gzf) {
+        if (_as2ipv4.Read(gzf)) {
+          if (_ipv42as.Load(_as2ipv4)) {
+            if (_as2ipv6.Read(gzf)) {
+              if (_ipv62as.Load(_as2ipv6)) {
+                if (_asntxt.Load(_config.Database().ASNTxtFile())) {
+                  rc = true;
+                }
+                else {
+                  MCLOG(LOG_ERR, "_asntxt.Load({}) failed",
+                        _config.Database().ASNTxtFile());
+                }
+              }
+              else {
+                MCLOG(LOG_ERR, "_ipv62as.Load() failed");
+              }
+            }
+            else {
+              MCLOG(LOG_ERR, "_as2ipv6.Read() failed");
+            }
+          }
+          else {
+            MCLOG(LOG_ERR, "_ipv42as.Load() failed");
+          }
+        }
+        else {
+          MCLOG(LOG_ERR, "_as2ipv4.Read() failed");
+        }
+        gzclose(gzf);
+      }
+      else {
+        MCLOG(LOG_ERR, "gzopen({},\"rb\") failed", path.c_str());
+      }
+      
+      return rc;
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Server::InitDatabasesIstream(const fs::path & path)
+    {
+      bool  rc = false;
+      std::ifstream  is(path);
       if (is) {
         if (_as2ipv4.Read(is)) {
           if (_ipv42as.Load(_as2ipv4)) {
@@ -236,49 +326,19 @@ namespace Dwm {
       }
       return rc;
     }
-
-#if 0
-    //------------------------------------------------------------------------
-    //!  
+    
     //------------------------------------------------------------------------
     bool Server::InitDatabases()
     {
-      bool  rc = false;
-      if (_ipv42as.Load(_config.Database().Ipv4ToASFile())) {
-        if (_as2ipv4.Load(_config.Database().ASToIpv4File())) {
-          if (_ipv62as.Load(_config.Database().Ipv6ToASFile())) {
-            if (_as2ipv6.Load(_config.Database().ASToIpv6File())) {
-              if (_asntxt.Load(_config.Database().ASNTxtFile())) {
-                rc = true;
-              }
-              else {
-                MCLOG(LOG_ERR, "Failed to load AS text file from {}",
-                      _config.Database().ASNTxtFile());
-              }
-            }
-            else {
-              MCLOG(LOG_ERR, "Failed to load AS to Ipv6 database from {}",
-                    _config.Database().ASToIpv6File());
-            }
-          }
-          else {
-            MCLOG(LOG_ERR, "Failed to load Ipv6 to AS database from {}",
-                  _config.Database().Ipv6ToASFile());
-          }
-        }
-        else {
-          MCLOG(LOG_ERR, "Failed to load AS to Ipv4 database from {}",
-                _config.Database().ASToIpv4File());
-        }
-      }
-      else {
-        MCLOG(LOG_ERR, "Failed to load Ipv4 to AS database from {}",
-              _config.Database().Ipv4ToASFile());
-      }
+      bool      rc = false;
+      fs::path  path(_config.Database().DBFile());
+      if (path.extension() == ".bz2")     {  rc = InitDatabasesBZ2(path);    }
+      else if (path.extension() == ".gz") { rc = InitDatabasesGZ(path);      }
+      else                                { rc = InitDatabasesIstream(path); }
+
       return rc;
     }
-#endif
-    
+
   }  // namespace McCurtain
 
 }  // namespace Dwm
