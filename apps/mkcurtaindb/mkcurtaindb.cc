@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 {
   Dwm::SysLogger::Open("mkcurtaindb", LOG_PERROR|LOG_PID, "user");
 
-  string  mccDbFile = "/usr/local/etc/mccip2as.db";
+  string  mccDbFile = "/usr/local/etc/mccas2ip.db";
 
   extern int  optind;
   int         optChar;

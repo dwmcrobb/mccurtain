@@ -59,7 +59,7 @@ static void Usage(const char *argv0)
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  std::string  dbFile("/usr/local/etc/mccip2as.db");
+  std::string  dbFile("/usr/local/etc/mccas2ip.db");
   int  optchar;
   
   while ((optchar = getopt(argc, argv, "f:")) != -1) {

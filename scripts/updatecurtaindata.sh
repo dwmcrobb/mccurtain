@@ -4,7 +4,7 @@
 #  routeviews-prefix2as file from CAIDA, then update databases for
 #  mccurtaind and restart mccurtaind.
 
-dbfile=/usr/local/etc/mccip2as.db
+dbfile=/usr/local/etc/mccas2ip.db
 asntxt=/usr/local/etc/asn.txt
 
 fetch -o /tmp/asn.txt https://ftp.ripe.net/ripe/asnames/asn.txt

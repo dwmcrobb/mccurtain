@@ -48,8 +48,8 @@ syslog {
 #============================================================================
 databases {
     #------------------------------------------------------------------------
-    #  IP_prefix <-> AS database file.  If not configured,
-    #  /usr/local/etc/mccip2as.db will be assumed.  This file can be created
+    #  AS <-> IP_prefix database file.  If not configured,
+    #  /usr/local/etc/mccas2ip.db will be assumed.  This file can be created
     #  from CAIDA pfx2as files with mkcurtaindb(1).
     #  If the file extension is ".bz2", the file is assumed to be in bzip
     #  format.  If the file extension is ".gz", the file is assumed to be in
@@ -58,7 +58,7 @@ databases {
     #  yields a binary file.  The mccdbcat(1) utility can be used to dump
     #  the contents of the file in human readable form.
     #------------------------------------------------------------------------
-    dbfile = "/usr/local/etc/mccip2as.db";
+    dbfile = "/usr/local/etc/mccas2ip.db";
 
     #------------------------------------------------------------------------
     #  RIPE asn.txt file location.  If not configured,

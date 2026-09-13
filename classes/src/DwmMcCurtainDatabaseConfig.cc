@@ -1,7 +1,5 @@
 //===========================================================================
-// @(#) $DwmPath$
-//===========================================================================
-//  Copyright (c) Daniel W. McRobb 2024
+//  Copyright (c) Daniel W. McRobb 2024, 2026
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -46,15 +44,11 @@ namespace Dwm {
   namespace McCurtain {
 
     //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
     DatabaseConfig::DatabaseConfig()
     {
       Clear();
     }
 
-    //------------------------------------------------------------------------
-    //!  
     //------------------------------------------------------------------------
     std::ostream &
     operator << (std::ostream & os, const DatabaseConfig & cfg)
@@ -64,7 +58,7 @@ namespace Dwm {
          << "#============================================================================\n"
          << "databases {\n"
          << "#------------------------------------------------------------------------\n"
-         << "#  Database file.  If not configured, /usr/local/etc/mccip2as.db\n"
+         << "#  Database file.  If not configured, /usr/local/etc/mccas2ip.db\n"
          << "#  will be assumed.\n"
          << "#------------------------------------------------------------------------\n"
          << "dbfile = \"" << cfg._dbFile << "\";\n\n"
@@ -78,11 +72,9 @@ namespace Dwm {
     }
 
     //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
     void DatabaseConfig::Clear()
     {
-      _dbFile = "/usr/local/etc/mccip2as.db";
+      _dbFile = "/usr/local/etc/mccas2ip.db";
       _asnTxtFile = "/usr/local/etc/asn.txt";
       
       return;
