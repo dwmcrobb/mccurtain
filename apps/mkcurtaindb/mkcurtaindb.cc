@@ -37,6 +37,7 @@
 //!  \brief utility to create binary data file from routeviews data
 //---------------------------------------------------------------------------
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -47,6 +48,7 @@
 #include "DwmMcCurtainVersion.hh"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 //----------------------------------------------------------------------------
 //!  
@@ -97,12 +99,12 @@ static bool PopulateV4Data(const string & caidarvfile,
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-static bool SaveAS2IpData(const string & outfile,
-                          Dwm::McCurtain::AS2Ipv4Net & asip4,
-                          Dwm::McCurtain::AS2Ipv6Net & asip6)
+static bool SaveAsUncompressed(const fs::path & path,
+                      const Dwm::McCurtain::AS2Ipv4Net & asip4,
+                               const Dwm::McCurtain::AS2Ipv6Net & asip6)
 {
   bool  rc = false;
-  ofstream  os(outfile);
+  ofstream  os(path);
   if (os) {
     if (asip4.Write(os)) {
       if (asip6.Write(os)) {
@@ -112,7 +114,74 @@ static bool SaveAS2IpData(const string & outfile,
     os.close();
   }
   else {
-    cerr << "Failed to open '" << outfile << "'\n";
+    cerr << "Failed to open '" << path.string() << "'\n";
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool SaveAsBZ2(const fs::path & path,
+                      const Dwm::McCurtain::AS2Ipv4Net & asip4,
+                      const Dwm::McCurtain::AS2Ipv6Net & asip6)
+{
+  bool     rc = false;
+  BZFILE  *bzf = BZ2_bzopen(path.c_str(), "wb");
+  if (bzf) {
+    if (asip4.BZWrite(bzf)) {
+      if (asip6.BZWrite(bzf)) {
+        rc = true;
+      }
+    }
+    BZ2_bzclose(bzf);
+  }
+  else {
+    cerr << "Failed to bzopen '" << path.c_str() << "'\n";
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool SaveAsGzip(const fs::path & path,
+                      const Dwm::McCurtain::AS2Ipv4Net & asip4,
+                      const Dwm::McCurtain::AS2Ipv6Net & asip6)
+{
+  bool    rc = false;
+  gzFile  gzf = gzopen(path.c_str(), "wb");
+  if (gzf) {
+    if (asip4.Write(gzf)) {
+      if (asip6.Write(gzf)) {
+        rc = true;
+      }
+    }
+    gzclose(gzf);
+  }
+  else {
+    cerr << "Failed to gzopen '" << path.c_str() << "'\n";
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool SaveAS2IpData(const string & outfile,
+                          Dwm::McCurtain::AS2Ipv4Net & asip4,
+                          Dwm::McCurtain::AS2Ipv6Net & asip6)
+{
+  bool      rc = false;
+  fs::path  path(outfile);
+  if (path.extension() == ".bz2") {
+    rc = SaveAsBZ2(path, asip4, asip6);
+  }
+  else if (path.extension() == ".gz") {
+    rc = SaveAsGzip(path, asip4, asip6);
+  }
+  else {
+    rc = SaveAsUncompressed(path, asip4, asip6);
   }
   return rc;
 }
