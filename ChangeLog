@@ -1,5 +1,13 @@
 2026-09-13  dwm  <dwm@ria.mcplex.net>
 
+	* apps/mccdbcat/mccdbcat.cc
+	* apps/mkcurtaindb/mkcurtaindb.cc
+	* classes/src/DwmMcCurtainDatabaseConfig.cc
+	* etc/mccurtaind.cfg.example
+	* scripts/updatecurtaindata.sh
+	Be consistent about default db filename (now
+	/usr/local/etc/mccas2ip.db).
+	
 	* tagged as mccurtain-0.0.30
 
 	* apps/mccdbcat/Makefile
