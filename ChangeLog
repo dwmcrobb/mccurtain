@@ -1,5 +1,9 @@
 2026-09-13  dwm  <dwm@ria.mcplex.net>
 
+	* apps/mccdbcat/Makefile
+	* apps/mccdbcat/mccdbcat.1
+	Added manpage for mccdbcat(1)
+
 	* etc/mccurtaind.cfg.example
 	Added to comment for dbFile.
 
