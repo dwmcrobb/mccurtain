@@ -45,9 +45,8 @@ extern "C" {
 #include <cstdlib>
 #include <fstream>
 
-#include "DwmMcCurtainAS2Ipv4Net.hh"
+#include "DwmMcCurtainAS2IPDb.hh"
 #include "DwmMcCurtainIpv4Net2AS.hh"
-#include "DwmMcCurtainAS2Ipv6Net.hh"
 #include "DwmMcCurtainIpv6Net2AS.hh"
 
 //----------------------------------------------------------------------------
@@ -75,55 +74,26 @@ int main(int argc, char *argv[])
     }
   }
 
-  std::ifstream  is(dbFile);
-  if (is) {
-    Dwm::McCurtain::Ipv4Net2AS  ipv42as;
-    if (ipv42as.Read(is)) {
-      for (const auto & entry : ipv42as) {
-        std::cout << entry.first << ' ';
-        std::string  sep("");
-        for (const auto & as : entry.second) {
-          std::cout << sep << as;
-          sep = ',';
-        }
-        std::cout << '\n';
+  Dwm::McCurtain::AS2Ipv4Net  as2ipv4;
+  Dwm::McCurtain::AS2Ipv6Net  as2ipv6;
+  if (Dwm::McCurtain::AS2IPDb::Load(dbFile, as2ipv4, as2ipv6)) {
+    for (const auto & entry : as2ipv4.Nets()) {
+      std::cout << entry.first << '\n';
+      for (const auto & pfx : entry.second) {
+        std::cout << "  " << pfx.first << '\n';
       }
     }
-    Dwm::McCurtain::AS2Ipv4Net  as2ipv4;
-    if (as2ipv4.Read(is)) {
-      for (const auto & entry : as2ipv4.Nets()) {
-        std::cout << entry.first << '\n';
-        for (const auto & pfx : entry.second) {
-          std::cout << "  " << pfx.first << '\n';
-        }
-      }
-    }
-    Dwm::McCurtain::Ipv6Net2AS  ipv62as;
-    if (ipv62as.Read(is)) {
-      for (const auto & entry : ipv62as) {
-        std::cout << entry.first << ' ';
-        std::string  sep("");
-        for (const auto & as : entry.second) {
-          std::cout << sep << as;
-          sep = ',';
-        }
-        std::cout << '\n';
-      }
-    }
-    Dwm::McCurtain::AS2Ipv6Net  as2ipv6;
-    if (as2ipv6.Read(is)) {
-      for (const auto & entry : as2ipv6.Nets()) {
-        std::cout << entry.first << '\n';
-        for (const auto & pfx : entry.second) {
-          std::cout << "  " << pfx.first << '\n';
-        }
+    for (const auto & entry : as2ipv6.Nets()) {
+      std::cout << entry.first << '\n';
+      for (const auto & pfx : entry.second) {
+        std::cout << "  " << pfx.first << '\n';
       }
     }
   }
   else {
-    std::cerr << "Failed to open db file '" << dbFile << "'\n";
+    std::cerr << "Failed to load db file '" << dbFile << "'\n";
     return 1;
   }
-
+  
   return 0;
 }
