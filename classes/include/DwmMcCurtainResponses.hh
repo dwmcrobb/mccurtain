@@ -61,11 +61,25 @@ namespace Dwm {
                  std::vector<std::pair<uint32_t,RipeAsnTxt::Entry>>>;
 
     //------------------------------------------------------------------------
+    //!  A tuple containing an IPV6 prefix and a vector of
+    //!  (AS_number,RipeAsnTxt::Entry) pairs.
+    //------------------------------------------------------------------------
+    using Ipv6AddrResponseEntry =
+      std::tuple<Ipv6Prefix,
+                 std::vector<std::pair<uint32_t,RipeAsnTxt::Entry>>>;
+    
+    //------------------------------------------------------------------------
     //!  For an IPv4 address request, mccurtaind responds with a vector of
     //!  Ipv4AddrResponseEntry.
     //------------------------------------------------------------------------
     using Ipv4AddrResponse = std::vector<Ipv4AddrResponseEntry>;
 
+    //------------------------------------------------------------------------
+    //!  For an IPv6 address request, mccurtaind responds with a vector of
+    //!  Ipv6AddrResponseEntry.
+    //------------------------------------------------------------------------
+    using Ipv6AddrResponse = std::vector<Ipv6AddrResponseEntry>;
+    
     //------------------------------------------------------------------------
     //!  For an AS request, mccurtaind responds with a tuple of AS number,
     //!  RipeAsnTxt::Entry and vector of IPv4 prefixes.

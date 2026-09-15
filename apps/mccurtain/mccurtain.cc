@@ -121,6 +121,23 @@ PrintIpv4AddrResponse(const Dwm::McCurtain::Ipv4AddrResponse & resp)
 //!  
 //----------------------------------------------------------------------------
 static void
+PrintIpv6AddrResponse(const Dwm::McCurtain::Ipv6AddrResponse & resp)
+{
+  for (const auto & entry : resp) {
+    cout << std::get<0>(entry) << ":\n";
+    for (const auto & ase : std::get<1>(entry)) {
+      cout << "  " << setiosflags(ios::left) << setw(10) << ase.first << ' '
+           << setw(2) << ase.second.CountryCode() << ' '
+           << ase.second.Name() << '\n';
+    }
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void
 PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp,
                         bool verbose)
 {
@@ -311,6 +328,16 @@ int main(int argc, char *argv[])
         Dwm::McCurtain::Ipv4AddrResponse  resp;
         if (peer.Receive(resp)) {
           PrintIpv4AddrResponse(resp);
+          return 0;
+        }
+      }
+    }
+    else if (arg.find_first_of(':') != string::npos) {
+      Dwm::McCurtain::Request  req{Dwm::Ipv6Address(arg)};
+      if (peer.Send(req)) {
+        Dwm::McCurtain::Ipv6AddrResponse  resp;
+        if (peer.Receive(resp)) {
+          PrintIpv6AddrResponse(resp);
           return 0;
         }
       }

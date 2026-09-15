@@ -73,6 +73,14 @@ namespace Dwm {
       {}
 
       //----------------------------------------------------------------------
+      //!  Construct a request for prefixes and ASes for a given IPv6
+      //!  address.
+      //----------------------------------------------------------------------
+      Request(const Ipv6Address & addr)
+          : _data(addr)
+      {}
+      
+      //----------------------------------------------------------------------
       //!  Construct a request for prefixes announced by the given origin
       //!  AS @c asnum.
       //----------------------------------------------------------------------
@@ -103,7 +111,8 @@ namespace Dwm {
       //!  We only have two types of requests, which we can hold in a
       //!  std::variant.
       //----------------------------------------------------------------------
-      using DataType = std::variant<Ipv4Address,uint32_t,std::string>;
+      using DataType = std::variant<Ipv4Address,Ipv6Address,
+                                    uint32_t,std::string>;
 
       //----------------------------------------------------------------------
       //!  Returns the encapsulated data.

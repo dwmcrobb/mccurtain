@@ -109,6 +109,8 @@ namespace Dwm {
       
       void GetIpv4AddrResponse(const Ipv4Address & addr,
                                Ipv4AddrResponse & resp);
+      void GetIpv6AddrResponse(const Ipv6Address & addr,
+                               Ipv6AddrResponse & resp);
       void GetASPrefixesResponse(uint32_t asNum, ASPrefixesResponse & resp);
       void GetCountryPrefixesResponse(const std::string & countryCode,
                                       CountryPrefixesResponse & resp);

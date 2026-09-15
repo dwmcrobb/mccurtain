@@ -127,6 +127,25 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
+    bool Responder::SendIpv6AddrResponse(const Ipv6Address & addr)
+    {
+      bool  rc = false;
+
+      Ipv6AddrResponse  response;
+      _server.GetIpv6AddrResponse(addr, response);
+      if (_peer.Send(response)) {
+        rc = true;
+      }
+      else {
+        MCLOG(LOG_ERR, "Failed to send Ipv6AddrResponse to client {}",
+              _peer.Id());
+      }
+      return rc;
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
     bool Responder::SendASPrefixesResponse(uint32_t asNum)
     {
       bool  rc = false;
@@ -171,9 +190,12 @@ namespace Dwm {
           rc = SendIpv4AddrResponse(std::get<Ipv4Address>(req.Data()));
           break;
         case 1:
-          rc = SendASPrefixesResponse(std::get<uint32_t>(req.Data()));
+          rc = SendIpv6AddrResponse(std::get<Ipv6Address>(req.Data()));
           break;
         case 2:
+          rc = SendASPrefixesResponse(std::get<uint32_t>(req.Data()));
+          break;
+        case 3:
           rc = SendCountryPrefixesResponse(std::get<std::string>(req.Data()));
           break;
         default:

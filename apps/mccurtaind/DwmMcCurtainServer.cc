@@ -156,6 +156,35 @@ namespace Dwm {
       }
       return;
     }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    void Server::GetIpv6AddrResponse(const Ipv6Address & addr,
+                                     Ipv6AddrResponse & resp)
+    {
+      resp.clear();
+      std::vector<Ipv6PrefixPatricia<std::set<uint32_t>>::value_type>  matches;
+      if (_ipv62as.find_matches(addr, matches)) {
+        for (const auto & match : matches) {
+          Ipv6AddrResponseEntry  entry;
+          get<0>(entry) = match.first;
+          for (const auto & as : match.second) {
+            auto  asit = _asntxt.Entries().find(as);
+            if (asit != _asntxt.Entries().end()) {
+              get<1>(entry).push_back(*asit);
+            }
+            else {
+              pair<uint32_t,RipeAsnTxt::Entry>
+                asnoinfo(as, RipeAsnTxt::Entry("",""));
+              get<1>(entry).push_back(asnoinfo);
+            }
+          }
+          resp.push_back(entry);
+        }
+      }
+      return;
+    }
     
     //------------------------------------------------------------------------
     //!  
