@@ -1,4 +1,3 @@
-Rename mccdbcat to mccdb, then update manpage.
 Write a manpage for mkcurtaindb(8)
 Write a manpage for mccurtaind(8)
 Write a manpage for mccurtaindb(5)
