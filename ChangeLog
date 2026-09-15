@@ -1,5 +1,7 @@
 2026-09-15  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
+	* Renamed mccdbcat to mccdb.
+
 	* apps/mccdbcat/mccdbcat.cc
 	Allow selecting prefixes which match a given address, a given
 	country or given AS.  Also allow display of ASes with a

@@ -32,7 +32,7 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file mccurtaindbcat.cc
+//!  \file mccurtaindb.cc
 //!  \author Daniel W. McRobb
 //!  \brief trivial utility to dump the contents of the mccurtain db file in
 //!    human-readable form

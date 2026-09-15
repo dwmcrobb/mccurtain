@@ -1,12 +1,12 @@
 include ../../Makefile.vars
 
 ALLINCS  = -I../../classes/include ${DWMINCS}
-OBJS     = mccdbcat.o
+OBJS     = mccdb.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
-TARTARGETS   = ${TARDIR}/bin/mccdbcat \
-               ${TARDIR}/man/man1/mccdbcat.1
+TARTARGETS   = ${TARDIR}/bin/mccdb \
+               ${TARDIR}/man/man1/mccdb.1
 
-mccdbcat: mccdbcat.o ../../classes/lib/libDwmMcCurtain.a
+mccdb: mccdb.o ../../classes/lib/libDwmMcCurtain.a
 	${CXX} ${LDFLAGS} -o $@ $^ ${DWMLIBS}
 
 #  dependency rule
@@ -32,17 +32,17 @@ endif
 
 tarprep: ${TARTARGETS}
 
-${TARDIR}/bin/mccdbcat: mccdbcat
+${TARDIR}/bin/mccdb: mccdb
 	${LIBTOOL} --mode=install ../../install-sh -s -c -m 555 $< $@
 
-${TARDIR}/man/man1/mccdbcat.1: mccdbcat.1
+${TARDIR}/man/man1/mccdb.1: mccdb.1
 	${LIBTOOL} --mode=install ../../install-sh -c -m 644 $< $@
 
 distclean:: clean
 	rm -f ${OBJDEPS}
 
 clean:: clean-tarprep
-	${LIBTOOL} --mode=clean rm -f mccdbcat ${OBJS}
+	${LIBTOOL} --mode=clean rm -f mccdb ${OBJS}
 
 clean-tarprep::
 	${LIBTOOL} --mode=uninstall rm -f ${TARTARGETS}
