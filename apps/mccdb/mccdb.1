@@ -7,6 +7,9 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl f Ar dbfile
+.Op Fl a Ar asnTxtFile
+.Op Fl p
+.Ar [ipv4addr | ipv6addr | AS_number | country_code]
 .Sh DESCRIPTION
 .Nm
 is a trivial debug utility to dump the contents of a mccurtain AS to IP
@@ -19,8 +22,35 @@ The following command line options are available:
 .It Fl f Ar dbfile
 Specify the input database file to be dumped.  If not given,
 /usr/local/etc/mccas2ip.db is assumed.
+.It Fl a Ar asnTxtFile
+Specify the input asn.txt file.  If not given, /usr/local/etc/asn.txt
+is assumed.
+.It Fl p
+Applicable when the final argument is a country code, will cause
+.Nm
+to print prefixes within the country instead of autonomous systems in
+the country.
+.It Ar ipv4addr | ipv6addr | AS_number | country_code
+If an IPv4 address is given as the final argument,
+.Nm
+will print only the IPv4 prefixes which contain the given IPv4 address.
+.Pp
+If an IPv6 address is given as the final argument,
+.Nm
+will print only the IPv6 prefixes which contain the given IPv6 address.
+.Pp
+If an AS number is given as the final argument,
+.Nm
+will print only the prefixes from the given AS.
+.Pp
+If a 2-letter country code is given as the final argument,
+.Nm
+will print the autonomous systems in the given country, or the prefixes
+in the given country if the \fI-p\fR flag was specified.
 .El
-
+If no arguments are used,
+.Nm
+will print the entire contents of the database, organized by AS number.
 .Sh FILES
 .Bl -tag -width indent
 .It Pa /usr/local/etc/mccas2ip.db
