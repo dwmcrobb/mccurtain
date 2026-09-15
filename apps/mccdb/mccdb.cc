@@ -316,7 +316,8 @@ static void PrintCountryCodeASes(const Dwm::McCurtain::RipeAsnTxt & asntxt,
             [] (const auto & a, const auto & b)
             { return (a.first < b.first); });
   for (const auto & entry : entries) {
-    std::cout << entry.first << ' ' << entry.second.Name() << '\n';
+    std::cout << entry.first << ' ' << entry.second.CountryCode()
+              << ' ' << entry.second.Name() << '\n';
   }
   return;
 }
