@@ -1,3 +1,10 @@
+2026-09-15  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* apps/mccdbcat/mccdbcat.cc
+	Allow selecting prefixes which match a given address, a given
+	country or given AS.  Also allow display of ASes with a
+	given country code.
+
 2026-09-13  dwm  <dwm@ria.mcplex.net>
 
 	* tagged as mccurtain-0.0.31
