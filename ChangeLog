@@ -1,3 +1,14 @@
+2026-09-15  dwm  <dwm@ria.mcplex.net>
+
+	* apps/mccurtain/mccurtain.cc
+	* apps/mccurtaind/DwmMcCurtainResponder.cc
+	* apps/mccurtaind/DwmMcCurtainResponder.hh
+	* apps/mccurtaind/DwmMcCurtainServer.cc
+	* apps/mccurtaind/DwmMcCurtainServer.hh
+	* classes/include/DwmMcCurtainRequests.hh
+	* classes/include/DwmMcCurtainResponses.hh
+	Added support for IPv6 address queries via our secure channel.
+
 2026-09-15  Daniel McRobb  <dwm@mbp22.mcplex.net>
 
 	* apps/mccdb/mccdb.cc
