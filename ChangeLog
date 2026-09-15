@@ -1,5 +1,8 @@
 2026-09-15  Daniel McRobb  <dwm@thrip.mcplex.net>
 
+	* apps/mccdb/mccdb.1
+	Added some examples.
+
 	* apps/mccdb/mccdb.cc
 	* apps/mccdb/mccdb.1
 	Added '-4' and '-6' command line options to select only IPv4 or
