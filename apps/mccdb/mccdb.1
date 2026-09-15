@@ -64,6 +64,38 @@ in the given country if the \fI-p\fR flag was specified.
 If no arguments are used,
 .Nm
 will print the entire contents of the database, organized by AS number.
+.Sh EXAMPLES
+What is the origin of 192.5.89.2?
+.Pp
+.Bd -literal
+    % mccdb 192.5.89.2
+    192.5.89.2:
+      192.5.89.0/24
+        10578 US GIGAPOP-NE - Harvard University
+.Ed
+.Pp
+What networks have an origin AS of 10578?
+.Bd -literal
+    % mccdb 10578
+    18.2.0.0/19
+    18.2.128.0/19
+    18.2.192.0/19
+    192.5.89.0/24
+    2001:468:600::/40
+    2001:504:2e::/48
+    2603:40ff:2000::/36
+    2603:40ff:4000::/36
+    2603:40ff:6000::/36
+.Ed
+.Pp
+What IPv4 networks have an origin of AS 10578?
+.Bd -literal
+    % mccdb -4 10578
+    18.2.0.0/19
+    18.2.128.0/19
+    18.2.192.0/19
+    192.5.89.0/24
+.Ed
 .Sh FILES
 .Bl -tag -width indent
 .It Pa /usr/local/etc/mccas2ip.db
