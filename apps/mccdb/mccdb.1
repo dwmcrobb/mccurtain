@@ -9,6 +9,8 @@
 .Op Fl f Ar dbfile
 .Op Fl a Ar asnTxtFile
 .Op Fl p
+.Op Fl 4
+.Op Fl 6
 .Ar [ipv4addr | ipv6addr | AS_number | country_code]
 .Sh DESCRIPTION
 .Nm
@@ -30,6 +32,16 @@ Applicable when the final argument is a country code, will cause
 .Nm
 to print prefixes within the country instead of autonomous systems in
 the country.
+.It Fl 4
+Applicable when requesting prefixes but not for a specific IP address
+match, will cause
+.Nm
+to print only IPv4 prefixes.
+.It Fl 6
+Applicable when requesting prefixes but not for a specific IP address
+match, will cause
+.Nm
+to print only IPv6 prefixes.
 .It Ar ipv4addr | ipv6addr | AS_number | country_code
 If an IPv4 address is given as the final argument,
 .Nm

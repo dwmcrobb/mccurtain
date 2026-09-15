@@ -105,30 +105,44 @@ static bool IsASNumber(const std::string & s)
 //----------------------------------------------------------------------------
 static void PrintAllASes(const Dwm::McCurtain::AS2Ipv4Net & as2ip4,
                          const Dwm::McCurtain::AS2Ipv6Net & as2ip6,
-                         const Dwm::McCurtain::RipeAsnTxt & asntxt)
+                         const Dwm::McCurtain::RipeAsnTxt & asntxt,
+                         bool showV4, bool showV6)
 {
-  for (const auto & entry : as2ip4.Nets()) {
-    std::cout << entry.first;
-    auto  asnit = asntxt.Entries().find(entry.first);
-    if (asnit != asntxt.Entries().end()) {
-      std::cout << ' ' << asnit->second.CountryCode()
-                << ' ' << asnit->second.Name();
-    }
-    std::cout << '\n';
-    for (const auto & pfx : entry.second) {
-      std::cout << "  " << pfx.first << '\n';
+  std::set<uint32_t>  asnumbers;
+  if (showV4) {
+    for (const auto & entry : as2ip4.Nets()) {
+      asnumbers.insert(entry.first);
     }
   }
-  for (const auto & entry : as2ip6.Nets()) {
-    std::cout << entry.first;
-    auto  asnit = asntxt.Entries().find(entry.first);
+  if (showV6) {
+    for (const auto & entry : as2ip6.Nets()) {
+      asnumbers.insert(entry.first);
+    }
+  }
+  
+  for (const auto as : asnumbers) {
+    std::cout << as;
+    auto  asnit = asntxt.Entries().find(as);
     if (asnit != asntxt.Entries().end()) {
       std::cout << ' ' << asnit->second.CountryCode()
                 << ' ' << asnit->second.Name();
     }
     std::cout << '\n';
-    for (const auto & pfx : entry.second) {
-      std::cout << "  " << pfx.first << '\n';
+    if (showV4) {
+      auto  asit4 = as2ip4.Nets().find(as);
+      if (asit4 != as2ip4.Nets().end()) {
+        for (const auto & pfx : asit4->second) {
+          std::cout << "  " << pfx.first << '\n';
+        }
+      }
+    }
+    if (showV6) {
+      auto  asit6 = as2ip6.Nets().find(as);
+      if (asit6 != as2ip6.Nets().end()) {
+        for (const auto & pfx : asit6->second) {
+          std::cout << "  " << pfx.first << '\n';
+        }
+      }
     }
   }
   return;
@@ -140,28 +154,24 @@ static void PrintAllASes(const Dwm::McCurtain::AS2Ipv4Net & as2ip4,
 static void PrintOneAS(const Dwm::McCurtain::AS2Ipv4Net & as2ip4,
                        const Dwm::McCurtain::AS2Ipv6Net & as2ip6,
                        const Dwm::McCurtain::RipeAsnTxt & asntxt,
-                       uint32_t asnum)
+                       bool showV4, bool showV6, uint32_t asnum)
 {
-  auto  it4 = as2ip4.Nets().find(asnum);
   bool  printedASNumber = false;
-  if (it4 != as2ip4.Nets().end()) {
-#if 0
-    std::cout << it4->first << '\n';
-    printedASNumber = true;
-#endif
-    for (const auto & pfx : it4->second) {
-      std::cout << pfx.first << '\n';
+
+  if (showV4) {
+    auto  it4 = as2ip4.Nets().find(asnum);
+    if (it4 != as2ip4.Nets().end()) {
+      for (const auto & pfx : it4->second) {
+        std::cout << pfx.first << '\n';
+      }
     }
   }
-  auto  it6 = as2ip6.Nets().find(asnum);
-  if (it6 != as2ip6.Nets().end()) {
-#if 0
-    if (! printedASNumber) {
-      std::cout << it6->first << '\n';
-    }
-#endif
-    for (const auto & pfx : it6->second) {
-      std::cout << pfx.first << '\n';
+  if (showV6) {
+    auto  it6 = as2ip6.Nets().find(asnum);
+    if (it6 != as2ip6.Nets().end()) {
+      for (const auto & pfx : it6->second) {
+        std::cout << pfx.first << '\n';
+      }
     }
   }
   return;
@@ -234,53 +244,59 @@ static void PrintIpv6Matches(const Dwm::McCurtain::AS2Ipv6Net & as2ip6,
 static void PrintCountryCodePrefixes(const Dwm::McCurtain::AS2Ipv4Net & as2ip4,
                                      const Dwm::McCurtain::AS2Ipv6Net & as2ip6,
                                      const Dwm::McCurtain::RipeAsnTxt & asntxt,
+                                     bool showV4, bool showV6,
                                      const std::string & countryCode)
 {
-  Dwm::McCurtain::CaidaV4Routeviews::ASMapValue  pfxs4;
-  
-  for (const auto & as : as2ip4.Nets()) {
-    auto  asnit = asntxt.Entries().find(as.first);
-    if (asnit != asntxt.Entries().end()) {
-      if (asnit->second.CountryCode() == countryCode) {
-        for (const auto & pfx : as.second) {
-          pfxs4.Insert(pfx.first);
+  if (showV4) {
+    Dwm::McCurtain::CaidaV4Routeviews::ASMapValue  pfxs4;
+    
+    for (const auto & as : as2ip4.Nets()) {
+      auto  asnit = asntxt.Entries().find(as.first);
+      if (asnit != asntxt.Entries().end()) {
+        if (asnit->second.CountryCode() == countryCode) {
+          for (const auto & pfx : as.second) {
+            pfxs4.Insert(pfx.first);
+          }
         }
       }
     }
-  }
-  pfxs4.Aggregate();
-  std::set<Dwm::Ipv4Prefix>  pfx4set;
-  for (const auto & asms : pfxs4.PrefixSets()) {
-    for (const auto & pfx : asms.second) {
-      pfx4set.insert(pfx);
+    pfxs4.Aggregate();
+    std::set<Dwm::Ipv4Prefix>  pfx4set;
+    for (const auto & asms : pfxs4.PrefixSets()) {
+      for (const auto & pfx : asms.second) {
+        pfx4set.insert(pfx);
+      }
     }
-  }
-  for (const auto & pfx : pfx4set) {
-    std::cout << pfx << '\n';
+    for (const auto & pfx : pfx4set) {
+      std::cout << pfx << '\n';
+    }
   }
 
-  Dwm::McCurtain::CaidaV6Routeviews::ASMapValue  pfxs6;
-  
-  for (const auto & as : as2ip6.Nets()) {
-    auto  asnit = asntxt.Entries().find(as.first);
-    if (asnit != asntxt.Entries().end()) {
-      if (asnit->second.CountryCode() == countryCode) {
-        for (const auto & pfx : as.second) {
-          pfxs6.Insert(pfx.first);
+  if (showV6) {
+    Dwm::McCurtain::CaidaV6Routeviews::ASMapValue  pfxs6;
+    
+    for (const auto & as : as2ip6.Nets()) {
+      auto  asnit = asntxt.Entries().find(as.first);
+      if (asnit != asntxt.Entries().end()) {
+        if (asnit->second.CountryCode() == countryCode) {
+          for (const auto & pfx : as.second) {
+            pfxs6.Insert(pfx.first);
+          }
         }
       }
     }
-  }
-  pfxs6.Aggregate();
-  std::set<Dwm::Ipv6Prefix>  pfx6set;
-  for (const auto & asms : pfxs6.PrefixSets()) {
-    for (const auto & pfx : asms.second) {
-      pfx6set.insert(pfx);
+    pfxs6.Aggregate();
+    std::set<Dwm::Ipv6Prefix>  pfx6set;
+    for (const auto & asms : pfxs6.PrefixSets()) {
+      for (const auto & pfx : asms.second) {
+        pfx6set.insert(pfx);
+      }
+    }
+    for (const auto & pfx : pfx6set) {
+      std::cout << pfx << '\n';
     }
   }
-  for (const auto & pfx : pfx6set) {
-    std::cout << pfx << '\n';
-  }
+  
   return;
 }
 
@@ -308,7 +324,7 @@ static void PrintCountryCodeASes(const Dwm::McCurtain::RipeAsnTxt & asntxt,
 //----------------------------------------------------------------------------
 static void Usage(const char *argv0)
 {
-  std::cerr << "Usage: " << argv0 << " [-f dbfile] [-a asnTxtFile] [-p]\n"
+  std::cerr << "Usage: " << argv0 << " [-f dbfile] [-a asnTxtFile] [-p] [-4] [-6]\n"
             << "       " << "[ipv4addr|ipv6addr|AS_number|country_code]\n\n"
             << "default dbfile: /usr/local/etc/mccas2ip.db\n"
             << "default asnTxtFile: /usr/local/etc/asn.txt\n";
@@ -321,11 +337,19 @@ int main(int argc, char *argv[])
   std::string  dbFile("/usr/local/etc/mccas2ip.db");
   std::string  asnTxtFile("/usr/local/etc/asn.txt");
 
+  bool  requestedV4 = false, showV4 = true;
+  bool  requestedV6 = false, showV6 = true;
   bool  showPrefixes = false;
   int   optchar;
 
-  while ((optchar = getopt(argc, argv, "a:f:p")) != -1) {
+  while ((optchar = getopt(argc, argv, "46a:f:p")) != -1) {
     switch (optchar) {
+      case '4':
+        requestedV4 = true;
+        break;
+      case '6':
+        requestedV6 = true;
+        break;
       case 'a':
         asnTxtFile = optarg;
         break;
@@ -339,6 +363,16 @@ int main(int argc, char *argv[])
         Usage(argv[0]);
         exit(1);
         break;
+    }
+  }
+  if (requestedV4) {
+    if (! requestedV6) {
+      showV6 = false;
+    }
+  }
+  else if (requestedV6) {
+    if (! requestedV4) {
+      showV4 = false;
     }
   }
   
@@ -356,18 +390,20 @@ int main(int argc, char *argv[])
         }
         else if (IsCountryCode(argv[optind])) {
           if (showPrefixes) {
-            PrintCountryCodePrefixes(as2ipv4, as2ipv6, asntxt, argv[optind]);
+            PrintCountryCodePrefixes(as2ipv4, as2ipv6, asntxt, showV4,
+                                     showV6, argv[optind]);
           }
           else {
             PrintCountryCodeASes(asntxt, argv[optind]);
           }
         }
         else if (IsASNumber(argv[optind])) {
-          PrintOneAS(as2ipv4, as2ipv6, asntxt, std::stoul(argv[optind]));
+          PrintOneAS(as2ipv4, as2ipv6, asntxt, showV4, showV6,
+                     std::stoul(argv[optind]));
         }
       }
       else {
-        PrintAllASes(as2ipv4, as2ipv6, asntxt);
+        PrintAllASes(as2ipv4, as2ipv6, asntxt, showV4, showV6);
       }
     }
     else {
