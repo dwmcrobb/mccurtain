@@ -1,5 +1,12 @@
 2026-09-15  dwm  <dwm@ria.mcplex.net>
 
+	* apps/mccurtaind/DwmMcCurtainServer.cc
+	Populate IPv6 prefixes in responses to AS or country queries.
+
+	* classes/include/DwmMcCurtainResponses.hh
+	Add std::vector<Ipv6Prefix> to ASPrefixesResponse so that responses
+	to queries for an AS or country can contain IPv6 prefixes.
+
 	* apps/mccurtain/mccurtain.cc
 	Added -4 and -6 command line options to select IPv4 or IPv6 prefix
 	output when querying for an AS or country.  The default selects only
