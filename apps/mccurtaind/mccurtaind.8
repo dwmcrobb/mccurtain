@@ -1,0 +1,63 @@
+.Dd April 16, 2024
+.Dt mccurtaind 8
+.Os mcplex.net
+.Sh NAME
+.Nm mccurtaind
+.Nd IP origin server daemon
+.Sh SYNOPSIS
+.Nm
+.Op Fl c Ar config_file
+.Op Fl p Ar pid_file
+.Op Fl d
+.Sh DESCRIPTION
+.Nm
+is a server daemon that provides routing origin information to clients
+via UDP (for IP address queries) and secure TCP (for IP and other queries).
+It requires a configuration file (see
+.Xr mccurtaind.cfg 8 ), a mccurtain dtabase file (see
+.Xr mkcurtaindb 8 ,
+.Xr mccurtaindb 5 and
+;Xr mccdb 1 ) and a RIPE \fIasn.txt\fR file.
+.Pp
+.Nm
+uses libDwmCredence for authentication and encryption of TCP connections.
+The UDP service in unauthenticated and ununecrypted, but significantly
+faster (much lower latency) for the queries supported; it can be very
+useful bound to only the loopback, pqrticularly on hosts performing
+intrusion detection/prevention.
+.Pp
+The following command line options are available:
+.Pp
+.Bl -tag -width indent
+.It Fl c Ar config_file
+Specify the
+.Xr mccurtaind 8
+configurtion file.  The default path is \fI/usr/local/etc/mccurtaind.cfg\fR.
+See
+.Xr mccurtaind.cfg 5 for configuration documentation.
+.It Fl p Ar pid_file
+Specify the file in which
+.Nm
+should store its process ID (PID).  The default is
+\fI/var/run/mccurtaind.pid\fR
+.It Fl d
+Do not daemonize.  Mostly useful for debugging.
+.El
+
+.Sh FILES
+.Bl -tag -width indent
+.It Pa /usr/local/etc/mccurtaind.cfg
+The default configuration file.
+.It Pa /var/run/mccurtaind.pid
+The default PID file.
+.El
+.Sh SEE ALSO
+.Xr mccurtain 1 ,
+.Xr mccdb 1 ,
+.Xr mccurtaindb 5 ,
+.Xr mccurtaind.cfg 5 ,
+.Xr mkcurtaindb 8 ,
+.Xr credence 1
+.Sh AUTHORS
+Copyright \(co 2024
+.An Daniel W. McRobb Aq Mt dwm@mcplex.net

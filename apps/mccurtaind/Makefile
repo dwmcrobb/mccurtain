@@ -7,7 +7,8 @@ OBJS         = mccurtaind.o \
                DwmMcCurtainServer.o \
                DwmMcCurtainUdpServer.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
-TARTARGETS   = ${TARDIR}/sbin/mccurtaind
+TARTARGETS   = ${TARDIR}/sbin/mccurtaind \
+               ${TARDIR}/man/man8/mccurtaind.8
 
 mccurtaind: ${OBJS} ../../classes/lib/libDwmMcCurtain.a
 	${CXX} ${LDFLAGS} -o $@ $^ ${DWMLIBS}
@@ -37,6 +38,9 @@ tarprep: ${TARTARGETS}
 
 ${TARDIR}/sbin/mccurtaind: mccurtaind
 	${LIBTOOL} --mode=install ../../install-sh -s -c -m 555 $< $@
+
+${TARDIR}/man/man8/mccurtaind.8: mccurtaind.8
+	${LIBTOOL} --mode=install ../../install-sh -c -m 644 $< $@
 
 distclean:: clean
 	rm -f ${OBJDEPS}
