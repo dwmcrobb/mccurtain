@@ -1,5 +1,7 @@
 2026-09-16  dwm  <dwm@ria.mcplex.net>
 
+	* tagged as mccurtain-0.0.33
+
 	* classes/include/DwmMcCurtainResponses.hh
 	include DwmIpv6Prefix.hh
 
