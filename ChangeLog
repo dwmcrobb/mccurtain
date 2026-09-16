@@ -1,3 +1,7 @@
+2026-09-16  Daniel W. McRobb  <dwm@kiva.mcplex.net>
+
+	* tagged as mccurtain-0.0.34
+
 2026-09-16  dwm  <dwm@ria.mcplex.net>
 
 	* apps/mccurtaind/DwmMcCurtainServer.cc
