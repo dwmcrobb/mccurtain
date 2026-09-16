@@ -39,7 +39,7 @@ ${TARDIR}/bin/mkcurtaindb: mkcurtaindb
 ${TARDIR}/man/man8/mkcurtaindb.8: mkcurtaindb.8
 	${LIBTOOL} --mode=install ../../install-sh -c -m 644 $< $@
 
-${TARDIR}/man/man8/mccurtaindb.5: mccurtaindb.5
+${TARDIR}/man/man5/mccurtaindb.5: mccurtaindb.5
 	${LIBTOOL} --mode=install ../../install-sh -c -m 644 $< $@
 
 distclean:: clean
