@@ -1,5 +1,8 @@
 2026-09-16  dwm  <dwm@ria.mcplex.net>
 
+	* etc/mccurtaind.cfg.example
+	Add udpAddresses configuration.
+
 	* apps/mkcurtaindb/mccurtaindb.5
 	Add manpage for db file format.
 
