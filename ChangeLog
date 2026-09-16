@@ -1,5 +1,10 @@
 2026-09-16  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
+	* tagged as mccurtain-0.0.35
+
+	* apps/mkcurtaindb/Makefile
+	Correct tarprep target path for mccurtaindb.5
+
 	* tagged as mccurtain-0.0.34
 
 2026-09-16  dwm  <dwm@ria.mcplex.net>
