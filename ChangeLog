@@ -1,5 +1,11 @@
 2026-09-16  dwm  <dwm@ria.mcplex.net>
 
+	* apps/mccurtaind/DwmMcCurtainServer.cc
+	* apps/mccurtaind/DwmMcCurtainServer.hh
+	* apps/mccurtaind/DwmMcCurtainUdpServer.cc
+	* apps/mccurtaind/DwmMcCurtainUdpServer.hh
+	Check client access in UDP server.
+
 	* etc/mccurtaind.cfg.example
 	Add udpAddresses configuration.
 
