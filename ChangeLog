@@ -1,5 +1,7 @@
 2026-09-15  dwm  <dwm@ria.mcplex.net>
 
+	* tagged as mccurtain-0.0.32
+
 	* apps/mccurtaind/DwmMcCurtainServer.cc
 	Populate IPv6 prefixes in responses to AS or country queries.
 
