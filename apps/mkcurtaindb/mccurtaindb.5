@@ -1,0 +1,53 @@
+.Dd September 16, 2026
+.Dt mccurtaindb 5
+.Os mcplex.net
+.Sh NAME
+.Nm mccurtaindb
+.Nd mccurtain database file format
+.Sh SYNOPSIS
+The \fBmccurtain\fR system requires two input files: an AS to IP database
+created with
+.Xr mkcurtaindb 8
+and an \fIasn.txt\fR file downloaded from RIPE.  These files are required
+by
+.Xr mccurtaind 8 and
+.Xr mccdb 1 .  This document describes the format of the AS to IP database
+file.
+.Sh DESCRIPTION
+There are two top-level objects serialized in the database file.  The
+first object maps autonomous systems (ASes) to IPv4 prefixes and the
+second maps autonomous systems (ASes) to IPv6 prefixes.
+.Pp
+Within each of the two objects is an AS number and a list of prefixes
+for which the AS appears at the origin AS.
+.Pp
+The IPv4 object is encalsulated in a \fIDwm::McCurtain::AS2Ipv4Net\fR
+object in the C++ library.  The IPv6 object is encapsulated in a
+\fIDwm::McCurtain::AS2Ipv6Net\fR object in the C++ library.  The
+static conveniece functions \fIDwm::McCurtain::AS2IPDb::Load()\fR and
+\fIDwm::McCurtain::AS2IPDb::Save()\fR are used to load and save
+both objects.
+.Pp
+The storage format is binary, regardless of whether it is compressed.
+If the filename ends in \fI.bz2\fR it is assumed to be in bzip2
+compressed form.  If the filename ends in \fI.gz\fR it is assumed to
+be in gzip compressed form.  Otherwise it is assumed to be in the
+uncompressed form.  The \fIDwm::McCurtain::AS2IPDb::Load()\fR and
+\fIDwm::McCurtain::AS2IPDb::Save()\fR functions will make these
+assumptions based on the filename as described.  This means that
+.Xr mccdb 1 (via its \fI-f dbfile\fR argument) and
+.Xr mccurtaind 8 (via configuration) can load any of the 3 formats
+based on filename, and that
+.Xr mkcurtaindb 8 can save in any of the 3 formats.
+.Sh FILES
+.Bl -tag -width indent
+.It Pa /usr/local/etc/mccas2ip.db
+The default mccurtain AS to IP database file.
+.El
+.Sh SEE ALSO
+.Xr mccdb 1 ,
+.Xr mccurtaind 8 ,
+.Xr mkcurtaindb 8
+.Sh AUTHORS
+Copyright \(co 2026
+.An Daniel W. McRobb Aq Mt dwm@mcplex.net
