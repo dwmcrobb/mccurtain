@@ -82,10 +82,12 @@ namespace Dwm {
     
     //------------------------------------------------------------------------
     //!  For an AS request, mccurtaind responds with a tuple of AS number,
-    //!  RipeAsnTxt::Entry and vector of IPv4 prefixes.
+    //!  RipeAsnTxt::Entry, a vector of IPv4 prefixes and a vector of IPv6
+    //!  prefixes.
     //------------------------------------------------------------------------
     using ASPrefixesResponse = std::tuple<uint32_t,RipeAsnTxt::Entry,
-                                          std::vector<Ipv4Prefix>>;
+                                          std::vector<Ipv4Prefix>,
+                                          std::vector<Ipv6Prefix>>;
 
     using CountryPrefixesResponse = std::vector<ASPrefixesResponse>;
     
