@@ -49,8 +49,11 @@ extern "C" {
 #include <thread>
 
 #include "DwmIpv4PrefixPatricia.hh"
+#include "DwmIpv6PrefixPatricia.hh"
 #include "DwmMclogLogger.hh"
 #include "DwmCredencePeer.hh"
+#include "DwmMcCurtainCaidaV4Routeviews.hh"
+#include "DwmMcCurtainCaidaV6Routeviews.hh"
 #include "DwmMcCurtainMessage.hh"
 #include "DwmMcCurtainOriginServer.hh"
 #include "DwmMcCurtainRequests.hh"
@@ -139,18 +142,31 @@ PrintIpv6AddrResponse(const Dwm::McCurtain::Ipv6AddrResponse & resp)
 //----------------------------------------------------------------------------
 static void
 PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp,
-                        bool verbose)
+                        bool verbose, bool showV4, bool showV6)
 {
   if (verbose) {
-    cout << setiosflags(ios::left) << setw(10) << std::get<0>(resp) << ' '
-         << setw(2) << std::get<1>(resp).CountryCode() << ' '
-         << std::get<1>(resp).Name() << '\n';
-  }
-  for (const auto & pfx : std::get<2>(resp)) {
-    if (verbose) {
-      cout << "  ";
+    if ((showV4 && (! std::get<2>(resp).empty()))
+        || (showV6 && (! std::get<3>(resp).empty()))) {
+      cout << setiosflags(ios::left) << setw(10) << std::get<0>(resp) << ' '
+           << setw(2) << std::get<1>(resp).CountryCode() << ' '
+           << std::get<1>(resp).Name() << '\n';
     }
-    cout << pfx.ToShortString() << '\n';
+  }
+  if (showV4) {
+    for (const auto & pfx : std::get<2>(resp)) {
+      if (verbose) {
+        cout << "  ";
+      }
+      cout << pfx.ToShortString() << '\n';
+    }
+  }
+  if (showV6) {
+    for (const auto & pfx : std::get<3>(resp)) {
+      if (verbose) {
+        cout << "  ";
+      }
+      cout << pfx << '\n';
+    }
   }
   return;
 }
@@ -160,25 +176,52 @@ PrintASPrefixesResponse(const Dwm::McCurtain::ASPrefixesResponse & resp,
 //----------------------------------------------------------------------------
 static void
 PrintCountryPrefixesResponse(const Dwm::McCurtain::CountryPrefixesResponse & resp,
-                             bool verbose)
+                             bool verbose, bool showV4, bool showV6)
 {
   if (verbose) {
     for (const auto & aspr : resp) {
-      PrintASPrefixesResponse(aspr, verbose);
+      PrintASPrefixesResponse(aspr, verbose, showV4, showV6);
     }
     return;
   }
-  
-  Dwm::Ipv4PrefixPatricia<bool>  pfxs;
-  for (const auto & aspr : resp) {
-    for (const auto & pfx : std::get<2>(aspr)) {
-      pfxs[pfx] = true;
+
+  if (showV4) {
+    Dwm::McCurtain::CaidaV4Routeviews::ASMapValue  pfxs;
+    for (const auto & aspr : resp) {
+      for (const auto & pfx : std::get<2>(aspr)) {
+        pfxs.Insert(pfx);
+      }
+    }
+    pfxs.Aggregate();
+    std::set<Dwm::Ipv4Prefix>  pfx4set;
+    for (const auto & asms : pfxs.PrefixSets()) {
+      for (const auto & pfx : asms.second) {
+        pfx4set.insert(pfx);
+      }
+    }
+    for (const auto & pfx : pfx4set) {
+      std::cout << pfx << '\n';
     }
   }
-  pfxs.Aggregate();
-  for (const auto & pfx : pfxs) {
-    cout << pfx.first.ToShortString() << '\n';
+  if (showV6) {
+    Dwm::McCurtain::CaidaV6Routeviews::ASMapValue  pfxs;
+    for (const auto & aspr : resp) {
+      for (const auto & pfx : std::get<3>(aspr)) {
+        pfxs.Insert(pfx);
+      }
+    }
+    pfxs.Aggregate();
+    std::set<Dwm::Ipv6Prefix>  pfx6set;
+    for (const auto & asms : pfxs.PrefixSets()) {
+      for (const auto & pfx : asms.second) {
+        pfx6set.insert(pfx);
+      }
+    }
+    for (const auto & pfx : pfx6set) {
+      std::cout << pfx << '\n';
+    }
   }
+  
   return;
 }
 
@@ -234,7 +277,9 @@ static void UdpGetOrigin(const vector<string> & servers,
 static void Usage(const char *argv0)
 {
   cerr << "Usage: " << argv0 << " [-d] [-j] [-u] [-h mccurtaind_host] [-p port] ipv4addr\n"
-       << "       " << argv0 << " [-d] [-v] [-h mccurtaind_host] [-p port] AS_number\n"
+       << "       " << argv0 << " [-d] [-j] [-u] [-h mccurtaind_host] [-p port] ipv6addr\n"
+       << "       " << argv0 << " [-d] [-v] [-4] [-6] [-h mccurtaind_host] [-p port] AS_number\n"
+       << "       " << argv0 << " [-d] [-v] [-4] [-6] [-h mccurtaind_host] [-p port] country_code\n"
        << "       " << argv0 << " -V\n\n"
        << "  Note: MCCURTAIND environment variable will be used if\n"
        << "        '-h mccurtaind_host' option is not specified.\n";
@@ -253,7 +298,9 @@ int main(int argc, char *argv[])
   bool              useUdp = false;
   bool              useJson = false;
   bool              verbose = false;
-
+  bool              requestedV4 = false, showV4 = true;
+  bool              requestedV6 = false, showV6 = false;
+  
   Dwm::Mclog::OstreamSink  cerrSink(std::cerr);
   Dwm::Mclog::logger.Open("user", {&cerrSink});
   Dwm::Mclog::logger.MinimumSeverity("err");
@@ -264,8 +311,14 @@ int main(int argc, char *argv[])
     hostList = mccurtaindEnv;
   }
   
-  while ((optChar = getopt(argc, argv, "dh:jp:uvV")) != -1) {
+  while ((optChar = getopt(argc, argv, "46dh:jp:uvV")) != -1) {
     switch (optChar) {
+      case '4':
+        requestedV4 = true;
+        break;
+      case '6':
+        requestedV6 = true;
+        break;
       case 'd':
         Dwm::Mclog::logger.MinimumSeverity("debug");
         break;
@@ -318,6 +371,19 @@ int main(int argc, char *argv[])
     UdpGetOrigin(hosts, argv[optind], useJson);
     return 0;
   }
+
+  if (requestedV4) {
+    if (! requestedV6) {
+      showV6 = false;
+    }
+    showV4 = true;
+  }
+  if (requestedV6) {
+    if (! requestedV4) {
+      showV4 = false;
+    }
+    showV6 = true;
+  }
   
   Credence::Peer  peer;
   if (GetPeer(hosts, port, peer)) {
@@ -349,7 +415,7 @@ int main(int argc, char *argv[])
         if (peer.Send(req)) {
           Dwm::McCurtain::CountryPrefixesResponse  resp;
           if (peer.Receive(resp)) {
-            PrintCountryPrefixesResponse(resp, verbose);
+            PrintCountryPrefixesResponse(resp, verbose, showV4, showV6);
             return 0;
           }
         }
@@ -361,7 +427,7 @@ int main(int argc, char *argv[])
           if (peer.Send(req)) {
             Dwm::McCurtain::ASPrefixesResponse  resp;
             if (peer.Receive(resp)) {
-              PrintASPrefixesResponse(resp, verbose);
+              PrintASPrefixesResponse(resp, verbose, showV4, showV6);
               return 0;
             }
           }
