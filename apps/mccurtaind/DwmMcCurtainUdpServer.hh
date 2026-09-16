@@ -97,15 +97,17 @@ namespace Dwm {
           Message  msg;
           AT       sockAddr;
           if (msg.RecvFrom(fd, &sockAddr)) {
-            if (msg.Header().Type()
-                == MessageHeader::MsgType::e_typeOriginRequest) {
-              auto  *req = msg.OrigRequest();
-              if (req) {
-                OriginResponse  resp;
-                if (GetResponse(*req, resp)) {
-                  msg.OrigResponse(resp);
-                  msg.Header().Type(MessageHeader::MsgType::e_typeOriginResponse);
-                  msg.SendTo(fd, &sockAddr);
+            if (ClientAllowed(sockAddr)) {
+              if (msg.Header().Type()
+                  == MessageHeader::MsgType::e_typeOriginRequest) {
+                auto  *req = msg.OrigRequest();
+                if (req) {
+                  OriginResponse  resp;
+                  if (GetResponse(*req, resp)) {
+                    msg.OrigResponse(resp);
+                    msg.Header().Type(MessageHeader::MsgType::e_typeOriginResponse);
+                    msg.SendTo(fd, &sockAddr);
+                  }
                 }
               }
             }
@@ -121,15 +123,17 @@ namespace Dwm {
           Message  msg;
           AT       sockAddr;
           if (msg.RecvJsonFrom(fd, &sockAddr)) {
-            if (msg.Header().Type()
-                == MessageHeader::MsgType::e_typeOriginRequest) {
-              auto  *req = msg.OrigRequest();
-              if (req) {
-                OriginResponse  resp;
-                if (GetResponse(*req, resp)) {
-                  msg.OrigResponse(resp);
-                  msg.Header().Type(MessageHeader::MsgType::e_typeOriginResponse);
-                  msg.SendJsonTo(fd, &sockAddr);
+            if (ClientAllowed(sockAddr)) {
+              if (msg.Header().Type()
+                  == MessageHeader::MsgType::e_typeOriginRequest) {
+                auto  *req = msg.OrigRequest();
+                if (req) {
+                  OriginResponse  resp;
+                  if (GetResponse(*req, resp)) {
+                    msg.OrigResponse(resp);
+                    msg.Header().Type(MessageHeader::MsgType::e_typeOriginResponse);
+                    msg.SendJsonTo(fd, &sockAddr);
+                  }
                 }
               }
             }
@@ -142,6 +146,8 @@ namespace Dwm {
                              OriginResponse & resp);
       bool GetV4AddrResponse(const OriginRequest & req,
                              OriginResponse & resp);
+      bool ClientAllowed(const sockaddr_in & sockAddr) const;
+      bool ClientAllowed(const sockaddr_in6 & sockAddr) const;
       void RespondBinary(int fd);
       void RespondJson(int fd);
       void RespondBinary6(int fd);

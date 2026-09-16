@@ -258,6 +258,18 @@ namespace Dwm {
       }
       return rc;
     }
+
+    //------------------------------------------------------------------------
+    bool UdpServer::ClientAllowed(const sockaddr_in & sockAddr) const
+    {
+      return _server.ClientAllowed(IpAddress(Ipv4Address(sockAddr.sin_addr.s_addr)));
+    }
+
+    //------------------------------------------------------------------------
+    bool UdpServer::ClientAllowed(const sockaddr_in6 & sockAddr) const
+    {
+      return _server.ClientAllowed(IpAddress(Ipv6Address(sockAddr.sin6_addr)));
+    }
     
     //------------------------------------------------------------------------
     bool UdpServer::GetResponse(const OriginRequest & req,

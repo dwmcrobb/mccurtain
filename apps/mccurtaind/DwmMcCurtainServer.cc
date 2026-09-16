@@ -100,14 +100,24 @@ namespace Dwm {
     //------------------------------------------------------------------------
     bool Server::ClientAllowed(const boost::asio::ip::address & epAddr) const
     {
+      return ClientAllowed(IpAddress(epAddr.to_string()));
+    }
+                                  
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Server::ClientAllowed(const IpAddress & addr) const
+    {
       bool  rc = _allowedClients.empty();
       if (! rc) {
-        IpAddress clientAddr(epAddr.to_string());
         auto  it = std::find_if(_allowedClients.begin(),
                                 _allowedClients.end(),
                                 [&] (const auto & ac)
-                                { return ac.Contains(clientAddr); });
+                                { return ac.Contains(addr); });
         rc = (it != _allowedClients.end());
+        if (! rc) {
+          MCLOG(LOG_ERR, "Client {} access denied", addr);
+        }
       }
       return rc;
     }

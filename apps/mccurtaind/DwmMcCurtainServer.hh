@@ -118,6 +118,7 @@ namespace Dwm {
       const Credence::KeyStash & GetKeyStash() const  { return _keyStash; }
       const Credence::KnownKeys & GetKnownKeys() const  { return _knownKeys; }
       const Config GetConfig() const  { return _config; }
+      bool ClientAllowed(const IpAddress & addr) const;
 
       //----------------------------------------------------------------------
       //!  Stops the server.
