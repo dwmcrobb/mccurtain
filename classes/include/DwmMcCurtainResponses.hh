@@ -46,6 +46,7 @@
 #include <vector>
 
 #include "DwmIpv4Prefix.hh"
+#include "DwmIpv6Prefix.hh"
 #include "DwmMcCurtainRipeAsnTxt.hh"
 
 namespace Dwm {
