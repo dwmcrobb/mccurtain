@@ -195,6 +195,7 @@ namespace Dwm {
       std::get<0>(resp) = asNum;
       std::get<1>(resp).Clear();
       std::get<2>(resp).clear();
+      std::get<3>(resp).clear();
 
       auto  asnit = _asntxt.Entries().find(asNum);
       if (asnit != _asntxt.Entries().end()) {
@@ -204,6 +205,12 @@ namespace Dwm {
       if (asit != _as2ipv4.Nets().end()) {
         for (const auto & pfx : asit->second) {
           std::get<2>(resp).push_back(pfx.first);
+        }
+      }
+      auto  asit6 = _as2ipv6.Nets().find(asNum);
+      if (asit6 != _as2ipv6.Nets().end()) {
+        for (const auto & pfx : asit6->second) {
+          std::get<3>(resp).push_back(pfx.first);
         }
       }
       return;
@@ -217,7 +224,8 @@ namespace Dwm {
         if (as.second.CountryCode() == countryCode) {
           ASPrefixesResponse  oneAS;
           GetASPrefixesResponse(as.first, oneAS);
-          if (! std::get<2>(oneAS).empty()) {
+          if (! std::get<2>(oneAS).empty()
+              || (! std::get<3>(oneAS).empty())) {
             resp.emplace_back(oneAS);
           }
         }
