@@ -3,7 +3,9 @@ include ../../Makefile.vars
 ALLINCS  = -I../../classes/include ${DWMINCS}
 OBJS     = mkcurtaindb.o
 OBJDEPS      = $(OBJS:%.o=deps/%_deps)
-TARTARGETS   = ${TARDIR}/bin/mkcurtaindb
+TARTARGETS   = ${TARDIR}/bin/mkcurtaindb \
+               ${TARDIR}/man/man8/mkcurtaindb.8
+
 
 mkcurtaindb: mkcurtaindb.o ../../classes/lib/libDwmMcCurtain.a
 	${CXX} ${LDFLAGS} -o $@ $^ ${DWMLIBS}
@@ -33,6 +35,9 @@ tarprep: ${TARTARGETS}
 
 ${TARDIR}/bin/mkcurtaindb: mkcurtaindb
 	${LIBTOOL} --mode=install ../../install-sh -s -c -m 555 $< $@
+
+${TARDIR}/man/man8/mkcurtaindb.8: mkcurtaindb.8
+	${LIBTOOL} --mode=install ../../install-sh -c -m 644 $< $@
 
 distclean:: clean
 	rm -f ${OBJDEPS}

@@ -1,0 +1,94 @@
+.Dd April 16, 2024
+.Dt mkcurtaindb 8
+.Os mcplex.net
+.Sh NAME
+.Nm mkcurtaindb
+.Nd create a mccurtain AS to IP dtabase from CAIDA routeviews files
+.Sh SYNOPSIS
+.Nm
+.Op Fl o Ar dbfile
+.Ar routeViewsIPv4File
+.Ar routeViewsIPv6File
+.Sh DESCRIPTION
+.Nm
+mqy be used to create a mccurtain AS to IP database from CAIDA
+routeviews files.  This database is required by
+.Xr mccurtaind 8
+and
+.Xr mccdb 1 .
+.Pp
+
+The command line arguments:
+.Pp
+.Bl -tag -width indent
+.It Fl o Ar dbfile
+Specify the paht to the output database file.  If this option is not
+used, \fI/usr/local/etc/mccas2ip.db\fR will be assumed.
+.It Ar routeViewsIPv4File
+Specifies the path to the CAIDA routeviews file for IPv4.
+.It Ar routeViewsIPv6File
+Specifies the path the CAIDA routeviews file for IPv6.
+.Sh EXAMPLES
+All of the examples below assume that a CAIDA IPv4 routeviews file has
+been downloaded and saved in \fIrv2.pfx2as.gz\fR and that a CAIDA IPv6
+routeviews has been downloaded and saved in \fIrv6.pfx2as.gz\fR
+.Pp
+Create the database at the default path (\fI/usr/local/etc/mccas2ip.db\fR)
+from the CAIDA IPv4 routeviews file in \fIrv2.pfx2as.gz\fR and the CAIDA
+IPv6 routeviews file \fIrv6.pfx2as.gz\fR:
+.Bd -literal
+    # mkcurtaindb rv2.pfx2as.gz rv6.pfx2as.gz
+.Ed
+.Pp
+Create the database \fI./mccas2ip.db\fR from the CAIDA IPv4 routeviews
+file in \fIrv2.pfx2as.gz\fR and the CAIDA IPv6 routeviews file
+\fIrv6.pfx2as.gz\fR, in uncompressed form.  This is the fastest format
+to load, and hence is the preferred format for
+.Xr mccdb 1 .  Despite being larger than the compressed format, it is
+smaller than the size of the compressed CAIDA routeviews files:
+.Bd -literal
+    % mkcurtaindb -o ./mccas2ip.db rv2.pfx2as.gz rv6.pfx2as.gz
+.Ed
+.Pp
+Create the database \fI./mccas2ip.db.bz2\fR from the CAIDA IPv4
+routeviews file in \fIrv2.pfx2as.gz\fR and the CAIDA IPv6 routeviews
+file \fIrv6.pfx2as.gz\fR, in bzip2 compressed form.  This format is
+about half the size of the uncompressed format in most cases, at the
+expense of a slower load time for
+.Xr mccdb 1
+and
+.Xr mccurtaind 8 .  This is of litle consequence for
+.Xr mccurtaind 8 since it only loads at startup and runs for long
+periods (typically 24 hours to a week between reloads):
+.Bd -literal
+    % mkcurtaindb -o ./mccas2ip.db.bz2 rv2.pfx2as.gz rv6.pfx2as.gz
+.Ed
+.Pp
+Create the database \fI./mccas2ip.db.gz\fR from the CAIDA IPv4
+routeviews file in \fIrv2.pfx2as.gz\fR and the CAIDA IPv6 routeviews
+file \fIrv6.pfx2as.gz\fR, in gzip compressed form.  This format is
+about half the size of the uncompressed format in most cases, at the
+expense of a slower load time for
+.Xr mccdb 1 and
+.Xr mccurtaind 8 .  This is of litle consequence for
+.Xr mccurtaind 8 since it only loads at startup and runs for long
+periods (typically 24 hours to a week between reloads):
+.Bd -literal
+    % mkcurtaindb -o ./mccas2ip.db.gz rv2.pfx2as.gz rv6.pfx2as.gz
+.Ed
+.Sh FILES
+.Bl -tag -width indent
+.It Pa /usr/local/etc/mccas2ip.db
+The default mccurtain AS to IP database file.
+.It Pa https://publicdata.caida.org/datasets/routing/routeviews-prefix2as/
+The top level URL for the CAIDA IPv4 routeviews files.
+.It Pa https://publicdata.caida.org/datasets/routing/routeviews6-prefix2as/
+The top level URL for the CAIDA IPv6 routeviews files.
+.El
+.Sh SEE ALSO
+.Xr mccdb 1 ,
+.Xr mccurtain 1 ,
+.Xr mccurtaind 8
+.Sh AUTHORS
+Copyright \(co 2026
+.An Daniel W. McRobb Aq Mt dwm@mcplex.net
