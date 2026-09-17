@@ -1,4 +1,6 @@
-2026-09-17  Daniel McRobb  <dwm@mcplex.net>
+2026-09-17  Daniel McRobb  <dwm@mbp22.mcplex.net>
+
+	* tagged as mccurtain-0.0.38
 
 	* apps/mccurtain/Makefile
 	* apps/mccurtaind/Makefile
