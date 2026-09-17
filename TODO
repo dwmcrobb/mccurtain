@@ -1,5 +1,0 @@
-Write a manpage for mccurtaind.cfg(5)
-
-----------------------------------------------------------------------------
-DONE: Use a single AS to IP database file, holding two objects: an
-AS2Ipv4Net and an AS2Ipv6Net.
