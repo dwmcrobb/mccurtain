@@ -13,7 +13,7 @@ mccurtain: mccurtain.o ../../classes/lib/libDwmMcCurtain.a
 deps/%_deps: %.cc
 	@echo "making dependencies for $<"
 	@set -e; \
-	${CXX} -MM ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINCS} -c $< | \
+	${CXX} -MM ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINCS} $< | \
 	 sed 's/\($*\)\.o[ :]*/\1.o $(@D)\/$(@F) : /g' > $@ ; [ -s $@ ] || \
 	 rm -f $@
 

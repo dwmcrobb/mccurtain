@@ -35,7 +35,7 @@ runtests: all
 deps/%_deps: %.cc 
 	@echo "making dependencies for $<"
 	@set -e; \
-	${CXX} -MM ${CXXFLAGS} ${ALLINCS} -c $< | \
+	${CXX} -MM ${CXXFLAGS} ${ALLINCS} $< | \
 	 sed 's/\($*\)\.o[ :]*/\1.o $(@D)\/$(@F) : /g' > $@ ; [ -s $@ ] || \
 	 rm -f $@
 
