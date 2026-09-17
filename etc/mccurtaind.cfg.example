@@ -62,7 +62,7 @@ databases {
     #  format.  If the file extension is ".gz", the file is assumed to be in
     #  gzip format.  Any other extension is assumed to be uncompressed.  Note
     #  that all formats are binary; decompressing the bzip2 or gzip formats
-    #  yields a binary file.  The mccdbcat(1) utility can be used to dump
+    #  yields a binary file.  The mccdb(1) utility can be used to dump
     #  the contents of the file in human readable form.
     #------------------------------------------------------------------------
     dbfile = "/usr/local/etc/mccas2ip.db";
