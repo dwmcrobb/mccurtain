@@ -1,3 +1,11 @@
+2026-09-17  Daniel McRobb  <dwm@mcplex.net>
+
+	* apps/mccurtain/Makefile
+	* apps/mccurtaind/Makefile
+	* apps/mkcurtaindb/Makefile
+	* classes/tests/Makefile
+	Remove '-c' from compiler arguments when buulding dependencies.
+
 2026-09-17  dwm  <dwm@ria.mcplex.net>
 
 	* tagged as mccurtain-0.0.37
