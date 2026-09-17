@@ -1,3 +1,9 @@
+2026-09-17  dwm  <dwm@ria.mcplex.net>
+
+	* apps/mccurtaind/Makefile
+	* apps/mccurtaind/mccurtaind.cfg.5
+	Added manpage for the mccurtaind configuration file.
+
 2026-09-16  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
 	* tagged as mccurtain-0.0.35
