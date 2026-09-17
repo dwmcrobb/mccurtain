@@ -1,0 +1,195 @@
+.Dd September 16, 2026
+.Dt mccurtaind.cfg 5
+.Os mcplex.net
+.Sh NAME
+.Nm mccurtaind.cfg
+.Nd mccurtaind configuration file.
+.Sh SYNOPSIS
+.Nm
+.Sh DESCRIPTION
+.Nm
+is the configuration file for
+.Xr mccurtaind 8 .
+.Sh FILE FORMAT
+.Nm
+contains multiple top-level stanzas.  Each stanza contains attributes (name:value pairs)
+or sub-stanzas.  Stanzas are opened with a name and \fB{\fR and closed with
+\fB};\fR.  Attribute notation is \fIname = value;\fR
+.Pp
+Comments start with \fB#\fR and continue to the end of the line.  Empty
+lines are ignored.
+.Ss "syslog" \fRstanza
+
+.Pp
+The syslog stanza contains system logging settings.
+.Bl -tag -width "   " indent
+.It \fBfacility = \fI"name"\fR;
+The syslog facility.  This may be one of "user", "daemon", "auth",
+"local0", "local1", "local2", "local3", "local4", "local5", "local6"
+or "local7".  The default is "daemon".
+.It \fBlevel = \fI"priority"\fR;
+The lowest priority that will be logged.  This may be "debug",
+"info", "notice", "warning", "error", "critical", "alert" or
+"emergency".  The default is "info".
+.It \fBlogLocations = \fI"yes|no"\fR;
+If \fI"yes"\fR, mccurtaind will show file and line number information in each
+log message.  This is typically set to \fI"no"\fR, but may be
+set to \fI"yes"\fR during development or debugging.  The default is \fI"no"\fR.
+.El
+.Pp
+An example syslog stanza is shown below.
+.Pp
+.Bd -literal
+syslog {
+  Facility = "local0";
+  level = "info";
+  logLocations = "yes";
+};
+.Ed
+.Ss service stanza\fR
+
+.Pp
+The service stanza is composed of network service configuration.
+.Bd -literal -width ""
+\fBaddresses = [ { address = "\fIipv4_address\fB"; tcpPort = \fIport\fB; },
+              { address = "\fIipv6_address\fB"; tcpPort = \fIport\fB; } ];\fR
+.Ed
+.Bd -offset 4n
+The addresses value is an array of {IP_address,port} tuples which configure
+the TCP endpoints where
+.Xr mccurtaind 8 will accept TCP queries.  Currrently, only one address per
+address family is supported, so multi-homed hosts will need to use the
+special "inaddr_any" (IPv4 wildcard) and "in6addr_any" (IPv6 wildcard)
+values for the addresses.
+.Ed
+.Bd -literal -width ""
+\fBudpAddresses = [ { address = "\fIipv4_address\fB"; udpPort = \fIport\fB; },
+                 { address = "\fIipv6_address\fB"; udpPort = \fIport\fB; } ];\fR
+.Ed
+.Bd -offset 4n
+The udpAddresses value is an array of {IP_address,port} tuples which configure
+the UDP endpoints where
+.Xr mccurtaind 8 will accept UDP queries.  Currrently, only one address per
+address family is supported, so multi-homed hosts will need to use the
+special "inaddr_any" (IPv4 wildcard) and "in6addr_any" (IPv6 wildcard)
+values for the addresses.  However, since UDP queries are unauthenticated
+and unencrypted, it is generally advised that these addresses should be
+loopback addresses or internal interface addresses (not routable to public
+Internet).
+.Ed
+.Bd -literal -width ""
+\fBkeyDirectory = "\fIcredence_key_directory\fR";
+.Ed
+.Bd -offset 4n
+.Xr mccurtaind 8 uses libDwmCredence for authentication of clients.  Three
+files are required: a private key file, a public key file and a file
+containing the public keys of clients that will be allowed to access
+.Xr mccurtaind 8 .
+.Pp
+\fIkeyDirectory\fR sets the Directory containing the credence public key
+file (id_ed25519.pub), private key file (id_ed25519) and allowed client
+public keys file (known_keys).
+.Ed
+.Bd -literal -width ""
+\fBallowedlClients = [ "\fIIP_prefix1\fB", "\fIIP_prefix2\fB",\fR ..., \fB"\fIIP_prefixN\fB" ];\fR
+.Ed
+.Bd -offset 4n
+The \fBallowedClients\fR value is an array of IP prefixes (IPv4 or IPv6)
+from which
+.Xr mccurtaind 8 will accept queries.  Each prefix is specified in CIDR
+form (e.g. "10.1.2.0/24" or "fd60:3019:f5a:5abf::0/64").
+.Ed
+.Pp
+An example service stanza:
+.Bd -literal -offset 4n
+service {
+    addresses = [ { address = "inaddr_any"; tcpPort = 2126; },
+                  { address = "in6addr_any"; tcpPort = 2126; } ];
+    udpAddresses = [ { address = "127.0.0.1"; udpPort = 2126; },
+                     { address = "::1"; udpPort = 2126; } ];
+    keyDirectory = "/usr/local/etc/mccurtaind";
+    allowedClients = [ "10.11.1/24", "127.0.0.1/32",
+                       "fd60:3019:f5a:5abf::0/64", "::1" ];
+};
+.Ed
+.Ss databases stanza
+
+.Pp
+The databases stanza is composed of input data configuration items: the
+path the AS to IP prefix database file and the path to the RIPE asn.txt file.
+.Bd -literal -width ""
+\fBdbfile = "\fIAS_to_IP_database_file\fB";\fR
+.Ed
+.Bd -literal -offset 4n
+The AS to IP prefix database file.  If not configured,
+/usr/local/etc/mccas2ip.db will be assumed.  This file can be
+created from CAIDA pfx2as files with mkcurtaindb(1).
+
+If the file extension is \fI.bz2\fR, the file is assumed to be in bzip
+format.  If the file extension is \fI.gz\fR, the file is assumed to be
+in gzip format.  Any other extension is assumed to be uncompressed.
+Note that all formats are binary; decompressing the bzip2 or gzip
+formats yields a binary file.  The mccdb(1) utility can be used to
+dump the contents of the file in human readable form.
+.Ed
+.Bd -literal -width ""
+\fBasntxt = "\fIRIPE_asn_text_file\fB";\fR
+.Ed
+.Bd -literal -offset 4n
+RIPE asn.txt file location.  If not configured,
+/usr/local/etc/asn.txt will be assumed.  A current version of this
+file can be downloaded from RIPE's ftp site at
+http://ftp.ripe.net/ripe/asnames/asn.txt
+.Ed
+.Pp
+An example databases stanza:
+.Bd -literal -offset 4n
+databases {
+    dbfile = "/usr/local/etc/mccas2ip.db";
+    asntxt = "/usr/local/etc/asn.txt";
+};
+.Ed
+.Sh COMPLETE EXAMPLE
+An example complete configuration:
+
+.Bd -literal -offset 4n
+syslog {
+  Facility = "local0";
+  level = "info";
+  logLocations = "yes";
+};
+
+service {
+    addresses = [ { address = "inaddr_any"; tcpPort = 2126; },
+                  { address = "in6addr_any"; tcpPort = 2126; } ];
+    udpAddresses = [ { address = "127.0.0.1"; udpPort = 2126; },
+                     { address = "::1"; udpPort = 2126; } ];
+    keyDirectory = "/usr/local/etc/mccurtaind";
+    allowedClients = [ "10.11.1/24", "127.0.0.1/32",
+                       "fd60:3019:f5a:5abf::0/64", "::1" ];
+};
+
+databases {
+    dbfile = "/usr/local/etc/mccas2ip.db";
+    asntxt = "/usr/local/etc/asn.txt";
+};
+.Ed
+.Sh FILES
+.Bl -tag -width indent
+.It Pa /usr/local/etc/mccurtaind.cfg
+The default configuration file.
+.It Pa /usr/local/etc/mccurtaind.cfg.example
+The default location of the excample configuration file.
+.It Pa /usr/local/etc/mccas2ip.db
+The default location of the AS to IP prefix database file.
+.It Pa /usr/local/etc/asn.txt
+The default location of the RIPE asn.txt file.
+.Sh SEE ALSO
+.Xr mccurtaind 8 ,
+.Xr mccurtain 1 ,
+.Xr mkcurtaindb 8 ,
+.Xr mccdb 1 ,
+.Xr credence 1
+.Sh COPYRIGHT
+Copyright (c) 2026 Daniel W. McRobb
+.Mt dwm@mcplex.net
